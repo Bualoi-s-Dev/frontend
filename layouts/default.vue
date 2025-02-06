@@ -4,7 +4,7 @@ import Header from '~/components/Header.vue';
 </script>
 
 <template>
-    <div class="w-screen h-screen flex flex-col font-poppins pt-12">
+    <div class="w-screen h-screen flex flex-col font-poppins pt-16">
         <Header />
         <slot />
     </div>
