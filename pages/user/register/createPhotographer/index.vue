@@ -65,163 +65,155 @@ const handleChooseImage = () => fileInput.value?.click();
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center h-fit py-[50px]">
-    <div class="flex flex-col items-start gap-[6px] h-fit">
+  <LoginRegisterCard>
+    <template #backButton>
       <BackButton />
-      <div
-        class="px-8 py-12 flex flex-col h-fit mx-auto shadow-lg bg-innerBackground w-[330px] gap-6 rounded-lg"
-      >
-        <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
-          <img :src="logo" alt="logo" class="w-9" />
-          Photomatch
+    </template>
+    <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
+      <img :src="logo" alt="logo" class="w-9" />
+      Photomatch
+    </div>
+    <div class="flex flex-col gap-3">
+      <h1 class="text-[18px] text-titleActive tracking-wide">Create Account</h1>
+      <h2 class="text-[16px] text-body">As Customer</h2>
+
+      <div class="flex flex-col gap-4">
+        <button
+          @click="handleChooseImage"
+          :style="{ backgroundImage: `url(${imageUrl})` }"
+          class="flex border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center"
+          :class="{ 'border-red-500': errors.imageUrl }"
+        >
+          <template v-if="!imageUrl">
+            <img class="w-[41px]" :src="imageIcon" alt="image" />
+            <h1 class="text-[10px] text-label">Upload Profile Picture</h1>
+          </template>
+        </button>
+        <p v-if="errors.imageUrl" class="text-red-500 text-xs">
+          {{ errors.imageUrl }}
+        </p>
+
+        <div class="flex flex-col gap-1">
+          <label>First Name<span class="text-primary">*</span></label>
+          <input
+            v-model="firstName"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.firstName }"
+          />
+          <p v-if="errors.firstName" class="text-red-500 text-xs">
+            {{ errors.firstName }}
+          </p>
         </div>
-        <div class="flex flex-col gap-3">
-          <h1 class="text-[18px] text-titleActive tracking-wide">
-            Create Account
-          </h1>
-          <h2 class="text-[16px] text-body">As Customer</h2>
 
-          <div class="flex flex-col gap-4">
-            <button
-              @click="handleChooseImage"
-              :style="{ backgroundImage: `url(${imageUrl})` }"
-              class="flex border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center"
-              :class="{ 'border-red-500': errors.imageUrl }"
-            >
-              <template v-if="!imageUrl">
-                <img class="w-[41px]" :src="imageIcon" alt="image" />
-                <h1 class="text-[10px] text-label">Upload Profile Picture</h1>
-              </template>
-            </button>
-            <p v-if="errors.imageUrl" class="text-red-500 text-xs">
-              {{ errors.imageUrl }}
-            </p>
-
-            <div class="flex flex-col gap-1">
-              <label>First Name<span class="text-primary">*</span></label>
-              <input
-                v-model="firstName"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.firstName }"
-              />
-              <p v-if="errors.firstName" class="text-red-500 text-xs">
-                {{ errors.firstName }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Last Name<span class="text-primary">*</span></label>
-              <input
-                v-model="lastName"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.lastName }"
-              />
-              <p v-if="errors.lastName" class="text-red-500 text-xs">
-                {{ errors.lastName }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Gender<span class="text-primary">*</span></label>
-              <select
-                v-model="gender"
-                class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.gender }"
-              >
-                <option disabled value="">Select Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-              </select>
-              <p v-if="errors.gender" class="text-red-500 text-xs">
-                {{ errors.gender }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Line ID<span class="text-primary">*</span></label>
-              <input
-                v-model="lineID"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.lineID }"
-              />
-              <p v-if="errors.lineID" class="text-red-500 text-xs">
-                {{ errors.lineID }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Facebook<span class="text-primary">*</span></label>
-              <input
-                v-model="facebook"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.facebook }"
-              />
-              <p v-if="errors.facebook" class="text-red-500 text-xs">
-                {{ errors.facebook }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Instagram<span class="text-primary">*</span></label>
-              <input
-                v-model="instagram"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.instagram }"
-              />
-              <p v-if="errors.instagram" class="text-red-500 text-xs">
-                {{ errors.instagram }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Bank Account<span class="text-primary">*</span></label>
-              <select
-                v-model="bankAccount"
-                class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.bankAccount }"
-              >
-                <option disabled value="">Select Bank</option>
-                <option>Kasikorn</option>
-                <option>Krungthai</option>
-              </select>
-              <p v-if="errors.bankAccount" class="text-red-500 text-xs">
-                {{ errors.bankAccount }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Account Number<span class="text-primary">*</span></label>
-              <input
-                v-model="accountNumber"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.accountNumber }"
-              />
-              <p v-if="errors.accountNumber" class="text-red-500 text-xs">
-                {{ errors.accountNumber }}
-              </p>
-            </div>
-
-            <!-- Submit Button -->
-            <Button
-              class="flex items-center justify-center py-[12px]"
-              textColor="text-white"
-              fontSize="text-[14px]"
-              fontFamily="font-poppins"
-              @click="handleSubmit"
-            >
-              Submit
-            </Button>
-          </div>
+        <div class="flex flex-col gap-1">
+          <label>Last Name<span class="text-primary">*</span></label>
+          <input
+            v-model="lastName"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.lastName }"
+          />
+          <p v-if="errors.lastName" class="text-red-500 text-xs">
+            {{ errors.lastName }}
+          </p>
         </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Gender<span class="text-primary">*</span></label>
+          <select
+            v-model="gender"
+            class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.gender }"
+          >
+            <option disabled value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+          </select>
+          <p v-if="errors.gender" class="text-red-500 text-xs">
+            {{ errors.gender }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Line ID<span class="text-primary">*</span></label>
+          <input
+            v-model="lineID"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.lineID }"
+          />
+          <p v-if="errors.lineID" class="text-red-500 text-xs">
+            {{ errors.lineID }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Facebook<span class="text-primary">*</span></label>
+          <input
+            v-model="facebook"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.facebook }"
+          />
+          <p v-if="errors.facebook" class="text-red-500 text-xs">
+            {{ errors.facebook }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Instagram<span class="text-primary">*</span></label>
+          <input
+            v-model="instagram"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.instagram }"
+          />
+          <p v-if="errors.instagram" class="text-red-500 text-xs">
+            {{ errors.instagram }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Bank Account<span class="text-primary">*</span></label>
+          <select
+            v-model="bankAccount"
+            class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.bankAccount }"
+          >
+            <option disabled value="">Select Bank</option>
+            <option>Kasikorn</option>
+            <option>Krungthai</option>
+          </select>
+          <p v-if="errors.bankAccount" class="text-red-500 text-xs">
+            {{ errors.bankAccount }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Account Number<span class="text-primary">*</span></label>
+          <input
+            v-model="accountNumber"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.accountNumber }"
+          />
+          <p v-if="errors.accountNumber" class="text-red-500 text-xs">
+            {{ errors.accountNumber }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <Button
+          class="flex items-center justify-center py-[12px]"
+          textOptions="text-white text-[14px] font-poppins tracking-wider"
+          @click="handleSubmit"
+        >
+          Submit
+        </Button>
       </div>
     </div>
-  </div>
+  </LoginRegisterCard>
   <input
     type="file"
     ref="fileInput"

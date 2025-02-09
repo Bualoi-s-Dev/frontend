@@ -64,152 +64,144 @@ const handleChooseImage = () => fileInput.value?.click();
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center h-fit py-[50px]">
-    <div class="flex flex-col items-start gap-[6px] h-fit">
+  <LoginRegisterCard>
+    <template #backButton>
       <BackButton />
-      <div
-        class="px-8 py-12 flex flex-col h-fit mx-auto shadow-lg bg-innerBackground w-[330px] gap-6 rounded-lg"
-      >
-        <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
-          <img :src="logo" alt="logo" class="w-9" />
-          Photomatch
+    </template>
+    <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
+      <img :src="logo" alt="logo" class="w-9" />
+      Photomatch
+    </div>
+    <div class="flex flex-col gap-3">
+      <h1 class="text-[18px] text-titleActive tracking-wide">Create Account</h1>
+      <h2 class="text-[16px] text-body">As Customer</h2>
+
+      <div class="flex flex-col gap-4">
+        <button
+          @click="handleChooseImage"
+          :style="{ backgroundImage: `url(${imageUrl})` }"
+          class="flex border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center"
+          :class="{ 'border-red-500': errors.imageUrl }"
+        >
+          <template v-if="!imageUrl">
+            <img class="w-[41px]" :src="imageIcon" alt="image" />
+            <h1 class="text-[10px] text-label">Package Thumbnail</h1>
+          </template>
+        </button>
+        <p v-if="errors.imageUrl" class="text-red-500 text-xs">
+          {{ errors.imageUrl }}
+        </p>
+
+        <!-- First Name -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[16px]"
+            >First Name<span class="text-primary">*</span></label
+          >
+          <input
+            v-model="firstName"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.firstName }"
+          />
+          <p v-if="errors.firstName" class="text-red-500 text-xs">
+            {{ errors.firstName }}
+          </p>
         </div>
-        <div class="flex flex-col gap-3">
-          <h1 class="text-[18px] text-titleActive tracking-wide">
-            Create Account
-          </h1>
-          <h2 class="text-[16px] text-body">As Customer</h2>
 
-          <div class="flex flex-col gap-4">
-            <button
-              @click="handleChooseImage"
-              :style="{ backgroundImage: `url(${imageUrl})` }"
-              class="flex border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center"
-              :class="{ 'border-red-500': errors.imageUrl }"
-            >
-              <template v-if="!imageUrl">
-                <img class="w-[41px]" :src="imageIcon" alt="image" />
-                <h1 class="text-[10px] text-label">Package Thumbnail</h1>
-              </template>
-            </button>
-            <p v-if="errors.imageUrl" class="text-red-500 text-xs">
-              {{ errors.imageUrl }}
-            </p>
-
-            <!-- First Name -->
-            <div class="flex flex-col gap-1">
-              <label class="text-[16px]"
-                >First Name<span class="text-primary">*</span></label
-              >
-              <input
-                v-model="firstName"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.firstName }"
-              />
-              <p v-if="errors.firstName" class="text-red-500 text-xs">
-                {{ errors.firstName }}
-              </p>
-            </div>
-
-            <!-- Last Name -->
-            <div class="flex flex-col gap-1">
-              <label class="text-[16px]"
-                >Last Name<span class="text-primary">*</span></label
-              >
-              <input
-                v-model="lastName"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.lastName }"
-              />
-              <p v-if="errors.lastName" class="text-red-500 text-xs">
-                {{ errors.lastName }}
-              </p>
-            </div>
-
-            <!-- Gender -->
-            <div class="flex flex-col gap-1">
-              <label class="text-[16px]"
-                >Gender<span class="text-primary">*</span></label
-              >
-              <select
-                class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
-                v-model="gender"
-                :class="{ 'border-red-500': errors.gender }"
-              >
-                <option disabled value="">Select Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-              </select>
-              <p v-if="errors.gender" class="text-red-500 text-xs">
-                {{ errors.gender }}
-              </p>
-            </div>
-
-            <!-- Phone Number -->
-            <div class="flex flex-col gap-1">
-              <label class="text-[16px]"
-                >Phone Number<span class="text-primary">*</span></label
-              >
-              <input
-                v-model="phoneNumber"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.phoneNumber }"
-              />
-              <p v-if="errors.phoneNumber" class="text-red-500 text-xs">
-                {{ errors.phoneNumber }}
-              </p>
-            </div>
-
-            <!-- Address -->
-            <div class="flex flex-col gap-1">
-              <label class="text-[16px]"
-                >Address<span class="text-primary">*</span></label
-              >
-              <input
-                v-model="address"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.address }"
-              />
-              <p v-if="errors.address" class="text-red-500 text-xs">
-                {{ errors.address }}
-              </p>
-            </div>
-
-            <!-- Zip Code -->
-            <div class="flex flex-col gap-1">
-              <label class="text-[16px]"
-                >Zip Code<span class="text-primary">*</span></label
-              >
-              <input
-                v-model="zipCode"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.zipCode }"
-              />
-              <p v-if="errors.zipCode" class="text-red-500 text-xs">
-                {{ errors.zipCode }}
-              </p>
-            </div>
-
-            <!-- Submit Button -->
-            <Button
-              class="flex items-center justify-center py-[12px]"
-              textColor="text-white"
-              fontSize="text-[14px]"
-              fontFamily="font-poppins"
-              @click="handleSubmit"
-            >
-              Submit
-            </Button>
-          </div>
+        <!-- Last Name -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[16px]"
+            >Last Name<span class="text-primary">*</span></label
+          >
+          <input
+            v-model="lastName"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.lastName }"
+          />
+          <p v-if="errors.lastName" class="text-red-500 text-xs">
+            {{ errors.lastName }}
+          </p>
         </div>
+
+        <!-- Gender -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[16px]"
+            >Gender<span class="text-primary">*</span></label
+          >
+          <select
+            class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
+            v-model="gender"
+            :class="{ 'border-red-500': errors.gender }"
+          >
+            <option disabled value="">Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+          </select>
+          <p v-if="errors.gender" class="text-red-500 text-xs">
+            {{ errors.gender }}
+          </p>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[16px]"
+            >Phone Number<span class="text-primary">*</span></label
+          >
+          <input
+            v-model="phoneNumber"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.phoneNumber }"
+          />
+          <p v-if="errors.phoneNumber" class="text-red-500 text-xs">
+            {{ errors.phoneNumber }}
+          </p>
+        </div>
+
+        <!-- Address -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[16px]"
+            >Address<span class="text-primary">*</span></label
+          >
+          <input
+            v-model="address"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.address }"
+          />
+          <p v-if="errors.address" class="text-red-500 text-xs">
+            {{ errors.address }}
+          </p>
+        </div>
+
+        <!-- Zip Code -->
+        <div class="flex flex-col gap-1">
+          <label class="text-[16px]"
+            >Zip Code<span class="text-primary">*</span></label
+          >
+          <input
+            v-model="zipCode"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.zipCode }"
+          />
+          <p v-if="errors.zipCode" class="text-red-500 text-xs">
+            {{ errors.zipCode }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <Button
+          class="flex items-center justify-center py-[12px]"
+          textOptions="text-white text-[14px] font-poppins tracking-wider"
+          @click="handleSubmit"
+        >
+          Submit
+        </Button>
       </div>
     </div>
-  </div>
+  </LoginRegisterCard>
 
   <!-- Hidden File Input -->
   <input
