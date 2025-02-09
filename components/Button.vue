@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<{
     bgColor: 'bg-black',
     width: 'w-auto',   
     height: 'h-8',
-    textOptions: 'text-sm text-center font-semibold text-white',  
+    textOptions: 'text-sm text-center font-light text-white',  
     buttonOptions: 'rounded px-3 py-0.5',
     iconSize: 'w-5 h-5'  
 });
