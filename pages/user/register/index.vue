@@ -101,19 +101,19 @@ const handleSubmit = () => {
       </div>
       <div class="flex flex-col gap-[16px]">
         <Button
-          class="flex items-center justify-center py-[12px]"
+          class="flex items-center justify-center py-[18px]"
           textOptions="text-white text-[14px] font-poppins"
           @click="handleSubmit"
           >Register
         </Button>
         <Button
-          class="flex items-center justify-center py-[12px] bg-google"
+          class="flex items-center justify-center py-[18px] bg-google"
           textOptions="text-titleActive text-[14px] font-poppins"
           :leftIcon="google_icon"
           >Register With Google
         </Button>
         <Button
-          class="flex items-center justify-center py-[12px] bg-facebook"
+          class="flex items-center justify-center py-[18px] bg-facebook"
           textOptions="text-white text-[14px] font-poppins"
           :leftIcon="facebook_icon"
         >

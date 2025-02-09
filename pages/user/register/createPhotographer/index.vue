@@ -10,7 +10,9 @@ const imageUrl = ref("");
 const firstName = ref("");
 const lastName = ref("");
 const gender = ref("");
-const socialMediaLink = ref("");
+const lineID = ref("");
+const facebook = ref("");
+const instagram = ref("");
 const bankAccount = ref("");
 const accountNumber = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -33,14 +35,13 @@ const validate = () => {
   if (!firstName.value) errors.value.firstName = "First name is required.";
   if (!lastName.value) errors.value.lastName = "Last name is required.";
   if (!gender.value) errors.value.gender = "Please select a gender.";
-  if (!socialMediaLink.value)
-    errors.value.socialMediaLink = "Social media link is required.";
+  if (!lineID.value) errors.value.lineID = "Line ID is required.";
+  if (!facebook.value) errors.value.facebook = "Facebook is required.";
+  if (!instagram.value) errors.value.instagram = "Instagram is required.";
   if (!bankAccount.value)
     errors.value.bankAccount = "Please select a bank account.";
   if (!accountNumber.value) {
     errors.value.accountNumber = "Account number is required.";
-  } else if (!/^\d+$/.test(accountNumber.value)) {
-    errors.value.accountNumber = "Account number must be numeric.";
   }
 
   return Object.keys(errors.value).length === 0;
@@ -53,7 +54,9 @@ const handleSubmit = () => {
   console.log("First Name:", firstName.value);
   console.log("Last Name:", lastName.value);
   console.log("Gender:", gender.value);
-  console.log("Social Media Links:", socialMediaLink.value);
+  console.log("Line ID:", lineID.value);
+  console.log("Facebook:", facebook.value);
+  console.log("Instagram:", instagram.value);
   console.log("Bank Account:", bankAccount.value);
   console.log("Account Number:", accountNumber.value);
 };
@@ -137,17 +140,41 @@ const handleChooseImage = () => fileInput.value?.click();
             </div>
 
             <div class="flex flex-col gap-1">
-              <label
-                >Social Media Links<span class="text-primary">*</span></label
-              >
+              <label>Line ID<span class="text-primary">*</span></label>
               <input
-                v-model="socialMediaLink"
+                v-model="lineID"
                 type="text"
                 class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.socialMediaLink }"
+                :class="{ 'border-red-500': errors.lineID }"
               />
-              <p v-if="errors.socialMediaLink" class="text-red-500 text-xs">
-                {{ errors.socialMediaLink }}
+              <p v-if="errors.lineID" class="text-red-500 text-xs">
+                {{ errors.lineID }}
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label>Facebook<span class="text-primary">*</span></label>
+              <input
+                v-model="facebook"
+                type="text"
+                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+                :class="{ 'border-red-500': errors.facebook }"
+              />
+              <p v-if="errors.facebook" class="text-red-500 text-xs">
+                {{ errors.facebook }}
+              </p>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label>Instagram<span class="text-primary">*</span></label>
+              <input
+                v-model="instagram"
+                type="text"
+                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+                :class="{ 'border-red-500': errors.instagram }"
+              />
+              <p v-if="errors.instagram" class="text-red-500 text-xs">
+                {{ errors.instagram }}
               </p>
             </div>
 
