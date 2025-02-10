@@ -3,16 +3,17 @@ definePageMeta({
   layout: "background",
 });
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import logo from "assets/logo.png";
 import imageIcon from "assets/icons/image.svg";
 
+const router = useRouter();
 const imageUrl = ref("");
 const firstName = ref("");
 const lastName = ref("");
 const gender = ref("");
 const phoneNumber = ref("");
-const address = ref("");
-const zipCode = ref("");
+const location = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const errors = ref<Record<string, string>>({});
@@ -38,12 +39,7 @@ const validate = () => {
   } else if (!/^\d+$/.test(phoneNumber.value)) {
     errors.value.phoneNumber = "Phone number must be numeric.";
   }
-  if (!address.value) errors.value.address = "Address is required.";
-  if (!zipCode.value) {
-    errors.value.zipCode = "Zip code is required.";
-  } else if (!/^\d+$/.test(zipCode.value)) {
-    errors.value.zipCode = "Zip code must be numeric.";
-  }
+  if (!location.value) errors.value.location = "Location is required.";
 
   return Object.keys(errors.value).length === 0;
 };
@@ -56,8 +52,9 @@ const handleSubmit = () => {
   console.log("Last Name:", lastName.value);
   console.log("Gender:", gender.value);
   console.log("Phone Number:", phoneNumber.value);
-  console.log("Address:", address.value);
-  console.log("Zip Code:", zipCode.value);
+  console.log("Location:", location.value);
+
+  router.push("/user/register/selectRole");
 };
 
 const handleChooseImage = () => fileInput.value?.click();
@@ -73,8 +70,7 @@ const handleChooseImage = () => fileInput.value?.click();
       Photomatch
     </div>
     <div class="flex flex-col gap-3">
-      <h1 class="text-[18px] text-titleActive tracking-wide">Create Account</h1>
-      <h2 class="text-[16px] text-body">As Customer</h2>
+      <h1 class="text-[18px] text-titleActive tracking-wide">Create User</h1>
 
       <div class="flex flex-col gap-4">
         <button
@@ -159,35 +155,19 @@ const handleChooseImage = () => fileInput.value?.click();
           </p>
         </div>
 
-        <!-- Address -->
+        <!-- Location -->
         <div class="flex flex-col gap-1">
           <label class="text-[16px]"
-            >Address<span class="text-primary">*</span></label
+            >Location<span class="text-primary">*</span></label
           >
           <input
-            v-model="address"
+            v-model="location"
             type="text"
             class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.address }"
+            :class="{ 'border-red-500': errors.location }"
           />
-          <p v-if="errors.address" class="text-red-500 text-xs">
-            {{ errors.address }}
-          </p>
-        </div>
-
-        <!-- Zip Code -->
-        <div class="flex flex-col gap-1">
-          <label class="text-[16px]"
-            >Zip Code<span class="text-primary">*</span></label
-          >
-          <input
-            v-model="zipCode"
-            type="text"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.zipCode }"
-          />
-          <p v-if="errors.zipCode" class="text-red-500 text-xs">
-            {{ errors.zipCode }}
+          <p v-if="errors.location" class="text-red-500 text-xs">
+            {{ errors.location }}
           </p>
         </div>
 

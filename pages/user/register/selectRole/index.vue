@@ -53,7 +53,7 @@ const isSelected = (role: string) =>
                 'bg-transparent text-placeHolder':
                   !isSelected('customer').value,
               }"
-              @click="router.push('/user/register/createCustomer')"
+              @click="router.push('/user/register')"
               >Select
             </Button>
           </div>

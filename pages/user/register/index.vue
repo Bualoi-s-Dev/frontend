@@ -46,7 +46,7 @@ const handleSubmit = () => {
   console.log("Confirm Password:", confirmPassword.value);
   errorMessage.value = ""; // Clear errors if successful
 
-  router.push("/user/register/selectRole");
+  router.push("/user/register/createUser");
 };
 </script>
 
