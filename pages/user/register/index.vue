@@ -59,7 +59,7 @@ const handleSubmit = () => {
     <div class="flex flex-col gap-[20px]">
       <div class="flex flex-col gap-[16px]">
         <div>
-          <label>Email<span class="text-red-500">*</span></label>
+          <label>Email</label>
           <input
             v-model="email"
             type="email"
@@ -71,7 +71,7 @@ const handleSubmit = () => {
         </div>
 
         <div>
-          <label>Password<span class="text-red-500">*</span></label>
+          <label>Password</label>
           <input
             v-model="password"
             type="password"
@@ -83,7 +83,7 @@ const handleSubmit = () => {
         </div>
 
         <div>
-          <label>Confirm Password<span class="text-red-500">*</span></label>
+          <label>Confirm Password</label>
           <input
             v-model="confirmPassword"
             type="password"
