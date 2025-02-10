@@ -14,7 +14,6 @@ import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
 const router = useRouter();
 const email = ref("");
 const password = ref("");
-const confirmPassword = ref("");
 const errorMessage = ref("");
 
 // Email validation (simple regex)
@@ -25,15 +24,10 @@ const isEmailValid = computed(() =>
 // Password validation (min 6 chars)
 const isPasswordValid = computed(() => password.value.length >= 6);
 
-// Confirm password validation
-const isConfirmPasswordValid = computed(
-  () => password.value === confirmPassword.value
-);
-
 // Form validation
 const isFormValid = computed(
   () =>
-    isEmailValid.value && isPasswordValid.value && isConfirmPasswordValid.value
+    isEmailValid.value && isPasswordValid.value
 );
 
 // Handle form submission
@@ -45,10 +39,9 @@ const handleSubmit = () => {
 
   console.log("Email:", email.value);
   console.log("Password:", password.value);
-  console.log("Confirm Password:", confirmPassword.value);
   errorMessage.value = ""; // Clear errors if successful
 
-  router.push("/user/register/selectRole");
+  router.push("/");
 };
 </script>
 
@@ -61,7 +54,7 @@ const handleSubmit = () => {
     <div class="flex flex-col gap-[20px]">
       <div class="flex flex-col gap-[16px]">
         <div>
-          <label>Email<span class="text-red-500">*</span></label>
+          <label>Email</label>
           <input
             v-model="email"
             type="email"
@@ -73,7 +66,7 @@ const handleSubmit = () => {
         </div>
 
         <div>
-          <label>Password<span class="text-red-500">*</span></label>
+          <label>Password</label>
           <input
             v-model="password"
             type="password"
@@ -83,35 +76,44 @@ const handleSubmit = () => {
             Password must be at least 6 characters
           </p>
         </div>
+        <div class="">
+          <label class="text-label text-[14px]">
+            <span
+              class="cursor-pointer underline"
+              @click="router.push('/user/login/reset/1')"
+              >Forgot your password?</span
+            >
+          </label>
+        </div>
       </div>
       <div class="flex flex-col gap-[16px]">
         <Button
           class="flex items-center justify-center py-[12px]"
           textOptions="text-white text-[14px] font-poppins"
           @click="handleSubmit"
-          >Register
+          >Login
         </Button>
         <Button
           class="flex items-center justify-center py-[12px] bg-google"
           textOptions="text-titleActive text-[14px] font-poppins"
           :leftIcon="google_icon"
-          >Register With Google
+          >Login With Google
         </Button>
         <Button
           class="flex items-center justify-center py-[12px] bg-facebook"
           textOptions="text-white text-[14px] font-poppins"
           :leftIcon="facebook_icon"
         >
-          Register With Facebook
+          Login With Facebook
         </Button>
       </div>
       <div class="pl-[8px] pt-[20px]">
         <label class="text-label text-[14px]">
-          Back to
+          new to Photomatch?
           <span
             class="ml-[6px] cursor-pointer underline"
-            @click="router.push('/user/login')"
-            >Sign in</span
+            @click="router.push('/user/register')"
+            >Get Started</span
           >
         </label>
       </div>
