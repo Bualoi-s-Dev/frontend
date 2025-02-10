@@ -2,12 +2,10 @@
 definePageMeta({
   layout: "background",
 });
-
+import { Icon } from "@iconify/vue";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import logo from "assets/logo.png";
-import facebook_icon from "assets/icons/facebook.svg";
-import google_icon from "assets/icons/google.svg";
 
 import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
 
@@ -109,13 +107,13 @@ const handleSubmit = () => {
         <Button
           class="flex items-center justify-center py-[18px] bg-google"
           textOptions="text-titleActive text-[14px] font-poppins"
-          :leftIcon="google_icon"
+          :leftIcon="'flat-color-icons:google'"
           >Register With Google
         </Button>
         <Button
           class="flex items-center justify-center py-[18px] bg-facebook"
           textOptions="text-white text-[14px] font-poppins"
-          :leftIcon="facebook_icon"
+          :leftIcon="'logos:facebook'"
         >
           Register With Facebook
         </Button>
