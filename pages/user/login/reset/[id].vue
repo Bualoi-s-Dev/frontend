@@ -13,32 +13,40 @@ import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
 const router = useRouter();
 const route = useRoute();
 const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
 const status = ref(0);
 const errorMessage = ref("");
 const pages = [1, 2];
 const currentPage = Number(route.params.id);
+
+const auth = useAuthStore();
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
   /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.value)
 );
 
-const updateStatus = () => {
+const updateStatus = (cur: number) => {
     // status.value = (status.value + 1) % 3;
-    status.value = 1;
-};
+    status.value = cur;
+}
+
+const handleForgotPassword = async() => {
+    if (currentPage == 1 && !isEmailValid.value) {
+        errorMessage.value = "Please correct the errors before submitting.";
+        return;
+    }
+
+    updateStatus(1);
+
+    try {
+        await auth.handleForgotPassword(email.value);
+    } catch (error: any) {
+        errorMessage.value = error.message;
+    }
+}
 
 // Handle form submission
 const handleSubmit = () => {
-  if (currentPage == 1 && !isEmailValid.value) {
-    errorMessage.value = "Please correct the errors before submitting.";
-    return;
-  }
-
-  updateStatus();
-
 //   console.log("Email:", email.value);
   errorMessage.value = ""; // Clear errors if successful
 
@@ -82,7 +90,7 @@ const handleSubmit = () => {
                     <Button
                     class="flex items-center justify-center py-[12px]"
                     textOptions="text-white text-[14px] font-poppins"
-                    @click="handleSubmit"
+                    @click="handleForgotPassword"
                     >Send
                     </Button>
                 </div>

@@ -1,11 +1,29 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
+
+const auth = useAuthStore();
+const router = useRouter();
+
+const errorMessage = ref("");
 
 const menuOpen = ref(false);
 const toggleMenu = () => {
     menuOpen.value = !menuOpen.value;
 };
+
+const onLogoutSuccess = () => {
+  router.push("/user/login");
+}
+
+const handleLogout = async () => {
+    try {
+      await auth.handleLogout();
+      onLogoutSuccess();
+    } catch (error: any) {
+      errorMessage.value = error.message;
+    }
+}
 </script>
 
 <template>
@@ -26,7 +44,7 @@ const toggleMenu = () => {
                     <NuxtLink to="/" class="block" @click="toggleMenu">Home</NuxtLink>
                 </li>
                 <li>
-                    <NuxtLink to="/user/login" class="block text-red-500" @click="toggleMenu">Logout</NuxtLink>
+                    <NuxtLink to="/user/login" class="block text-red-500" @click="handleLogout">Logout</NuxtLink>
                 </li>
             </ul>
         </div>

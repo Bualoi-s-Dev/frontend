@@ -38,6 +38,11 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userCredential.user;
     };
 
+    const handleForgotPassword = async (email: string): Promise<void> => {
+        if(!email) return;
+        await sendPasswordResetEmail($auth, email);
+    };
+
     const handleLogout = async (): Promise<void> => {
         await signOut($auth);
         user.value = null;
@@ -71,10 +76,6 @@ export const useAuthStore = defineStore('auth', () => {
     //         error.value = 'Failed to fetch profile.';
     //     }
     // };
-
-    const handleForgotPassword = async (email: string): Promise<void> => {
-        await sendPasswordResetEmail($auth, email);
-    };
 
     return {
         user,

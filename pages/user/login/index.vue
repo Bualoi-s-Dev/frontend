@@ -59,7 +59,7 @@ const handleSubmit = async () => {
   } catch (error: any) {
     errorMessage.value = error.message;
   }
-};
+}
 </script>
 
 <template>
