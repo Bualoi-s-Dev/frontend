@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import Button from "@/components/Button.vue"
-import profilePic from "@/assets/profilePicture.png"
-import axios from "axios";
-import workImage from "@/assets/workImage.png";
-import workImage2 from "@/assets/workImage2.png";
 import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 
@@ -19,6 +15,7 @@ const fetchUserProfile = async () => {
   try {
     const response = await api.fetchUserProfile();
     user.value.name = response.name
+    user.value.profile = config.public.s3URL + response.profile
     user.value.location = response.location
     console.log(response)
   } catch ( error: any ) {
@@ -29,20 +26,8 @@ const auth = useAuthStore();
 const config = useRuntimeConfig();
 const fetchUserPackage = async () => {
   try {
-    
-    // console.log(await auth.fetchToken())
-    // const res = await fetch(`${config.public.apiUrl}/package`, {
-    //   method: "GET",
-    //   headers: {
-    //     Authorization: `Bearer ${await auth.fetchToken()}`
-    //   }
-    // })
-    // console.log(await res.json())
-    const response = await axios.get(`${config.public.apiUrl}/package`, {
-            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
-        });
-    // const response = await api.fetchUserPackage();
-    console.log(response)
+    const response = await api.fetchUserPackage();
+    console.log('package',response)
     packages.value = response
   } catch ( error: any ) { 
     errorMessage.value = error.message;

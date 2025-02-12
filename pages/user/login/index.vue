@@ -54,9 +54,11 @@ const handleFacebookLogin = async () => {
 // Handle form submission
 const handleSubmit = async () => {
   try {
-    await auth.handleLogin(email.value, password.value);
+    const temp = await auth.handleLogin(email.value, password.value);
+    console.log("handleSubmit", 1)
     onLoginSuccess();
   } catch (error: any) {
+    console.log("error", error.message)
     errorMessage.value = error.message;
   }
 }

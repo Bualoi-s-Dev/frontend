@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import Button from "@/components/Button.vue"
-import profilePic from "@/assets/profilePicture.png"
-import workImage from "@/assets/workImage.png";
-import workImage2 from "@/assets/workImage2.png";
 import { Icon } from "@iconify/vue";
-import axios from "axios";
 
 const allData = ref<any>(null)
-const packages = ref([])
-
+const config = useRuntimeConfig();
 const user = ref({ name: '', gender:'', email: '', location: '' })
 const responesMessage = ref("");
 const imageUrl = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
+const packages = ref<any>(null)
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -36,6 +32,7 @@ const fetchUserProfile = async () => {
   try {
     const response = await api.fetchUserProfile();
     user.value.name = response.name
+    imageUrl.value = config.public.s3URL + response.profile
     user.value.gender = response.gender
     user.value.email = response.email
     user.value.location = response.location
@@ -45,8 +42,21 @@ const fetchUserProfile = async () => {
   }
 }
 
+const fetchUserPackage = async () => {
+  try {
+    const response = await api.fetchUserPackage();
+    console.log('package',response)
+    packages.value = response
+  } catch ( error: any ) { 
+    errorMessage.value = error.message;
+    console.log(errorMessage)
+  }
+}
+
+
 const updateUserInformation = async () => {
     const payload = {
+        id: allData.value.id,
         email: allData.value.email,
         name: user.value.name,
         gender: user.value.gender,
@@ -54,21 +64,21 @@ const updateUserInformation = async () => {
         phone: allData.value.phone,
         location: user.value.location,
         isPhotographer: true,
-        bankName: allData.value.bankName,
-        bankAccount: allData.value.bankAccount,
-        lineID: allData.value.lineID,
-        facebook: allData.value.facebook,
-        instagram: allData.value.instagram,
         showcasePackages: null,
         packages: null,
     }
-    console.log(payload.profile)
-    
+    console.log(payload)
+    try {
+        await api.updateUserInformation( payload );
+    } catch ( error : any ) {
+        errorMessage.value = error.message;
+        console.log(errorMessage)
+    }
 }
 
 onMounted(()=>{
     fetchUserProfile();
-    //fetchUserPackage();
+    fetchUserPackage();
 })
 
 const isModalOpen = ref(false)

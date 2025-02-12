@@ -26,6 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
     const handleLogin = async (email: string, password: string): Promise<void> => {
         const userCredential = await signInWithEmailAndPassword($auth, email, password);
         user.value = userCredential.user;
+        console.log(await fetchToken())
     };
 
     const handleGoogleLogin = async (): Promise<void> => {

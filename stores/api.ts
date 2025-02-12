@@ -9,13 +9,14 @@ export const useApiStore = defineStore('api', () => {
 
     const fetchUserProfile = async (): Promise<User> => {
         const response = await axios.get(`${config.public.apiUrl}/user/profile`, {
-            // headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
+            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
         });
         return response.data as User;
     };
 
     const fetchUserPackage = async(): Promise<Package> => {
-        const response = await axios.get(`${config.public.apiUrl}/package`, {
+        // TODO: remove trailing slash when backend fix the endpoint.
+        const response = await axios.get(`${config.public.apiUrl}/package/`, {
             headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
         });
         console.log(response.data)
@@ -71,6 +72,15 @@ export const useApiStore = defineStore('api', () => {
     //       });
     // }
 
+    const updateUserInformation = async ( payload: any ) => {
+        console.log(payload)
+        const response = await axios.put(`${config.public.apiUrl}/user/profile`, 
+            payload,
+            {
+            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
+        });
+    }
+
     // const updateUserInformation = async () => {
     //     try{
     //         const payload = {
@@ -109,6 +119,7 @@ export const useApiStore = defineStore('api', () => {
 
     return {
         fetchUserProfile,
-        fetchUserPackage
+        fetchUserPackage,
+        updateUserInformation
     };
 });
