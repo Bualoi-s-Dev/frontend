@@ -29,8 +29,14 @@ const isFormValid = computed(
 );
 
 const onLoginSuccess = async () => {
-  await user.updateProfile();
-  console.log("success");
+
+  console.log("on success");
+  try {
+    await user.updateProfile();
+  } catch (error: any) {
+    console.log(error.message)
+  }
+  console.log("after update profile");
   await router.push("/");
 }
 
@@ -56,7 +62,10 @@ const handleFacebookLogin = async () => {
 // Handle form submission
 const handleSubmit = async () => {
   try {
+    console.log('handle submit')
     await auth.handleLogin(email.value, password.value);
+
+    console.log('after handle submit')
     onLoginSuccess();
   } catch (error: any) {
     console.log("error", error.message)
@@ -102,15 +111,11 @@ const handleSubmit = async () => {
         <Button :disabled="!isFormValid" class="flex items-center justify-center py-[12px]"
           textOptions="text-white text-[14px] font-poppins" @click="handleSubmit">Login
         </Button>
-        <Button
-        bgColor="bg-gray-200"
-        class="flex items-center justify-center py-[18px]"
-        textOptions="text-black text-[14px] font-poppins"
-        leftIcon = "flat-color-icons:google"
-        @click="handleGoogleLogin"
-      >
-        Login with Google
-      </Button>
+        <Button bgColor="bg-gray-200" class="flex items-center justify-center py-[18px]"
+          textOptions="text-black text-[14px] font-poppins" leftIcon="flat-color-icons:google"
+          @click="handleGoogleLogin">
+          Login with Google
+        </Button>
         <Button class="flex items-center justify-center py-[12px] bg-facebook"
           textOptions="text-white text-[14px] font-poppins" leftIcon="logos:facebook" @click="handleFacebookLogin">
           Login With Facebook

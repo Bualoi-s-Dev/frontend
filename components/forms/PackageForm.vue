@@ -19,20 +19,18 @@ const loadingData = ref(false);
 
 const config = useRuntimeConfig();
 
-watch(props, async (val, old) => {
-  if (!val.data) return;
+watch(() => props.data, async (val, old) => {
+  if (!val || deepEqual(val, old)) return;
 
   loadingData.value = true;
 
-  const imgUrl = config.public.s3URL + val.data.photo_urls[0];
+  const imgUrl = config.public.s3URL + val.photo_urls[0];
    // TODO: ask backend to fix image cors issue
   const imgBlob = await fetch(`https://corsproxy.io/?key=0663c8cd&url=${encodeURIComponent(imgUrl)}`).then(res => res.blob());
   imageUrl.value = await readFileAsDataURL(imgBlob);
-  console.log('img', imageUrl.value)
-  // imageUrl.value = imgUrl;
 
-  name.value = val.data.title;
-  type.value = val.data.type;
+  name.value = val.title;
+  type.value = val.type;
 
   loadingData.value = false;
 });

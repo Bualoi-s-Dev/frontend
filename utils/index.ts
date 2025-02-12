@@ -20,3 +20,21 @@ export function readFileAsDataURL(file: File | Blob): Promise<string> {
         reader.onerror = (error) => reject(error);
     });
 };
+
+/**
+ * Recursively checks if two objects are equal. Works with nested objects and
+ * arrays.
+ *
+ * @param {any} x - The first object to compare.
+ * @param {any} y - The second object to compare.
+ * @returns {boolean} Whether the two objects are equal.
+ * 
+ * @see https://stackoverflow.com/a/32922084
+ */
+export function deepEqual(x: any, y: any): boolean {
+    const ok = Object.keys, tx = typeof x, ty = typeof y;
+    return x && y && tx === 'object' && tx === ty ? (
+      ok(x).length === ok(y).length &&
+        ok(x).every(key => deepEqual(x[key], y[key]))
+    ) : (x === y);
+  }

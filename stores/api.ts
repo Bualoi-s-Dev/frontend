@@ -22,20 +22,22 @@ export const useApiStore = defineStore('api', () => {
     }
 
     const updatePackage = async (id: string, pkg: PackageStrictRequest) => {
+        console.log('updating package')
         const response = await axios.patch(`${config.public.apiUrl}/package/${id}`, pkg, {
             headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
         })
+        console.log(pkg.photos[0], 'update package')
         return response.data;
     }
 
-    const fetchUserPackage = async (): Promise<Package> => {
+    const fetchUserPackage = async (): Promise<Package[]> => {
         // TODO: remove trailing slash when backend fix the endpoint.
         const response = await axios.get(`${config.public.apiUrl}/package/`, {
             headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
         });
-        return response.data as Package;
+        return response.data as Package[];
     }
-    
+
     const fetchPackage = async (id: string): Promise<Package> => {
         const response = await axios.get(`${config.public.apiUrl}/package/${id}`, {
             headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
