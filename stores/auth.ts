@@ -13,114 +13,77 @@ import {
 import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', () => {
-    const email = ref<string>('');
-    const password = ref<string>('');
     const user = ref<User | null>(null);
-    const jwtToken = ref<string>('');
-    const error = ref<string>('');
-    const message = ref<string>('');
 
     const { $auth, $facebookProvider, $googleProvider } = useNuxtApp();
-    const config = useRuntimeConfig();
+    // const config = useRuntimeConfig();
 
-    const handleRegister = async (): Promise<void> => {
-        try {
-            const userCredential = await createUserWithEmailAndPassword($auth, email.value, password.value);
-            user.value = userCredential.user;
-            await fetchToken(userCredential.user);
-        } catch (err: any) {
-            error.value = err.message;
-        }
+    const handleRegister = async (email: string, password: string,): Promise<void> => {
+        const userCredential = await createUserWithEmailAndPassword($auth, email, password);
+        user.value = userCredential.user;
     };
 
-    const handleLogin = async (): Promise<void> => {
-        try {
-            const userCredential = await signInWithEmailAndPassword($auth, email.value, password.value);
-            user.value = userCredential.user;
-            await fetchToken(userCredential.user);
-        } catch (err: any) {
-            error.value = err.message;
-        }
+    const handleLogin = async (email: string, password: string): Promise<void> => {
+        const userCredential = await signInWithEmailAndPassword($auth, email, password);
+        user.value = userCredential.user;
     };
 
     const handleGoogleLogin = async (): Promise<void> => {
-        try {
-            const userCredential = await signInWithPopup($auth, $googleProvider);
-            user.value = userCredential.user;
-            await fetchToken(userCredential.user);
-        } catch (err: any) {
-            error.value = err.message;
-        }
+        const userCredential = await signInWithPopup($auth, $googleProvider);
+        user.value = userCredential.user;
     };
 
     const handleFacebookLogin = async (): Promise<void> => {
-        try {
-            const userCredential = await signInWithPopup($auth, $facebookProvider);
-            user.value = userCredential.user;
-            await fetchToken(userCredential.user);
-        } catch (err: any) {
-            error.value = err.message;
-        }
+        const userCredential = await signInWithPopup($auth, $facebookProvider);
+        user.value = userCredential.user;
     };
 
     const handleLogout = async (): Promise<void> => {
         await signOut($auth);
         user.value = null;
-        jwtToken.value = '';
     };
 
-    const fetchToken = async (firebaseUser: User | null): Promise<void> => {
-        if (!firebaseUser) return;
-        try {
-            const token = await getIdToken(firebaseUser);
-            jwtToken.value = token;
-        } catch {
-            error.value = 'Error getting token';
-        }
+    /**
+     * Fetches the ID token for the currently authenticated user. 
+     * Call this every time before performing API requests that require authentication 
+     * because this will automatically refresh the token.
+     * 
+     * @returns {Promise<string>} A promise that resolves to the user's ID token.
+     * @throws Will throw an error if no user is currently logged in.
+     */
+    const fetchToken = async (): Promise<string> => {
+        if (!user.value) throw Error("No user logged in.");
+        const token = await getIdToken(user.value);
+        return token;
     };
 
-    const fetchUserProfile = async (): Promise<void> => {
-        if (!jwtToken.value) {
-            error.value = 'You need to log in first.';
-            return;
-        }
-        try {
-            const response = await axios.get(config.public.apiUrl, {
-                headers: { Authorization: `Bearer ${jwtToken.value}` }
-            });
-            alert(`User Profile: ${JSON.stringify(response.data)}`);
-        } catch {
-            error.value = 'Failed to fetch profile.';
-        }
-    };
+    // const fetchUserProfile = async (): Promise<void> => {
+    //     if (!jwtToken.value) {
+    //         error.value = 'You need to log in first.';
+    //         return;
+    //     }
+    //     try {
+    //         const response = await axios.get(config.public.apiUrl, {
+    //             headers: { Authorization: `Bearer ${jwtToken.value}` }
+    //         });
+    //         alert(`User Profile: ${JSON.stringify(response.data)}`);
+    //     } catch {
+    //         error.value = 'Failed to fetch profile.';
+    //     }
+    // };
 
-    const handleForgotPassword = async (): Promise<void> => {
-        if (!email.value) {
-            error.value = 'Please enter your email first.';
-            return;
-        }
-        try {
-            await sendPasswordResetEmail($auth, email.value);
-            message.value = 'Password reset link sent to your email.';
-            error.value = '';
-        } catch (err: any) {
-            error.value = err.message;
-        }
+    const handleForgotPassword = async (email: string): Promise<void> => {
+        await sendPasswordResetEmail($auth, email);
     };
 
     return {
-        email,
-        password,
         user,
-        jwtToken,
-        error,
-        message,
+        fetchToken,
         handleRegister,
         handleLogin,
         handleGoogleLogin,
         handleFacebookLogin,
         handleLogout,
-        fetchUserProfile,
         handleForgotPassword
     };
 });
