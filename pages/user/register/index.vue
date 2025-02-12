@@ -19,6 +19,7 @@ const confirmPassword = ref("");
 const errorMessage = ref("");
 
 const auth = useAuthStore();
+const user = useUserStore();
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
@@ -48,6 +49,7 @@ const handleSubmit = async () => {
 
   try {
     await auth.handleRegister(email.value, password.value);
+    await user.updateProfile();
     // Clear errors if successful
     errorMessage.value = "";
 

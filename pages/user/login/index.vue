@@ -14,6 +14,7 @@ const password = ref("");
 const errorMessage = ref("");
 
 const auth = useAuthStore();
+const user = useUserStore();
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
@@ -29,7 +30,8 @@ const isFormValid = computed(
     isEmailValid.value && isPasswordValid.value
 );
 
-const onLoginSuccess = () => {
+const onLoginSuccess = async () => {
+  await user.updateProfile();
   router.push("/");
 }
 

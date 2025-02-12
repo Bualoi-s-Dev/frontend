@@ -21,6 +21,13 @@ export const useApiStore = defineStore('api', () => {
         return response.data;
     }
 
+    const editPackage = async (pkg: Package) => {
+        const response = await axios.put(`${config.public.apiUrl}/package`, pkg, {
+            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
+        })
+        return response.data;
+    }
+
     return {
         fetchUserProfile,
         createPackage
