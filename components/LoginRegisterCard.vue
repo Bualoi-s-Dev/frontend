@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col items-center justify-center h-fit py-[50px]">
+  <div class="flex flex-col items-center justify-center h-fit py-[10px]">
     <div class="flex flex-col items-start gap-[6px] h-fit">
       <slot name="backButton"></slot>
       <!-- Slot for Button (optional) -->

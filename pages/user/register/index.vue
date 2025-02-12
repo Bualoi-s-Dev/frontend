@@ -7,6 +7,7 @@ import { useRouter } from "vue-router";
 import logo from "assets/logo.png";
 
 import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
+import { useAuthStore } from "~/stores/auth";
 
 const responseData = ref(null);
 const router = useRouter();
@@ -14,6 +15,8 @@ const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 const errorMessage = ref("");
+
+const auth = useAuthStore();
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
@@ -35,16 +38,22 @@ const isFormValid = computed(
 );
 
 // Handle form submission
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!isFormValid.value) {
     errorMessage.value = "Please correct the errors before submitting.";
     return;
   }
 
-  console.log("Email:", email.value);
-  console.log("Password:", password.value);
-  console.log("Confirm Password:", confirmPassword.value);
-  errorMessage.value = ""; // Clear errors if successful
+  try {
+    await auth.handleRegister(email.value, password.value);
+    // Clear errors if successful
+    errorMessage.value = "";
+
+    router.push("/user/register/selectRole");
+  } catch (error: any) {
+    console.log('error', error.message)
+    errorMessage.value = error.message;
+  }
 
   // Navigate to the next page with email as a query parameter
   router.push({
