@@ -2,7 +2,7 @@
 
 <template>
   <div class="w-screen h-screen flex flex-col font-poppins pt-16">
-    <Header />
+    <LoginRegisterBackground />
     <slot />
   </div>
 </template>
