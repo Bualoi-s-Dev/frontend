@@ -19,7 +19,7 @@ const password = ref("");
 const confirmPassword = ref("");
 const smsValidate = ref("");
 const errorMessage = ref("");
-const pages = [1, 2, 3, 4];
+const pages = [1, 2, 3];
 const currentPage = Number(route.params.id);
 
 // Email validation (simple regex)
@@ -65,8 +65,8 @@ const handleSubmit = () => {
 //   console.log("Email:", email.value);
   errorMessage.value = ""; // Clear errors if successful
 
-  if(currentPage == 4) router.push(`/user/login/reset/success`);
-  else router.push(`/user/login/reset/${currentPage % 4 + 1}`);
+  if(currentPage == 3) router.push(`/user/login/reset/success`);
+  else router.push(`/user/login/reset/${currentPage % 3 + 1}`);
 };
 </script>
 
@@ -113,43 +113,6 @@ const handleSubmit = () => {
                 <div class="flex flex-col gap-[16px]">
                     <div>
                         <div class="mb-3">
-                            <p class="text-lg">Check your email</p>
-                        </div>
-                        <p class="text-sm/6">We sent a reset link to 653xxxxx21@student.chula.ac.th enter 5 digit code that mentioned in the email</p>
-                        <div class="flex space-x-2 p-4">
-                            <div class="w-12 h-12 flex items-center justify-center border border-black rounded-lg text-lg font-semibold">
-                                8
-                            </div>
-                            <div class="w-12 h-12 flex items-center justify-center border border-black rounded-lg text-lg font-semibold">
-                                5
-                            </div>
-                            <div class="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg text-lg text-gray-400">
-                                &nbsp;
-                            </div>
-                            <div class="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg text-lg text-gray-400">
-                                &nbsp;
-                            </div>
-                            <div class="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg text-lg text-gray-400">
-                                &nbsp;
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex flex-col gap-[16px]">
-                    <Button
-                    class="flex items-center justify-center py-[12px]"
-                    textOptions="text-white text-[14px] font-poppins"
-                    @click="handleSubmit"
-                    >Verify Code
-                    </Button>
-                </div>
-            </div>
-        </template>
-        <template v-else-if="currentPage == 3">
-            <div class="flex flex-col gap-[20px]">
-                <div class="flex flex-col gap-[16px]">
-                    <div>
-                        <div class="mb-3">
                             <p class="text-lg">Password reset</p>
                         </div>
                         <p class="text-sm/6">Your password has been successfully reset. Click confirm to set a new password.</p>
@@ -165,7 +128,7 @@ const handleSubmit = () => {
                 </div>
             </div>
         </template>
-        <template v-else-if="currentPage == 4">
+        <template v-else-if="currentPage == 3">
             <div class="flex flex-col gap-[20px]">
                 <div class="flex flex-col gap-[16px]">
                     <div>
