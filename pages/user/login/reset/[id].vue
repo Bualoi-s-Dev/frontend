@@ -6,8 +6,6 @@ definePageMeta({
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import logo from "assets/logo.png";
-import facebook_icon from "assets/icons/facebook.svg";
-import google_icon from "assets/icons/google.svg";
 import { Icon } from '@iconify/vue';
 
 import LoginRegisterCard from "~/components/LoginRegisterCard.vue";

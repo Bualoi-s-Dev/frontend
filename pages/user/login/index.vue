@@ -6,7 +6,7 @@ definePageMeta({
 import logo from "assets/logo.png";
 import facebook_icon from "assets/icons/facebook.svg";
 import google_icon from "assets/icons/google.svg";
-
+import { useAuthStore } from "~/stores/auth";
 
 const router = useRouter();
 const email = ref("");

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import type { User } from '~/types/api';
+import { useAuthStore } from './auth';
 
 export const useApiStore = defineStore('api', () => {
     const auth = useAuthStore();
