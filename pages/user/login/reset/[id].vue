@@ -13,38 +13,53 @@ import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
 const router = useRouter();
 const route = useRoute();
 const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
 const status = ref(0);
 const errorMessage = ref("");
 const pages = [1, 2];
 const currentPage = Number(route.params.id);
+
+const auth = useAuthStore();
+
+const urlParams = new URLSearchParams(window.location.search);
+const mode = urlParams.get("mode"); // Should be "resetPassword"
+const actionCode = urlParams.get("oobCode"); // The verification code
+
+if (mode === "resetPassword" && actionCode) {
+  console.log("Password reset successful!");
+  // Redirect to login or dashboard
+  window.location.href = "/user/login";
+}
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
   /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.value)
 );
 
-const updateStatus = () => {
+const updateStatus = (cur: number) => {
     // status.value = (status.value + 1) % 3;
-    status.value = 1;
-};
+    status.value = cur;
+}
+
+const handleForgotPassword = async() => {
+    if (currentPage == 1 && !isEmailValid.value) {
+        errorMessage.value = "Please correct the errors before submitting.";
+        return;
+    }
+
+    updateStatus(1);
+
+    try {
+        await auth.handleForgotPassword(email.value);
+        if (currentPage == 1) router.push(`/user/login/reset/2`);
+    } catch (error: any) {
+        errorMessage.value = error.message;
+    }
+}
 
 // Handle form submission
 const handleSubmit = () => {
-  if (currentPage == 1 && !isEmailValid.value) {
-    errorMessage.value = "Please correct the errors before submitting.";
-    return;
-  }
-
-  updateStatus();
-
-//   console.log("Email:", email.value);
-  errorMessage.value = ""; // Clear errors if successful
-
-  if(currentPage == 2) router.push(`/user/login/reset/success`);
-  else router.push(`/user/login/reset/${currentPage % 2 + 1}`);
-};
+    router.push(`/user/login/reset/success`);
+}
 </script>
 
 <template>
@@ -80,9 +95,9 @@ const handleSubmit = () => {
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
-                    class="flex items-center justify-center py-[12px]"
+                    class="flex items-center justify-center py-[12px] hover:bg-red-600 transition"
                     textOptions="text-white text-[14px] font-poppins"
-                    @click="handleSubmit"
+                    @click="handleForgotPassword"
                     >Send
                     </Button>
                 </div>
@@ -93,17 +108,17 @@ const handleSubmit = () => {
                 <div class="flex flex-col gap-[16px]">
                     <div>
                         <div class="mb-3">
-                            <p class="text-lg">Password reset</p>
+                            <p class="text-lg">Password reset email sent.</p>
                         </div>
-                        <p class="text-sm/6">Your password has been successfully reset. Click confirm to set a new password.</p>
+                        <p class="text-sm/6">The email has been sent. Please check your email to reset password.</p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
-                    class="flex items-center justify-center py-[12px]"
+                    class="flex items-center justify-center py-[12px] hover:bg-red-600 transition"
                     textOptions="text-white text-[14px] font-poppins"
-                    @click="handleSubmit"
-                    >Confirm
+                    @click="handleForgotPassword"
+                    >Resend
                     </Button>
                 </div>
             </div>

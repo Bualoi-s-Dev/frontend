@@ -2,16 +2,14 @@
 definePageMeta({
   layout: "background",
 });
-
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import logo from "assets/logo.png";
-import facebook_icon from "assets/icons/facebook.svg";
-import google_icon from "assets/icons/google.svg";
 
 import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
 import { useAuthStore } from "~/stores/auth";
 
+const responseData = ref(null);
 const router = useRouter();
 const email = ref("");
 const password = ref("");
@@ -57,6 +55,11 @@ const handleSubmit = async () => {
     errorMessage.value = error.message;
   }
 
+  // Navigate to the next page with email as a query parameter
+  router.push({
+    path: "/user/register/createUser",
+    query: { email: email.value },
+  });
 };
 </script>
 
@@ -69,44 +72,71 @@ const handleSubmit = async () => {
     <div class="flex flex-col gap-[20px]">
       <div class="flex flex-col gap-[16px]">
         <div>
-          <label>Email<span class="text-red-500">*</span></label>
-          <input v-model="email" type="email"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
+          <label>Email</label>
+          <input
+            v-model="email"
+            type="email"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+          />
           <p v-if="email && !isEmailValid" class="text-red-500 text-xs">
             Invalid email format
           </p>
         </div>
 
         <div>
-          <label>Password<span class="text-red-500">*</span></label>
-          <input v-model="password" type="password"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
+          <label>Password</label>
+          <input
+            v-model="password"
+            type="password"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+          />
           <p v-if="password && !isPasswordValid" class="text-red-500 text-xs">
             Password must be at least 6 characters
           </p>
         </div>
 
         <div>
-          <label>Confirm Password<span class="text-red-500">*</span></label>
-          <input v-model="confirmPassword" type="password"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
-          <p v-if="confirmPassword && !isConfirmPasswordValid" class="text-red-500 text-xs">
+          <label>Confirm Password</label>
+          <input
+            v-model="confirmPassword"
+            type="password"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+          />
+          <p
+            v-if="confirmPassword && !isConfirmPasswordValid"
+            class="text-red-500 text-xs"
+          >
             Passwords do not match
           </p>
         </div>
       </div>
-      <div class="flex flex-col gap-[16px]">
-        <span class="text-red-500 text-xs">{{ errorMessage }}</span>
-        <Button :disabled="!isFormValid" class="flex items-center justify-center py-[12px]"
-          textOptions="text-white text-[14px] font-poppins" @click="handleSubmit">Register
-        </Button>
-      </div>
-      <div class="pl-[8px] pt-[20px]">
-        <label class="text-label text-[14px]">
-          Back to
-          <span class="ml-[6px] cursor-pointer underline" @click="router.push('/user/login')">Sign in</span>
-        </label>
-      </div>
+
+      <!-- Register Button -->
+      <Button
+        class="flex items-center justify-center py-[18px]"
+        textOptions="text-white text-[14px] font-poppins"
+        @click="handleSubmit"
+      >
+        Register
+      </Button>
+    </div>
+
+    <!-- Display API Response -->
+    <div v-if="responseData" class="mt-4 p-4 border border-gray-300 rounded">
+      <h3 class="font-bold">User Profile Data:</h3>
+      <pre>{{ responseData }}</pre>
+    </div>
+
+    <div class="pl-[8px] pt-[20px]">
+      <label class="text-label text-[14px]">
+        Back to
+        <span
+          class="ml-[6px] cursor-pointer underline"
+          @click="router.push('/user/login')"
+        >
+          Sign in
+        </span>
+      </label>
     </div>
   </LoginRegisterCard>
 </template>

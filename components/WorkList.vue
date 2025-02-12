@@ -1,49 +1,32 @@
+<script setup lang="ts">
+
+const props = defineProps({
+  data: {
+    type: Array as () => Array<{
+      photo_urls: string[];
+      title: string;
+      owner?: string;
+      type: string;
+      editable?: boolean;
+      addable?: boolean;
+    }>,
+    required: true,
+  },
+});
+</script>
+
 <template>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-      <ImageCard 
-        v-for="(item, index) in items" 
-        :key="index" 
-        :images="item.images" 
-        :title="item.title" 
-        :owner="item.owner" 
-        :type="item.type" 
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+    <div v-for="(work, index) in data" :key="index">
+      <WorkCard
+        :images="work.photo_urls.map(url => `https://pub-58a5559d12b34ac5999431d8764da7fa.r2.dev${url}`)"
+        :title="work.title"
+        :owner="work.owner"
+        :type="work.type"
+        :editable="work.editable"
+        :addable="work.addable"
       />
+      <!-- <pre>{{ console.log(work.photo_urls) }}</pre>  -->
     </div>
-  </template>
-  
-  <script>
-  import ImageCard from "@/components/WorkCard.vue";
-  import workImage from "@/assets/workImage.png"
-  import workImage2 from "@/assets/workImage2.png"
-  export default {
-    name: "ImageCardList",
-    components: {
-      ImageCard,
-    },
-    data() {
-      return {
-        items: [
-          {
-            images: [workImage, workImage2],
-            title: "Beautiful Sunset",
-            owner: "John Doe",
-            type: "Nature",
-          },
-          {
-            images: [workImage, workImage2],
-            title: "City Lights",
-            owner: "Jane Smith",
-            type: "Urban",
-          },
-          {
-            images: [workImage, workImage2],
-            title: "Mountain View",
-            owner: "Alice Johnson",
-            type: "Adventure",
-          },
-        ],
-      };
-    },
-  };
-  </script>
-  
+  </div>
+</template>
