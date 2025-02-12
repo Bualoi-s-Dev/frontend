@@ -4,10 +4,9 @@
       <!-- Avatar Container -->
       <div class="w-32 h-32 rounded-full shadow-lg">
         <img
-          :src="imgSrc"
+          :src="src"
           :alt="altText"
           class="w-full h-full object-cover rounded-full"
-          @error="handleError"
         />
       </div>
   
@@ -43,11 +42,7 @@
   }>();
   
   const defaultSrc = "/default-avatar.png"; // Provide a fallback image
-  const imgSrc = ref(props.src || defaultSrc);
-  
-  const handleError = () => {
-    imgSrc.value = defaultSrc; // Switch to fallback image on error
-  };
+  // const imgSrc = ref(props.src || defaultSrc);
   
   const changeImage = () => {
     console.log("Trigger file upload or image change action here!");
