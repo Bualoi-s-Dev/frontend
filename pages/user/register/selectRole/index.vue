@@ -13,7 +13,9 @@ import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
 
 const router = useRouter();
 const route = useRoute();
+const api = useApiStore();
 
+const id = ref("");
 // Retrieve user data from the previous page
 const email = ref(route.query.email || "");
 const name = ref(route.query.name || "");
@@ -24,16 +26,17 @@ const location = ref(route.query.location || "");
 const selectedRole = ref<string | null>(null);
 const isSelected = (role: string) => selectedRole.value === role;
 
-const varToken =
-  "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMjUwZDIyYTkzODVmYzQ4NDJhYTU2YWJhZjUzZmU5NDcxNmVjNTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc2UtMi03NmY2MiIsImF1ZCI6InNlLTItNzZmNjIiLCJhdXRoX3RpbWUiOjE3MzkzNjQ3NDcsInVzZXJfaWQiOiJGeWQzMmhEU2dUUTNLNTE2aHRQSklIQ0RzeWcyIiwic3ViIjoiRnlkMzJoRFNnVFEzSzUxNmh0UEpJSENEc3lnMiIsImlhdCI6MTczOTM2NDc0NywiZXhwIjoxNzM5MzY4MzQ3LCJlbWFpbCI6Indpcm9vbnB1cmkxMjNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIndpcm9vbnB1cmkxMjNAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.V9r3xC5gj4pDsU5Vm60h3t57A985Eac-j7BbwHBkUj4vUwhIdDAfP_YQOftI1eLWAfd44S5zilTOcIJltDiLt2vC5eLoUkM1KKjOOq-fGNyZ-OHUp_g-0Ga0kpol2L8qCY_7kszXayMPCyAVD2_sIsfLKC4iH93ICO71hAyFGdojTzYnauT5dJ2XZSv18nJSSQM3oJnMrzBupG9M9BUPxpiBeDLs7OIn4OuW-k3fSxG4NY6wn6SEOCwRgLO9WcxORjmUbtRB5w0XnoAtTvSGFumT-lC_HgZUC0XvkdXY7DV6VFupgzRW3eQbdI_iPyaOksURk76Hj11bxZLMpre68Q";
-// Handle Customer Role: Send PUT request
 const handleCustomerSelect = async () => {
   try {
+    console.log("Updating profile at:", api.updateUserProfile);
+    const response = await api.fetchUserProfile();
+    id.value = response.name;
     const payload = {
+      id: id.value,
       email: email.value,
       name: name.value,
       gender: gender.value,
-      profile: profile.value,
+      profile: profile.value || null,
       phone: phone.value,
       location: location.value,
       isPhotographer: false,
@@ -45,15 +48,8 @@ const handleCustomerSelect = async () => {
       showcasePackages: null,
       packages: null,
     };
-    console.log(payload);
-    await axios.put("http://localhost:8080/user/profile", payload, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${varToken}`,
-      },
-    });
-
-    // Redirect after updating
+    const response2 = await api.updateUserProfile(payload);
+    console.log("Profile updated successfully:", response2);
   } catch (error) {
     console.error("Error updating profile:", error);
   }

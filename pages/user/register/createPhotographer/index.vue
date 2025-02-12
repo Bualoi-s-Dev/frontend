@@ -2,10 +2,10 @@
 definePageMeta({
   layout: "background",
 });
-import axios from "axios";
 
 import { ref } from "vue";
 import logo from "assets/logo.png";
+import { BankName } from "@/types/api";
 
 const route = useRoute();
 
@@ -17,6 +17,7 @@ const profile = ref(route.query.profile || "");
 const phone = ref(route.query.phone || "");
 const location = ref(route.query.location || "");
 
+const id = ref("");
 const lineID = ref("");
 const facebook = ref("");
 const instagram = ref("");
@@ -24,6 +25,14 @@ const bankName = ref("");
 const bankAccount = ref("");
 
 const errors = ref<Record<string, string>>({});
+const api = useApiStore();
+
+const formatBankName = (bank: string) => {
+  return bank
+    .replace(/_/g, " ") // Replace underscores with spaces
+    .replace("BANK", "Bank") // Normalize "BANK" to "Bank"
+    .replace("THAILAND", "(Thailand)"); // Add proper spacing for Thailand banks
+};
 
 const validate = () => {
   errors.value = {};
@@ -38,15 +47,15 @@ const validate = () => {
   return Object.keys(errors.value).length === 0;
 };
 
-const varToken =
-  "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMjUwZDIyYTkzODVmYzQ4NDJhYTU2YWJhZjUzZmU5NDcxNmVjNTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc2UtMi03NmY2MiIsImF1ZCI6InNlLTItNzZmNjIiLCJhdXRoX3RpbWUiOjE3MzkzNjAxODcsInVzZXJfaWQiOiJGeWQzMmhEU2dUUTNLNTE2aHRQSklIQ0RzeWcyIiwic3ViIjoiRnlkMzJoRFNnVFEzSzUxNmh0UEpJSENEc3lnMiIsImlhdCI6MTczOTM2MDE4NywiZXhwIjoxNzM5MzYzNzg3LCJlbWFpbCI6Indpcm9vbnB1cmkxMjNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIndpcm9vbnB1cmkxMjNAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ZQFXrUxtC8jjrngcZLU5Dyuod_ZRmemnY1C2VL73TFMHUmMxu6WpElbY03GZLFrFOL23YZNpjV3XbO2X63XV-KQTMUW-J-JzO0ZcMsMSAXCDQiqCQ3mTcIHlMq2MOp3diLZkG-5TUdCiMSLmBT3xboTv_3mmbSquFOOvswJG9uGchKTgw0x1QYkK0n59963h8rB68synJopW9P4564Gzpkcv6wz2hvx9leaH30i3sFWEiqa-W4HHBNnOBA-cev1dvQfaJRld8A0BfGS8EGXwgdiZh7vHfY_wi1WzbHYPop7rpnGKE3gVGSFmiCl2oqaIyBLk8BXw2Y37sI-EPROAMg";
-const handleSubmit = async () => {
+const updateUserProfile = async () => {
   if (!validate()) return;
 
   try {
-    // Prepare the JSON payload
+    console.log("Updating profile at:", api.updateUserProfile);
+    const response = await api.fetchUserProfile();
+    id.value = response.name;
     const payload = {
-      /* id: "67ac57c04850b3f0bcc2ef60", */
+      id: id.value,
       email: email.value,
       name: name.value,
       gender: gender.value,
@@ -62,15 +71,8 @@ const handleSubmit = async () => {
       showcasePackages: null,
       packages: null,
     };
-    console.log(payload);
-    // Send PUT request to update user profile with JSON payload
-    await axios.put(`http://localhost:8080/user/profile`, payload, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${varToken}`,
-      },
-    });
-    console.log(payload);
+    const response2 = await api.updateUserProfile(payload);
+    console.log("Profile updated successfully:", response2);
   } catch (error) {
     console.error("Error updating profile:", error);
   }
@@ -139,18 +141,9 @@ const handleSubmit = async () => {
             :class="{ 'border-red-500': errors.bankName }"
           >
             <option disabled value="">Select Bank</option>
-            <option>Kasikorn</option>
-            <option>Bangkok Bank</option>
-            <option>SCB</option>
-            <option>Krungthai</option>
-            <option>TMBThanachart</option>
-            <option>Krungsri</option>
-            <option>Government Savings</option>
-            <option>TMB</option>
-            <option>UOB Thailand</option>
-            <option>CIMB Thailand</option>
-            <option>Standard Chartered</option>
-            <option>ICBC Thailand</option>
+            <option v-for="(label, key) in BankName" :key="key" :value="label">
+              {{ formatBankName(label) }}
+            </option>
           </select>
           <p v-if="errors.bankName" class="text-red-500 text-xs">
             {{ errors.bankName }}
@@ -174,7 +167,7 @@ const handleSubmit = async () => {
         <Button
           class="flex items-center justify-center py-[12px]"
           textOptions="text-white text-[14px] font-poppins tracking-wider"
-          @click="handleSubmit"
+          @click="updateUserProfile"
         >
           Submit
         </Button>
