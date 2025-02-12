@@ -104,7 +104,7 @@ const handleSubmit = async () => {
         class="flex items-center justify-center py-[18px]"
         textOptions="text-black text-[14px] font-poppins"
         leftIcon = "flat-color-icons:google"
-        @click="handleSubmit"
+        @click="handleGoogleLogin"
       >
         Login with Google
       </Button>
