@@ -9,9 +9,6 @@ import logo from "assets/logo.png";
             <img :src="logo" alt="logo" class="w-9">
             Photomatch
         </div>
-        
-        <button class="">
-            <img :src="hamburger" alt="hamburger" class="w-6">
-        </button>
+        <Navbar />
     </div>
 </template>
