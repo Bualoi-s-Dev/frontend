@@ -3,7 +3,6 @@ import { computed } from "vue";
 
 const props = withDefaults(
   defineProps<{
-    disabled?: boolean;
     leftIcon?: string | Record<string, any>;
     rightIcon?: string | Record<string, any>;
     middleIcon?: string | Record<string, any>; // Middle Icon
@@ -27,13 +26,13 @@ const props = withDefaults(
 const buttonClasses = computed(
   () =>
     `inline-flex items-center justify-center transition duration-200 
-    hover:brightness-90 disabled:opacity-50
+    hover:brightness-90 
     ${props.bgColor} ${props.width} ${props.height} ${props.textOptions} ${props.buttonOptions}`
 );
 </script>
 
 <template>
-  <button :disabled="disabled" :class="buttonClasses" type="button">
+  <button :class="buttonClasses" type="button">
     <slot name="leftIcon">
       <img
         v-if="typeof props.leftIcon === 'string'"
