@@ -2,8 +2,20 @@
 definePageMeta({
   layout: "background",
 });
+import axios from "axios";
+
 import { ref } from "vue";
 import logo from "assets/logo.png";
+
+const route = useRoute();
+
+// Retrieve user data from the previous page
+const email = ref(route.query.email || "");
+const name = ref(route.query.name || "");
+const gender = ref(route.query.gender || "");
+const profile = ref(route.query.profile || "");
+const phone = ref(route.query.phone || "");
+const location = ref(route.query.location || "");
 
 const lineID = ref("");
 const facebook = ref("");
@@ -26,13 +38,42 @@ const validate = () => {
   return Object.keys(errors.value).length === 0;
 };
 
-const handleSubmit = () => {
+const varToken =
+  "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMjUwZDIyYTkzODVmYzQ4NDJhYTU2YWJhZjUzZmU5NDcxNmVjNTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc2UtMi03NmY2MiIsImF1ZCI6InNlLTItNzZmNjIiLCJhdXRoX3RpbWUiOjE3MzkzNTE2OTMsInVzZXJfaWQiOiJGeWQzMmhEU2dUUTNLNTE2aHRQSklIQ0RzeWcyIiwic3ViIjoiRnlkMzJoRFNnVFEzSzUxNmh0UEpJSENEc3lnMiIsImlhdCI6MTczOTM1MTY5MywiZXhwIjoxNzM5MzU1MjkzLCJlbWFpbCI6Indpcm9vbnB1cmkxMjNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIndpcm9vbnB1cmkxMjNAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.cQY-9MRBUcwevFFFOEIWipZEuY9Kasa55fDiKar2v57-i_207qIy87h4LMNqlYNYMJBHGgBfNyMs11P2nB2XSmLSPi9k35eb_76Z2MJxW37rYu935hkyL8ZEt-NROLhgvn3qPVSW3Cx9GkuNhJIjlkXThitEnpcF-YBJCpKDywef2X-LmUT1vjRNVlPrI5z4OMJe6HCSEmXcx-U6aKvKTm4p2WOaRG2Mj22T9Mbu6YGaru7Az4Em55woIgfXvWdHF-Vgx-za6h2KilflLP4_vM8mHb0PMi8Xd_3HqQ60QwIz7GQJjwWKFABmypWV7Ak5FRhbtdwQPSnwYgYx2zQE1g";
+const handleSubmit = async () => {
   if (!validate()) return;
-  console.log("Line ID:", lineID.value);
-  console.log("Facebook:", facebook.value);
-  console.log("Instagram:", instagram.value);
-  console.log("Bank Name:", bankName.value);
-  console.log("Bank Account:", bankAccount.value);
+
+  try {
+    // Prepare the JSON payload
+    const payload = {
+      /* id: "67ac57c04850b3f0bcc2ef60", */
+      email: email.value,
+      name: name.value,
+      gender: gender.value,
+      profile: profile.value || null,
+      phone: phone.value,
+      location: location.value,
+      isPhotographer: true,
+      bankName: bankName.value,
+      bankAccount: bankAccount.value,
+      lineID: lineID.value,
+      facebook: facebook.value,
+      instagram: instagram.value,
+      showcasePackages: null,
+      packages: null,
+    };
+    console.log(payload);
+    // Send PUT request to update user profile with JSON payload
+    await axios.put(`http://localhost:8080/user/profile`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${varToken}`,
+      },
+    });
+    console.log(payload);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+  }
 };
 </script>
 
@@ -99,7 +140,17 @@ const handleSubmit = () => {
           >
             <option disabled value="">Select Bank</option>
             <option>Kasikorn</option>
+            <option>Bangkok Bank</option>
+            <option>SCB</option>
             <option>Krungthai</option>
+            <option>TMBThanachart</option>
+            <option>Krungsri</option>
+            <option>Government Savings</option>
+            <option>TMB</option>
+            <option>UOB Thailand</option>
+            <option>CIMB Thailand</option>
+            <option>Standard Chartered</option>
+            <option>ICBC Thailand</option>
           </select>
           <p v-if="errors.bankName" class="text-red-500 text-xs">
             {{ errors.bankName }}
