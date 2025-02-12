@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import type { User } from '~/types/api';
+import type { User, Package } from '~/types/api';
 import { useAuthStore } from './auth';
 
 export const useApiStore = defineStore('api', () => {
@@ -14,8 +14,15 @@ export const useApiStore = defineStore('api', () => {
         return response.data as User;
     };
 
+    const createPackage = async (pkg: Package) => {
+        const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
+            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
+        })
+        return response.data;
+    }
 
     return {
-        fetchUserProfile
+        fetchUserProfile,
+        createPackage
     };
 });

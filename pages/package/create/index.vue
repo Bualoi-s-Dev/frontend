@@ -1,5 +1,23 @@
 <script setup lang="ts">
+import { PackageType } from '~/types/api';
 
+const router = useRouter();
+const api = useApiStore();
+
+const submit = async (image: string, name: string, type: string) => {
+    try {
+        const response = await api.createPackage({
+            photo_urls: [image],
+            title: name,
+            type: type as PackageType
+        });
+        useToastify('Successfully created package.', { type: 'success' });
+
+        router.push(`/user/profile`);
+    } catch (error: any) {
+        useToastify(error.message, { type: 'error' });
+    }
+}
 </script>
 
 <template>
@@ -8,5 +26,5 @@
         Create Package
     </div>
 
-    <PackageForm @submit="console.log" />
+    <PackageForm @submit="submit" />
 </template>
