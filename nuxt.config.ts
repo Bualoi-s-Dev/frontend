@@ -18,7 +18,7 @@ export default defineNuxtConfig({
         measurementId: process.env.FIREBASE_MEASUREMENT_ID,
       },
       apiUrl: process.env.API_URL,
-      s3URL: process.env.S3_URL
+      s3URL: process.env.S3_URL,
     }
   },
   components: [
