@@ -5,6 +5,13 @@ export function toTitleCase(str: string): string {
     );
 }
 
+/**
+ * Reads a File or Blob as a base64 data URL.
+ *
+ * @param file - The File or Blob to read.
+ * @returns A Promise that resolves with the base64 data URL.
+ */
+
 export function readFileAsDataURL(file: File | Blob): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();

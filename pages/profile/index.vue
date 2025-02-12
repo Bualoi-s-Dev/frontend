@@ -22,7 +22,6 @@ const fetchUserProfile = async () => {
     errorMessage.value = error.message;
   }
 }
-const auth = useAuthStore();
 const config = useRuntimeConfig();
 const fetchUserPackage = async () => {
   try {
@@ -54,7 +53,11 @@ onMounted(()=>{
                 <Button @click="router.push('/profile/edit')" width="w-80 h-10" text-options="text-white text-right text-sm">Edit Profile</Button>
                 <Button width="w-80 h-10" text-options="mt-2 text-white text-right text-sm">View All Packages</Button>
             </div>
-            <h2 class="ml-6 mt-6">Work showcase</h2>
+            <div class="px-6 mt-6 flex flex-row w-full justify-between items-center">
+              <h2 >Work showcase</h2>
+              <Button @click="router.push('/package/create')">Add Package</Button>
+            </div>
+           
             <WorkList :data="packages"/>
             <div>
                 <div class="flex items-center ml-5 mb-3">

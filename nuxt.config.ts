@@ -36,6 +36,7 @@ export default defineNuxtConfig({
   toastify: {
     position: 'top-right',
     theme: 'light',
+    clearOnUrlChange: false
   },
   vite: {
     plugins: [

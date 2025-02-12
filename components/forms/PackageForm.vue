@@ -1,16 +1,41 @@
 <script setup lang="ts">
 import imageIcon from "assets/icons/image.svg";
-import { PackageType } from "~/types/api";
+import { PackageType, type Package } from "~/types/api";
 
 const props = defineProps<{
   onSubmit: (imageUrl: string, name: string, type: string) => void;
+  data?: Package;
+  disabled?: boolean;
 }>();
 
 const types: PackageType[] = Object.values(PackageType);
 
+
 const imageUrl = ref("");
 const name = ref("");
 const type = ref("");
+
+const loadingData = ref(false);
+
+const config = useRuntimeConfig();
+
+watch(props, async (val, old) => {
+  if (!val.data) return;
+
+  loadingData.value = true;
+
+  const imgUrl = config.public.s3URL + val.data.photo_urls[0];
+   // TODO: ask backend to fix image cors issue
+  const imgBlob = await fetch(`https://corsproxy.io/?key=0663c8cd&url=${encodeURIComponent(imgUrl)}`).then(res => res.blob());
+  imageUrl.value = await readFileAsDataURL(imgBlob);
+  console.log('img', imageUrl.value)
+  // imageUrl.value = imgUrl;
+
+  name.value = val.data.title;
+  type.value = val.data.type;
+
+  loadingData.value = false;
+});
 
 const fileInput = useTemplateRef("fileInput");
 
@@ -22,6 +47,7 @@ const onFileChange = async (event: any) => {
 };
 
 const valid = computed(() => imageUrl.value && name.value && type.value);
+const disableAll = computed(() => props.disabled || loadingData.value);
 
 const handleSubmit = () =>
   props.onSubmit(imageUrl.value, name.value, type.value);
@@ -30,8 +56,8 @@ const handleChooseImage = () => fileInput.value?.click();
 
 <template>
   <div class="w-full h-full p-6 flex flex-col">
-    <button @click="handleChooseImage" :style="{ backgroundImage: `url(${imageUrl})` }"
-      class="flex border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-56 font-light bg-cover bg-center">
+    <button :disabled="disableAll" @click="handleChooseImage" :style="{ backgroundImage: `url(${imageUrl})` }"
+      class="flex disabled:opacity-50 border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-56 font-light bg-cover bg-center">
       <template v-if="!imageUrl">
         <img class="w-12" :src="imageIcon" alt="image" />
         Package Thumbnail
@@ -41,18 +67,20 @@ const handleChooseImage = () => fileInput.value?.click();
     <div class="flex flex-row text-lg mt-6">
       Name<span class="text-primary">*</span>
     </div>
-    <input v-model="name" type="text" class="border border-stroke w-full rounded-md py-1 pl-2 text-lg mt-1.5" />
+    <input :disabled="disableAll" v-model="name" type="text"
+      class="border disabled:opacity-50 border-stroke w-full rounded-md py-1 pl-2 text-lg mt-1.5" />
 
     <div class="flex flex-row text-lg mt-6">
       Type<span class="text-primary">*</span>
     </div>
-    <select class="border border-stroke w-full rounded-md py-1.5 pl-2 text-lg mt-1.5" v-model="type">
+    <select :disabled="disableAll"
+      class="border disabled:opacity-50 border-stroke w-full rounded-md py-1.5 pl-2 text-lg mt-1.5" v-model="type">
       <option disabled value="">Select Package Type</option>
       <!--  -->
       <option v-for="type in types" :value="type">{{ toTitleCase(type.split("_").join(" ")) }}</option>
     </select>
 
-    <button :disabled="!valid" @click="handleSubmit"
+    <button :disabled="!valid || disableAll" @click="handleSubmit"
       class="mt-auto ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50">
       Submit
     </button>

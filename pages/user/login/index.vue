@@ -4,8 +4,6 @@ definePageMeta({
 });
 
 import logo from "assets/logo.png";
-import facebook_icon from "assets/icons/facebook.svg";
-import google_icon from "assets/icons/google.svg";
 import { useAuthStore } from "~/stores/auth";
 
 const router = useRouter();
@@ -32,7 +30,8 @@ const isFormValid = computed(
 
 const onLoginSuccess = async () => {
   await user.updateProfile();
-  router.push("/");
+  console.log("success");
+  await router.push("/");
 }
 
 const handleGoogleLogin = async () => {
@@ -47,6 +46,7 @@ const handleGoogleLogin = async () => {
 const handleFacebookLogin = async () => {
   try {
     await auth.handleFacebookLogin();
+    console.log('calling on login success')
     onLoginSuccess();
   } catch (error: any) {
     errorMessage.value = error.message;
@@ -56,8 +56,7 @@ const handleFacebookLogin = async () => {
 // Handle form submission
 const handleSubmit = async () => {
   try {
-    const temp = await auth.handleLogin(email.value, password.value);
-    console.log("handleSubmit", 1)
+    await auth.handleLogin(email.value, password.value);
     onLoginSuccess();
   } catch (error: any) {
     console.log("error", error.message)

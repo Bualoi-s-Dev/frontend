@@ -3,36 +3,18 @@ import { ref, computed, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
 
 // Props
-const props = defineProps({
-  editable: {
-    type: Boolean,
-    required: false
-  },
-  addable:{
-    type: Boolean,
-    required: false
-  },
-  toAdd:{
-    type: Boolean,
-    required: false
-  },
-  images: {
-    type: Array as () => string[],
-    required: false,
-  },
-  title: {
-    type: String,
-    required: false,
-  },
-  owner: {
-    type: String,
-    required: false,
-  },
-  type: {
-    type: String,
-    required: false,
-  },
-});
+const props = defineProps<{
+  editable?: boolean;
+  addable?: boolean;
+  toAdd?: boolean;
+  images: string[];
+  title?: string;
+  owner?: string;
+  type?: string;
+  id?: string;
+}>();
+
+const router =useRouter();
 
 // Reactive State
 const currentIndex = ref(0);
@@ -135,7 +117,7 @@ onMounted(() => {
             <div class="flex flex-row justify-between">
               <Button bg-color="bg-primary">{{ type }}</Button>
               <div v-if="editable">
-                <button>
+                <button @click="router.push(`/package/edit/${id}`)">
                   <Icon icon="iconoir:edit" width="30px"/>
                 </button>
               </div>
