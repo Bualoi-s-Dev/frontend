@@ -48,42 +48,17 @@ const validate = () => {
 
 const handleSubmit = async () => {
   if (!validate()) return;
-
-  try {
-    const payload = {
-      /* id: "67ab98ede83ccae62ed72002", */
+  router.push({
+    path: "/user/register/selectRole",
+    query: {
       email: email.value,
       name: name.value,
       gender: gender.value,
       profile: imageUrl.value || null,
       phone: phoneNumber.value,
       location: location.value,
-      isPhotographer: false,
-      bankName: "",
-      bankAccount: "",
-      lineID: "",
-      facebook: "",
-      instagram: "",
-      showcasePackages: null,
-      packages: null,
-    };
-
-    console.log(payload);
-
-    router.push({
-      path: "/user/register/selectRole",
-      query: {
-        email: email.value,
-        name: name.value,
-        gender: gender.value,
-        profile: imageUrl.value || null,
-        phone: phoneNumber.value,
-        location: location.value,
-      },
-    });
-  } catch (error) {
-    console.error("Error updating profile:", error);
-  }
+    },
+  });
 };
 
 const handleChooseImage = () => fileInput.value?.click();

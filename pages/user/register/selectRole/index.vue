@@ -16,7 +16,7 @@ const route = useRoute();
 const api = useApiStore();
 
 const id = ref("");
-// Retrieve user data from the previous page
+
 const email = ref(route.query.email || "");
 const name = ref(route.query.name || "");
 const gender = ref(route.query.gender || "");
@@ -28,9 +28,9 @@ const isSelected = (role: string) => selectedRole.value === role;
 
 const handleCustomerSelect = async () => {
   try {
-    console.log("Updating profile at:", api.updateUserProfile);
     const response = await api.fetchUserProfile();
-    id.value = response.name;
+    id.value = response.id;
+    console.log(id.value);
     const payload = {
       id: id.value,
       email: email.value,
@@ -49,13 +49,12 @@ const handleCustomerSelect = async () => {
       packages: null,
     };
     const response2 = await api.updateUserProfile(payload);
-    console.log("Profile updated successfully:", response2);
+    console.log(response2);
   } catch (error) {
     console.error("Error updating profile:", error);
   }
 };
 
-// Handle Photographer Role: Navigate to createPhotographer page
 const handlePhotographerSelect = () => {
   router.push({
     path: "/user/register/createPhotographer",

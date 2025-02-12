@@ -51,9 +51,8 @@ const updateUserProfile = async () => {
   if (!validate()) return;
 
   try {
-    console.log("Updating profile at:", api.updateUserProfile);
     const response = await api.fetchUserProfile();
-    id.value = response.name;
+    id.value = response.id;
     const payload = {
       id: id.value,
       email: email.value,
@@ -72,7 +71,7 @@ const updateUserProfile = async () => {
       packages: null,
     };
     const response2 = await api.updateUserProfile(payload);
-    console.log("Profile updated successfully:", response2);
+    console.log(response2);
   } catch (error) {
     console.error("Error updating profile:", error);
   }
