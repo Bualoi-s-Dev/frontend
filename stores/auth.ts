@@ -38,9 +38,15 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userCredential.user;
     };
 
+    const actionCodeSettings = {
+        url: 'http://localhost:3000/user/login/reset/success', // Replace with your app's URL
+        handleCodeInApp: false, // Ensures the action is handled in your app
+    };
+      
+
     const handleForgotPassword = async (email: string): Promise<void> => {
         if(!email) return;
-        await sendPasswordResetEmail($auth, email);
+        await sendPasswordResetEmail($auth, email, actionCodeSettings);
     };
 
     const handleLogout = async (): Promise<void> => {

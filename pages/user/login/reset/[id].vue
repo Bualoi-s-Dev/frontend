@@ -20,6 +20,16 @@ const currentPage = Number(route.params.id);
 
 const auth = useAuthStore();
 
+const urlParams = new URLSearchParams(window.location.search);
+const mode = urlParams.get("mode"); // Should be "resetPassword"
+const actionCode = urlParams.get("oobCode"); // The verification code
+
+if (mode === "resetPassword" && actionCode) {
+  console.log("Password reset successful!");
+  // Redirect to login or dashboard
+  window.location.href = "/user/login";
+}
+
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
   /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.value)
@@ -38,10 +48,9 @@ const handleForgotPassword = async() => {
 
     updateStatus(1);
 
-    if (currentPage == 1) router.push(`/user/login/reset/2`);
-
     try {
         await auth.handleForgotPassword(email.value);
+        if (currentPage == 1) router.push(`/user/login/reset/2`);
     } catch (error: any) {
         errorMessage.value = error.message;
     }
@@ -86,7 +95,7 @@ const handleSubmit = () => {
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
-                    class="flex items-center justify-center py-[12px]"
+                    class="flex items-center justify-center py-[12px] hover:bg-red-600 transition"
                     textOptions="text-white text-[14px] font-poppins"
                     @click="handleForgotPassword"
                     >Send
@@ -106,7 +115,7 @@ const handleSubmit = () => {
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
-                    class="flex items-center justify-center py-[12px]"
+                    class="flex items-center justify-center py-[12px] hover:bg-red-600 transition"
                     textOptions="text-white text-[14px] font-poppins"
                     @click="handleForgotPassword"
                     >Resend
