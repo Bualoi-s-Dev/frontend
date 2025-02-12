@@ -30,6 +30,7 @@ export default defineNuxtConfig({
       autoSubfolderIndex: false
     }
   },
+  modules: ['@pinia/nuxt'],
   vite: {
     plugins: [
       tailwindcss(),
