@@ -2,204 +2,183 @@
 definePageMeta({
   layout: "background",
 });
+import axios from "axios";
+
 import { ref } from "vue";
 import logo from "assets/logo.png";
-import imageIcon from "assets/icons/image.svg";
 
-const imageUrl = ref("");
-const firstName = ref("");
-const lastName = ref("");
-const gender = ref("");
-const socialMediaLink = ref("");
+const route = useRoute();
+
+// Retrieve user data from the previous page
+const email = ref(route.query.email || "");
+const name = ref(route.query.name || "");
+const gender = ref(route.query.gender || "");
+const profile = ref(route.query.profile || "");
+const phone = ref(route.query.phone || "");
+const location = ref(route.query.location || "");
+
+const lineID = ref("");
+const facebook = ref("");
+const instagram = ref("");
+const bankName = ref("");
 const bankAccount = ref("");
-const accountNumber = ref("");
-const fileInput = ref<HTMLInputElement | null>(null);
 
 const errors = ref<Record<string, string>>({});
 
-const onFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target?.files?.[0];
-  if (file && file.type.startsWith("image/")) {
-    imageUrl.value = URL.createObjectURL(file);
-    errors.value.imageUrl = "";
-  }
-};
-
 const validate = () => {
   errors.value = {};
-
-  if (!imageUrl.value) errors.value.imageUrl = "Profile picture is required.";
-  if (!firstName.value) errors.value.firstName = "First name is required.";
-  if (!lastName.value) errors.value.lastName = "Last name is required.";
-  if (!gender.value) errors.value.gender = "Please select a gender.";
-  if (!socialMediaLink.value)
-    errors.value.socialMediaLink = "Social media link is required.";
-  if (!bankAccount.value)
-    errors.value.bankAccount = "Please select a bank account.";
-  if (!accountNumber.value) {
-    errors.value.accountNumber = "Account number is required.";
-  } else if (!/^\d+$/.test(accountNumber.value)) {
-    errors.value.accountNumber = "Account number must be numeric.";
+  if (!lineID.value) errors.value.lineID = "Line ID is required.";
+  if (!facebook.value) errors.value.facebook = "Facebook is required.";
+  if (!instagram.value) errors.value.instagram = "Instagram is required.";
+  if (!bankName.value) errors.value.bankName = "Please select a bank name.";
+  if (!bankAccount.value) {
+    errors.value.bankAccount = "Bank Account is required.";
   }
 
   return Object.keys(errors.value).length === 0;
 };
 
-const handleSubmit = () => {
+const varToken =
+  "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMjUwZDIyYTkzODVmYzQ4NDJhYTU2YWJhZjUzZmU5NDcxNmVjNTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc2UtMi03NmY2MiIsImF1ZCI6InNlLTItNzZmNjIiLCJhdXRoX3RpbWUiOjE3MzkzNjAxODcsInVzZXJfaWQiOiJGeWQzMmhEU2dUUTNLNTE2aHRQSklIQ0RzeWcyIiwic3ViIjoiRnlkMzJoRFNnVFEzSzUxNmh0UEpJSENEc3lnMiIsImlhdCI6MTczOTM2MDE4NywiZXhwIjoxNzM5MzYzNzg3LCJlbWFpbCI6Indpcm9vbnB1cmkxMjNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIndpcm9vbnB1cmkxMjNAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ZQFXrUxtC8jjrngcZLU5Dyuod_ZRmemnY1C2VL73TFMHUmMxu6WpElbY03GZLFrFOL23YZNpjV3XbO2X63XV-KQTMUW-J-JzO0ZcMsMSAXCDQiqCQ3mTcIHlMq2MOp3diLZkG-5TUdCiMSLmBT3xboTv_3mmbSquFOOvswJG9uGchKTgw0x1QYkK0n59963h8rB68synJopW9P4564Gzpkcv6wz2hvx9leaH30i3sFWEiqa-W4HHBNnOBA-cev1dvQfaJRld8A0BfGS8EGXwgdiZh7vHfY_wi1WzbHYPop7rpnGKE3gVGSFmiCl2oqaIyBLk8BXw2Y37sI-EPROAMg";
+const handleSubmit = async () => {
   if (!validate()) return;
 
-  console.log("Image URL:", imageUrl.value);
-  console.log("First Name:", firstName.value);
-  console.log("Last Name:", lastName.value);
-  console.log("Gender:", gender.value);
-  console.log("Social Media Links:", socialMediaLink.value);
-  console.log("Bank Account:", bankAccount.value);
-  console.log("Account Number:", accountNumber.value);
+  try {
+    // Prepare the JSON payload
+    const payload = {
+      /* id: "67ac57c04850b3f0bcc2ef60", */
+      email: email.value,
+      name: name.value,
+      gender: gender.value,
+      profile: profile.value || null,
+      phone: phone.value,
+      location: location.value,
+      isPhotographer: true,
+      bankName: bankName.value,
+      bankAccount: bankAccount.value,
+      lineID: lineID.value,
+      facebook: facebook.value,
+      instagram: instagram.value,
+      showcasePackages: null,
+      packages: null,
+    };
+    console.log(payload);
+    // Send PUT request to update user profile with JSON payload
+    await axios.put(`http://localhost:8080/user/profile`, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${varToken}`,
+      },
+    });
+    console.log(payload);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+  }
 };
-
-const handleChooseImage = () => fileInput.value?.click();
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center h-fit py-[50px]">
-    <div class="flex flex-col items-start gap-[6px] h-fit">
+  <LoginRegisterCard>
+    <template #backButton>
       <BackButton />
-      <div
-        class="px-8 py-12 flex flex-col h-fit mx-auto shadow-lg bg-innerBackground w-[330px] gap-6 rounded-lg"
-      >
-        <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
-          <img :src="logo" alt="logo" class="w-9" />
-          Photomatch
+    </template>
+    <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
+      <img :src="logo" alt="logo" class="w-9" />
+      Photomatch
+    </div>
+    <div class="flex flex-col">
+      <h1 class="text-[18px] text-titleActive tracking-wide">Create Account</h1>
+      <h2 class="text-[16px] text-body">As Photographer</h2>
+    </div>
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <label>Line ID<span class="text-primary">*</span></label>
+          <input
+            v-model="lineID"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.lineID }"
+          />
+          <p v-if="errors.lineID" class="text-red-500 text-xs">
+            {{ errors.lineID }}
+          </p>
         </div>
-        <div class="flex flex-col gap-3">
-          <h1 class="text-[18px] text-titleActive tracking-wide">
-            Create Account
-          </h1>
-          <h2 class="text-[16px] text-body">As Customer</h2>
 
-          <div class="flex flex-col gap-4">
-            <button
-              @click="handleChooseImage"
-              :style="{ backgroundImage: `url(${imageUrl})` }"
-              class="flex border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center"
-              :class="{ 'border-red-500': errors.imageUrl }"
-            >
-              <template v-if="!imageUrl">
-                <img class="w-[41px]" :src="imageIcon" alt="image" />
-                <h1 class="text-[10px] text-label">Upload Profile Picture</h1>
-              </template>
-            </button>
-            <p v-if="errors.imageUrl" class="text-red-500 text-xs">
-              {{ errors.imageUrl }}
-            </p>
-
-            <div class="flex flex-col gap-1">
-              <label>First Name<span class="text-primary">*</span></label>
-              <input
-                v-model="firstName"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.firstName }"
-              />
-              <p v-if="errors.firstName" class="text-red-500 text-xs">
-                {{ errors.firstName }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Last Name<span class="text-primary">*</span></label>
-              <input
-                v-model="lastName"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.lastName }"
-              />
-              <p v-if="errors.lastName" class="text-red-500 text-xs">
-                {{ errors.lastName }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Gender<span class="text-primary">*</span></label>
-              <select
-                v-model="gender"
-                class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.gender }"
-              >
-                <option disabled value="">Select Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-              </select>
-              <p v-if="errors.gender" class="text-red-500 text-xs">
-                {{ errors.gender }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label
-                >Social Media Links<span class="text-primary">*</span></label
-              >
-              <input
-                v-model="socialMediaLink"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.socialMediaLink }"
-              />
-              <p v-if="errors.socialMediaLink" class="text-red-500 text-xs">
-                {{ errors.socialMediaLink }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Bank Account<span class="text-primary">*</span></label>
-              <select
-                v-model="bankAccount"
-                class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.bankAccount }"
-              >
-                <option disabled value="">Select Bank</option>
-                <option>Kasikorn</option>
-                <option>Krungthai</option>
-              </select>
-              <p v-if="errors.bankAccount" class="text-red-500 text-xs">
-                {{ errors.bankAccount }}
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <label>Account Number<span class="text-primary">*</span></label>
-              <input
-                v-model="accountNumber"
-                type="text"
-                class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                :class="{ 'border-red-500': errors.accountNumber }"
-              />
-              <p v-if="errors.accountNumber" class="text-red-500 text-xs">
-                {{ errors.accountNumber }}
-              </p>
-            </div>
-
-            <!-- Submit Button -->
-            <Button
-              class="flex items-center justify-center py-[12px]"
-              textColor="text-white"
-              fontSize="text-[14px]"
-              fontFamily="font-poppins"
-              @click="handleSubmit"
-            >
-              Submit
-            </Button>
-          </div>
+        <div class="flex flex-col gap-1">
+          <label>Facebook<span class="text-primary">*</span></label>
+          <input
+            v-model="facebook"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.facebook }"
+          />
+          <p v-if="errors.facebook" class="text-red-500 text-xs">
+            {{ errors.facebook }}
+          </p>
         </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Instagram<span class="text-primary">*</span></label>
+          <input
+            v-model="instagram"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.instagram }"
+          />
+          <p v-if="errors.instagram" class="text-red-500 text-xs">
+            {{ errors.instagram }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Bank Name<span class="text-primary">*</span></label>
+          <select
+            v-model="bankName"
+            class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.bankName }"
+          >
+            <option disabled value="">Select Bank</option>
+            <option>Kasikorn</option>
+            <option>Bangkok Bank</option>
+            <option>SCB</option>
+            <option>Krungthai</option>
+            <option>TMBThanachart</option>
+            <option>Krungsri</option>
+            <option>Government Savings</option>
+            <option>TMB</option>
+            <option>UOB Thailand</option>
+            <option>CIMB Thailand</option>
+            <option>Standard Chartered</option>
+            <option>ICBC Thailand</option>
+          </select>
+          <p v-if="errors.bankName" class="text-red-500 text-xs">
+            {{ errors.bankName }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label>Bank Account<span class="text-primary">*</span></label>
+          <input
+            v-model="bankAccount"
+            type="text"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.bankAccount }"
+          />
+          <p v-if="errors.bankAccount" class="text-red-500 text-xs">
+            {{ errors.bankAccount }}
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <Button
+          class="flex items-center justify-center py-[12px]"
+          textOptions="text-white text-[14px] font-poppins tracking-wider"
+          @click="handleSubmit"
+        >
+          Submit
+        </Button>
       </div>
     </div>
-  </div>
-  <input
-    type="file"
-    ref="fileInput"
-    @change="onFileChange"
-    accept="image/*"
-    hidden
-  />
+  </LoginRegisterCard>
 </template>
