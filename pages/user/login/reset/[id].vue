@@ -17,9 +17,9 @@ const route = useRoute();
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
-const smsValidate = ref("");
+const status = ref(0);
 const errorMessage = ref("");
-const pages = [1, 2, 3];
+const pages = [1, 2];
 const currentPage = Number(route.params.id);
 
 // Email validation (simple regex)
@@ -27,25 +27,10 @@ const isEmailValid = computed(() =>
   /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.value)
 );
 
-// Password validation (min 6 chars)
-const isPasswordValid = computed(() => password.value.length >= 6);
-
-// Confirm password validation
-const isConfirmPasswordValid = computed(
-  () => password.value === confirmPassword.value
-);
-
-// SMS validation
-const isSMSValid = computed(
-  () =>
-    smsValidate.value
-);
-
-// Form validation
-const isFormValid = computed(
-  () =>
-    isEmailValid.value
-);
+const updateStatus = () => {
+    // status.value = (status.value + 1) % 3;
+    status.value = 1;
+};
 
 // Handle form submission
 const handleSubmit = () => {
@@ -53,20 +38,14 @@ const handleSubmit = () => {
     errorMessage.value = "Please correct the errors before submitting.";
     return;
   }
-//   else if(currentPage == 2 && !isSMSValid.value) {
-//     errorMessage.value = "Please correct the errors before submitting.";
-//     return;
-//   }
-//   else if(currentPage == 4 && (!isPasswordValid || !isConfirmPasswordValid)) {
-//     errorMessage.value = "Please correct the errors before submitting.";
-//     return;
-//   }
+
+  updateStatus();
 
 //   console.log("Email:", email.value);
   errorMessage.value = ""; // Clear errors if successful
 
-  if(currentPage == 3) router.push(`/user/login/reset/success`);
-  else router.push(`/user/login/reset/${currentPage % 3 + 1}`);
+  if(currentPage == 2) router.push(`/user/login/reset/success`);
+  else router.push(`/user/login/reset/${currentPage % 2 + 1}`);
 };
 </script>
 
@@ -96,6 +75,9 @@ const handleSubmit = () => {
                         <p v-if="email && !isEmailValid" class="text-red-500 text-xs">
                             Invalid email format
                         </p>
+                        <p v-else-if="status == 1" class="text-green-500 text-xs">
+                            An email has been sent
+                        </p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-[16px]">
@@ -103,7 +85,7 @@ const handleSubmit = () => {
                     class="flex items-center justify-center py-[12px]"
                     textOptions="text-white text-[14px] font-poppins"
                     @click="handleSubmit"
-                    >Reset Password
+                    >Send
                     </Button>
                 </div>
             </div>
@@ -117,53 +99,6 @@ const handleSubmit = () => {
                         </div>
                         <p class="text-sm/6">Your password has been successfully reset. Click confirm to set a new password.</p>
                     </div>
-                </div>
-                <div class="flex flex-col gap-[16px]">
-                    <Button
-                    class="flex items-center justify-center py-[12px]"
-                    textOptions="text-white text-[14px] font-poppins"
-                    @click="handleSubmit"
-                    >Confirm
-                    </Button>
-                </div>
-            </div>
-        </template>
-        <template v-else-if="currentPage == 3">
-            <div class="flex flex-col gap-[20px]">
-                <div class="flex flex-col gap-[16px]">
-                    <div>
-                        <div class="mb-3">
-                            <p class="text-lg">Set a new password</p>
-                        </div>
-                        <p class="text-sm/6">Create a new password. Ensure it differs from previous ones for security</p>
-                    </div>
-                </div>
-                <div>
-                    <label>Password</label>
-                    <input
-                        v-model="password"
-                        type="password"
-                        class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                    />
-                    <!-- <Icon icon="tabler:eye-off" /> -->
-                    <p v-if="password && !isPasswordValid" class="text-red-500 text-xs">
-                        Password must be at least 6 characters
-                    </p>
-                </div>
-
-                <div>
-                    <label>Confirm Password</label>
-                    <input
-                        v-model="confirmPassword"
-                        type="password"
-                        class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-                    />
-                    <p
-                        v-if="confirmPassword && !isConfirmPasswordValid"
-                        class="text-red-500 text-xs"
-                    >
-                        Passwords do not match
-                    </p>
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
