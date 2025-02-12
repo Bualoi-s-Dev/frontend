@@ -10,15 +10,12 @@ import facebook_icon from "assets/icons/facebook.svg";
 import google_icon from "assets/icons/google.svg";
 
 import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
-import { useAuthStore } from "~/stores/auth";
 
 const router = useRouter();
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 const errorMessage = ref("");
-
-const auth = useAuthStore();
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
@@ -40,23 +37,18 @@ const isFormValid = computed(
 );
 
 // Handle form submission
-const handleSubmit = async () => {
+const handleSubmit = () => {
   if (!isFormValid.value) {
     errorMessage.value = "Please correct the errors before submitting.";
     return;
   }
 
-  try {
-    await auth.handleRegister(email.value, password.value);
-    // Clear errors if successful
-    errorMessage.value = "";
+  console.log("Email:", email.value);
+  console.log("Password:", password.value);
+  console.log("Confirm Password:", confirmPassword.value);
+  errorMessage.value = ""; // Clear errors if successful
 
-    router.push("/user/register/selectRole");
-  } catch (error: any) {
-    console.log('error', error.message)
-    errorMessage.value = error.message;
-  }
-
+  router.push("/user/register/selectRole");
 };
 </script>
 
@@ -70,8 +62,11 @@ const handleSubmit = async () => {
       <div class="flex flex-col gap-[16px]">
         <div>
           <label>Email<span class="text-red-500">*</span></label>
-          <input v-model="email" type="email"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
+          <input
+            v-model="email"
+            type="email"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+          />
           <p v-if="email && !isEmailValid" class="text-red-500 text-xs">
             Invalid email format
           </p>
@@ -79,8 +74,11 @@ const handleSubmit = async () => {
 
         <div>
           <label>Password<span class="text-red-500">*</span></label>
-          <input v-model="password" type="password"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
+          <input
+            v-model="password"
+            type="password"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+          />
           <p v-if="password && !isPasswordValid" class="text-red-500 text-xs">
             Password must be at least 6 characters
           </p>
@@ -88,23 +86,48 @@ const handleSubmit = async () => {
 
         <div>
           <label>Confirm Password<span class="text-red-500">*</span></label>
-          <input v-model="confirmPassword" type="password"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
-          <p v-if="confirmPassword && !isConfirmPasswordValid" class="text-red-500 text-xs">
+          <input
+            v-model="confirmPassword"
+            type="password"
+            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+          />
+          <p
+            v-if="confirmPassword && !isConfirmPasswordValid"
+            class="text-red-500 text-xs"
+          >
             Passwords do not match
           </p>
         </div>
       </div>
       <div class="flex flex-col gap-[16px]">
-        <span class="text-red-500 text-xs">{{ errorMessage }}</span>
-        <Button :disabled="!isFormValid" class="flex items-center justify-center py-[12px]"
-          textOptions="text-white text-[14px] font-poppins" @click="handleSubmit">Register
+        <Button
+          class="flex items-center justify-center py-[12px]"
+          textOptions="text-white text-[14px] font-poppins"
+          @click="handleSubmit"
+          >Register
+        </Button>
+        <Button
+          class="flex items-center justify-center py-[12px] bg-google"
+          textOptions="text-titleActive text-[14px] font-poppins"
+          :leftIcon="google_icon"
+          >Register With Google
+        </Button>
+        <Button
+          class="flex items-center justify-center py-[12px] bg-facebook"
+          textOptions="text-white text-[14px] font-poppins"
+          :leftIcon="facebook_icon"
+        >
+          Register With Facebook
         </Button>
       </div>
       <div class="pl-[8px] pt-[20px]">
         <label class="text-label text-[14px]">
           Back to
-          <span class="ml-[6px] cursor-pointer underline" @click="router.push('/user/login')">Sign in</span>
+          <span
+            class="ml-[6px] cursor-pointer underline"
+            @click="router.push('/user/login')"
+            >Sign in</span
+          >
         </label>
       </div>
     </div>
