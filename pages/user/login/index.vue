@@ -56,12 +56,14 @@ const handleFacebookLogin = async () => {
 // Handle form submission
 const handleSubmit = async () => {
   try {
-    await auth.handleLogin(email.value, password.value);
+    const temp = await auth.handleLogin(email.value, password.value);
+    console.log("handleSubmit", 1)
     onLoginSuccess();
   } catch (error: any) {
+    console.log("error", error.message)
     errorMessage.value = error.message;
   }
-};
+}
 </script>
 
 <template>
@@ -101,12 +103,17 @@ const handleSubmit = async () => {
         <Button :disabled="!isFormValid" class="flex items-center justify-center py-[12px]"
           textOptions="text-white text-[14px] font-poppins" @click="handleSubmit">Login
         </Button>
-        <Button class="flex items-center justify-center py-[12px] bg-google"
-          textOptions="text-titleActive text-[14px] font-poppins" :leftIcon="google_icon"
-          @click="handleGoogleLogin">Login With Google
-        </Button>
+        <Button
+        bgColor="bg-gray-200"
+        class="flex items-center justify-center py-[18px]"
+        textOptions="text-black text-[14px] font-poppins"
+        leftIcon = "flat-color-icons:google"
+        @click="handleGoogleLogin"
+      >
+        Login with Google
+      </Button>
         <Button class="flex items-center justify-center py-[12px] bg-facebook"
-          textOptions="text-white text-[14px] font-poppins" :leftIcon="facebook_icon" @click="handleFacebookLogin">
+          textOptions="text-white text-[14px] font-poppins" leftIcon="logos:facebook" @click="handleFacebookLogin">
           Login With Facebook
         </Button>
       </div>
