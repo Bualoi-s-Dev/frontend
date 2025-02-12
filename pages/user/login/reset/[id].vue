@@ -38,6 +38,8 @@ const handleForgotPassword = async() => {
 
     updateStatus(1);
 
+    if (currentPage == 1) router.push(`/user/login/reset/2`);
+
     try {
         await auth.handleForgotPassword(email.value);
     } catch (error: any) {
@@ -47,12 +49,8 @@ const handleForgotPassword = async() => {
 
 // Handle form submission
 const handleSubmit = () => {
-//   console.log("Email:", email.value);
-  errorMessage.value = ""; // Clear errors if successful
-
-  if(currentPage == 2) router.push(`/user/login/reset/success`);
-  else router.push(`/user/login/reset/${currentPage % 2 + 1}`);
-};
+    router.push(`/user/login/reset/success`);
+}
 </script>
 
 <template>
@@ -101,17 +99,17 @@ const handleSubmit = () => {
                 <div class="flex flex-col gap-[16px]">
                     <div>
                         <div class="mb-3">
-                            <p class="text-lg">Password reset</p>
+                            <p class="text-lg">Password reset email sent.</p>
                         </div>
-                        <p class="text-sm/6">Your password has been successfully reset. Click confirm to set a new password.</p>
+                        <p class="text-sm/6">The email has been sent. Please check your email to reset password.</p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
                     class="flex items-center justify-center py-[12px]"
                     textOptions="text-white text-[14px] font-poppins"
-                    @click="handleSubmit"
-                    >Confirm
+                    @click="handleForgotPassword"
+                    >Resend
                     </Button>
                 </div>
             </div>
