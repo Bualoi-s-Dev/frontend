@@ -14,7 +14,8 @@ import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<User | null>(null);
-
+    const config = useRuntimeConfig();
+    
     const { $auth, $facebookProvider, $googleProvider } = useNuxtApp();
     // const config = useRuntimeConfig();
 
@@ -26,6 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
     const handleLogin = async (email: string, password: string): Promise<void> => {
         const userCredential = await signInWithEmailAndPassword($auth, email, password);
         user.value = userCredential.user;
+        console.log(await fetchToken())
     };
 
     const handleGoogleLogin = async (): Promise<void> => {
@@ -38,9 +40,15 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userCredential.user;
     };
 
+    const actionCodeSettings = {
+        url: 'http://localhost:3000/user/login/reset/success', // Replace with your app's URL
+        handleCodeInApp: false, // Ensures the action is handled in your app
+    };
+      
+
     const handleForgotPassword = async (email: string): Promise<void> => {
         if(!email) return;
-        await sendPasswordResetEmail($auth, email);
+        await sendPasswordResetEmail($auth, email, actionCodeSettings);
     };
 
     const handleLogout = async (): Promise<void> => {

@@ -1,54 +1,43 @@
 <script setup lang="ts">
 import Button from "@/components/Button.vue"
-import profilePic from "@/assets/profilePicture.png"
-import axios from "axios";
-import workImage from "@/assets/workImage.png";
-import workImage2 from "@/assets/workImage2.png";
 import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 
 const router = useRouter();
 const user = ref({ name: '', description: '', location: '', profile: ''})
 const data = ref<any>(null)
-const packages = ref([])
+const packages = ref<any>(null)
+const errorMessage = ref("")
 
-const varToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMjUwZDIyYTkzODVmYzQ4NDJhYTU2YWJhZjUzZmU5NDcxNmVjNTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc2UtMi03NmY2MiIsImF1ZCI6InNlLTItNzZmNjIiLCJhdXRoX3RpbWUiOjE3MzkzNjY1OTYsInVzZXJfaWQiOiJRbHVCQjNIdENlTVF5QldVTUtnNDVlbWxJREMzIiwic3ViIjoiUWx1QkIzSHRDZU1ReUJXVU1LZzQ1ZW1sSURDMyIsImlhdCI6MTczOTM2NjU5NiwiZXhwIjoxNzM5MzcwMTk2LCJlbWFpbCI6ImRldmR1YW5nZGFvQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZXZkdWFuZ2Rhb0BnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.XToKJg4Qh-uLRXD4-oyNMpIgFSDYCTWsSXYOTa2YPmZxX6RqmIgOUcPbBwAuCb0zNqekbTz1CjjgQx2WvnYP74r0BMVuQUMB5KdTT0lwBkJUL1Rs9Y-f-LCxelHyCC6BOf8W6Qp3LV9a0owrYdFjTH282pR2QClgHsFdoEF-2sLIz2SZyScGjFS434LEPVkeVFCC0pk_vMLwagy5IUDCC-TxbsqrIy1Umd4ZXdTmzEAwpNPCDnfPr_H-E71clGUc8BsTqOxGLrrth6MR3reUjMGkvbdhXtru2NwW-tovxEKS4WUxiar466BO4gscPFfCmFEOF1Z5Crqf5_eXzodXUg'
-const fetchUserProfile = async() => {
-    axios.get('http://localhost:8080/user/profile', {
-      
-        headers: {
-          Authorization: 'Bearer ' + varToken
-        }
-      })
-      .then(response => {
-        console.log(response.data)
-        user.value.name = response.data.name
-        user.value.location = response.data.location
-        user.value.profile = 'https://pub-58a5559d12b34ac5999431d8764da7fa.r2.dev' + response.data.profile
-      })
-      .catch(error => {
-        error = error.response ? error.response.data : error.message;  // Storing error in data
-      });
+const api = useApiStore();
+
+const fetchUserProfile = async () => {
+  try {
+    const response = await api.fetchUserProfile();
+    user.value.name = response.name
+    user.value.profile = config.public.s3URL + response.profile
+    user.value.location = response.location
+    console.log(response)
+  } catch ( error: any ) {
+    errorMessage.value = error.message;
+  }
 }
-
-const fetchUserPackage = async() => {
-    axios.get('http://localhost:8080/package/', {
-        headers: {
-          Authorization: 'Bearer ' + varToken
-        }
-      })
-      .then(response => {
-        packages.value = response.data;
-        console.log(response.data)
-      })
-      .catch(error => {
-        error = error.response ? error.response.data : error.message;  // Storing error in data
-      });
+const auth = useAuthStore();
+const config = useRuntimeConfig();
+const fetchUserPackage = async () => {
+  try {
+    const response = await api.fetchUserPackage();
+    console.log('package',response)
+    packages.value = response
+  } catch ( error: any ) { 
+    errorMessage.value = error.message;
+    console.log(errorMessage)
+  }
 }
 
 onMounted(()=>{
-  fetchUserPackage();
   fetchUserProfile();
+  fetchUserPackage();
 })
 
 
@@ -62,7 +51,7 @@ onMounted(()=>{
                 <h2 class="text-xl font-semibold mt-4">{{ user.name }}</h2>
                 <p class="text-sm text-red-900">{{ user.description }}</p>
                 <p class="text-sm text-red-900 mb-2">{{ user.location }}</p>
-                <Button @click="router.push('/package/editprofile')" width="w-80 h-10" text-options="text-white text-right text-sm">Edit Profile</Button>
+                <Button @click="router.push('/profile/edit')" width="w-80 h-10" text-options="text-white text-right text-sm">Edit Profile</Button>
                 <Button width="w-80 h-10" text-options="mt-2 text-white text-right text-sm">View All Packages</Button>
             </div>
             <h2 class="ml-6 mt-6">Work showcase</h2>

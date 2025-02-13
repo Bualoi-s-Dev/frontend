@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import Button from "@/components/Button.vue"
-import profilePic from "@/assets/profilePicture.png"
-import workImage from "@/assets/workImage.png";
-import workImage2 from "@/assets/workImage2.png";
 import { Icon } from "@iconify/vue";
-import axios from "axios";
 
 const allData = ref<any>(null)
-const packages = ref([])
-
+const config = useRuntimeConfig();
 const user = ref({ name: '', gender:'', email: '', location: '' })
 const responesMessage = ref("");
 const imageUrl = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
+const packages = ref<any>(null)
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -28,73 +24,55 @@ const onFileChange = (event: Event) => {
   }
 };
 
-const varToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMjUwZDIyYTkzODVmYzQ4NDJhYTU2YWJhZjUzZmU5NDcxNmVjNTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc2UtMi03NmY2MiIsImF1ZCI6InNlLTItNzZmNjIiLCJhdXRoX3RpbWUiOjE3MzkzNjY1OTYsInVzZXJfaWQiOiJRbHVCQjNIdENlTVF5QldVTUtnNDVlbWxJREMzIiwic3ViIjoiUWx1QkIzSHRDZU1ReUJXVU1LZzQ1ZW1sSURDMyIsImlhdCI6MTczOTM2NjU5NiwiZXhwIjoxNzM5MzcwMTk2LCJlbWFpbCI6ImRldmR1YW5nZGFvQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJkZXZkdWFuZ2Rhb0BnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.XToKJg4Qh-uLRXD4-oyNMpIgFSDYCTWsSXYOTa2YPmZxX6RqmIgOUcPbBwAuCb0zNqekbTz1CjjgQx2WvnYP74r0BMVuQUMB5KdTT0lwBkJUL1Rs9Y-f-LCxelHyCC6BOf8W6Qp3LV9a0owrYdFjTH282pR2QClgHsFdoEF-2sLIz2SZyScGjFS434LEPVkeVFCC0pk_vMLwagy5IUDCC-TxbsqrIy1Umd4ZXdTmzEAwpNPCDnfPr_H-E71clGUc8BsTqOxGLrrth6MR3reUjMGkvbdhXtru2NwW-tovxEKS4WUxiar466BO4gscPFfCmFEOF1Z5Crqf5_eXzodXUg'
-const fetchUserProfile = async() => {
-    axios.get('http://localhost:8080/user/profile', {
-        headers: {
-          Authorization: 'Bearer ' + varToken
-        }
-      })
-      .then(response => {
-        console.log(response.data)
-        imageUrl.value = 'https://pub-58a5559d12b34ac5999431d8764da7fa.r2.dev' + response.data.profile
-        user.value.name = response.data.name
-        user.value.gender = response.data.gender
-        user.value.email = response.data.email
-        user.value.location = response.data.location
-        allData.value = response.data;  // Storing response in data
-      })
-      .catch(error => {
-        error = error.response ? error.response.data : error.message;  // Storing error in data
-      });
+const errorMessage = ref("")
+
+const api = useApiStore();
+
+const fetchUserProfile = async () => {
+  try {
+    const response = await api.fetchUserProfile();
+    user.value.name = response.name
+    imageUrl.value = config.public.s3URL + response.profile
+    user.value.gender = response.gender
+    user.value.email = response.email
+    user.value.location = response.location
+    allData.value = response;  // Storing response in data
+  } catch ( error: any ) {
+    errorMessage.value = error.message;
+  }
 }
-const fetchUserPackage = async() => {
-    axios.get('http://localhost:8080/package/', {
-        headers: {
-          Authorization: 'Bearer ' + varToken
-        }
-      })
-      .then(response => {
-        packages.value = response.data;
-        console.log(response.data)
-      })
-      .catch(error => {
-        error = error.response ? error.response.data : error.message;  // Storing error in data
-      });
+
+const fetchUserPackage = async () => {
+  try {
+    const response = await api.fetchUserPackage();
+    console.log('package',response)
+    packages.value = response
+  } catch ( error: any ) { 
+    errorMessage.value = error.message;
+    console.log(errorMessage)
+  }
 }
+
+
 const updateUserInformation = async () => {
-    try{
-        const payload = {
-            email: allData.value.email,
-            name: user.value.name,
-            gender: user.value.gender,
-            profile: imageUrl.value,
-            phone: allData.value.phone,
-            location: user.value.location,
-            isPhotographer: true,
-            bankName: allData.value.bankName,
-            bankAccount: allData.value.bankAccount,
-            lineID: allData.value.lineID,
-            facebook: allData.value.facebook,
-            instagram: allData.value.instagram,
-            showcasePackages: null,
-            packages: null,
-        }
-        console.log(payload.profile)
-        const response = await axios.put(
-            "http://localhost:8080/user/profile",
-            payload,
-            {
-                headers: {
-                    Authorization: 'Bearer ' + varToken,
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        responesMessage.value = "Username updated successfully!";
-    } catch (error) {
-        responesMessage.value = "Failed to update username.";
-        console.log(error)
+    const payload = {
+        id: allData.value.id,
+        email: allData.value.email,
+        name: user.value.name,
+        gender: user.value.gender,
+        profile: imageUrl.value,
+        phone: allData.value.phone,
+        location: user.value.location,
+        isPhotographer: true,
+        showcasePackages: null,
+        packages: null,
+    }
+    console.log(payload)
+    try {
+        await api.updateUserInformation( payload );
+    } catch ( error : any ) {
+        errorMessage.value = error.message;
+        console.log(errorMessage)
     }
 }
 

@@ -20,6 +20,16 @@ const currentPage = Number(route.params.id);
 
 const auth = useAuthStore();
 
+const urlParams = new URLSearchParams(window.location.search);
+const mode = urlParams.get("mode"); // Should be "resetPassword"
+const actionCode = urlParams.get("oobCode"); // The verification code
+
+if (mode === "resetPassword" && actionCode) {
+  console.log("Password reset successful!");
+  // Redirect to login or dashboard
+  window.location.href = "/user/login";
+}
+
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
   /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email.value)
@@ -40,6 +50,7 @@ const handleForgotPassword = async() => {
 
     try {
         await auth.handleForgotPassword(email.value);
+        if (currentPage == 1) router.push(`/user/login/reset/2`);
     } catch (error: any) {
         errorMessage.value = error.message;
     }
@@ -47,12 +58,8 @@ const handleForgotPassword = async() => {
 
 // Handle form submission
 const handleSubmit = () => {
-//   console.log("Email:", email.value);
-  errorMessage.value = ""; // Clear errors if successful
-
-  if(currentPage == 2) router.push(`/user/login/reset/success`);
-  else router.push(`/user/login/reset/${currentPage % 2 + 1}`);
-};
+    router.push(`/user/login/reset/success`);
+}
 </script>
 
 <template>
@@ -88,7 +95,7 @@ const handleSubmit = () => {
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
-                    class="flex items-center justify-center py-[12px]"
+                    class="flex items-center justify-center py-[12px] hover:bg-red-600 transition"
                     textOptions="text-white text-[14px] font-poppins"
                     @click="handleForgotPassword"
                     >Send
@@ -101,17 +108,17 @@ const handleSubmit = () => {
                 <div class="flex flex-col gap-[16px]">
                     <div>
                         <div class="mb-3">
-                            <p class="text-lg">Password reset</p>
+                            <p class="text-lg">Password reset email sent.</p>
                         </div>
-                        <p class="text-sm/6">Your password has been successfully reset. Click confirm to set a new password.</p>
+                        <p class="text-sm/6">The email has been sent. Please check your email to reset password.</p>
                     </div>
                 </div>
                 <div class="flex flex-col gap-[16px]">
                     <Button
-                    class="flex items-center justify-center py-[12px]"
+                    class="flex items-center justify-center py-[12px] hover:bg-red-600 transition"
                     textOptions="text-white text-[14px] font-poppins"
-                    @click="handleSubmit"
-                    >Confirm
+                    @click="handleForgotPassword"
+                    >Resend
                     </Button>
                 </div>
             </div>
