@@ -13,8 +13,10 @@ import LoginRegisterCard from "~/components/LoginRegisterCard.vue";
 
 const router = useRouter();
 const route = useRoute();
+const api = useApiStore();
 
-// Retrieve user data from the previous page
+const id = ref("");
+
 const email = ref(route.query.email || "");
 const name = ref(route.query.name || "");
 const gender = ref(route.query.gender || "");
@@ -24,16 +26,17 @@ const location = ref(route.query.location || "");
 const selectedRole = ref<string | null>(null);
 const isSelected = (role: string) => selectedRole.value === role;
 
-const varToken =
-  "eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMjUwZDIyYTkzODVmYzQ4NDJhYTU2YWJhZjUzZmU5NDcxNmVjNTQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc2UtMi03NmY2MiIsImF1ZCI6InNlLTItNzZmNjIiLCJhdXRoX3RpbWUiOjE3MzkzNjAxODcsInVzZXJfaWQiOiJGeWQzMmhEU2dUUTNLNTE2aHRQSklIQ0RzeWcyIiwic3ViIjoiRnlkMzJoRFNnVFEzSzUxNmh0UEpJSENEc3lnMiIsImlhdCI6MTczOTM2MDE4NywiZXhwIjoxNzM5MzYzNzg3LCJlbWFpbCI6Indpcm9vbnB1cmkxMjNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbIndpcm9vbnB1cmkxMjNAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.ZQFXrUxtC8jjrngcZLU5Dyuod_ZRmemnY1C2VL73TFMHUmMxu6WpElbY03GZLFrFOL23YZNpjV3XbO2X63XV-KQTMUW-J-JzO0ZcMsMSAXCDQiqCQ3mTcIHlMq2MOp3diLZkG-5TUdCiMSLmBT3xboTv_3mmbSquFOOvswJG9uGchKTgw0x1QYkK0n59963h8rB68synJopW9P4564Gzpkcv6wz2hvx9leaH30i3sFWEiqa-W4HHBNnOBA-cev1dvQfaJRld8A0BfGS8EGXwgdiZh7vHfY_wi1WzbHYPop7rpnGKE3gVGSFmiCl2oqaIyBLk8BXw2Y37sI-EPROAMg";
-// Handle Customer Role: Send PUT request
 const handleCustomerSelect = async () => {
   try {
+    const response = await api.fetchUserProfile();
+    id.value = response.id;
+    console.log(id.value);
     const payload = {
+      id: id.value,
       email: email.value,
       name: name.value,
       gender: gender.value,
-      profile: profile.value,
+      profile: profile.value || null,
       phone: phone.value,
       location: location.value,
       isPhotographer: false,
@@ -45,21 +48,13 @@ const handleCustomerSelect = async () => {
       showcasePackages: null,
       packages: null,
     };
-    console.log(payload);
-    await axios.put("http://localhost:8080/user/profile", payload, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${varToken}`,
-      },
-    });
-
-    // Redirect after updating
+    const response2 = await api.updateUserInformation(payload);
+    console.log(response2);
   } catch (error) {
     console.error("Error updating profile:", error);
   }
 };
 
-// Handle Photographer Role: Navigate to createPhotographer page
 const handlePhotographerSelect = () => {
   router.push({
     path: "/user/register/createPhotographer",

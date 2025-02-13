@@ -51,7 +51,7 @@ const handleSubmit = async () => {
 
     router.push("/user/register/selectRole");
   } catch (error: any) {
-    console.log('error', error.message)
+    console.log("error", error.message);
     errorMessage.value = error.message;
   }
 
