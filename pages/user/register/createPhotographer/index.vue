@@ -70,7 +70,7 @@ const updateUserProfile = async () => {
       showcasePackages: null,
       packages: null,
     };
-    const response2 = await api.updateUserProfile(payload);
+    const response2 = await api.updateUserInformation(payload);
     console.log(response2);
   } catch (error) {
     console.error("Error updating profile:", error);
