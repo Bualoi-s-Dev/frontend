@@ -56,12 +56,6 @@ const handleSubmit = async () => {
     console.log('error', error.message)
     errorMessage.value = error.message;
   }
-
-  // Navigate to the next page with email as a query parameter
-  router.push({
-    path: "/user/register/createUser",
-    query: { email: email.value },
-  });
 };
 </script>
 
