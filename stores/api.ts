@@ -3,16 +3,16 @@ import axios from 'axios';
 import type { Package, PackageStrictRequest, User } from '~/types/api';
 import { useAuthStore } from './auth';
 
-export const useApiStore = defineStore('api', () => {
-    const auth = useAuthStore();
-    const config = useRuntimeConfig();
+export const useApiStore = defineStore("api", () => {
+  const auth = useAuthStore();
+  const config = useRuntimeConfig();
 
-    const fetchUserProfile = async (): Promise<User> => {
-        const response = await axios.get(`${config.public.apiUrl}/user/profile`, {
-            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
-        });
-        return response.data as User;
-    };
+  const fetchUserProfile = async (): Promise<User> => {
+    const response = await axios.get(`${config.public.apiUrl}/user/profile`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as User;
+  };
 
     const createPackage = async (pkg: PackageStrictRequest) => {
         // TODO: remove trailing slash when backend fix the endpoint.
