@@ -3,11 +3,10 @@ import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
 
 const auth = useAuthStore();
-const router = useRouter();
-
-const errorMessage = ref("");
-
 const menuOpen = ref(false);
+const router = useRouter();
+const errorMessage = ref('');
+
 const toggleMenu = () => {
     menuOpen.value = !menuOpen.value;
 };
@@ -24,29 +23,62 @@ const handleLogout = async () => {
       errorMessage.value = error.message;
     }
 }
+
 </script>
 
 <template>
-    <nav class="mx-20">
-        <div class="container m-auto px-15 flex justify-between items-center">
+    <nav class="fixed w-full p-6 bg-transparent">
+        <div class="flex items-center justify-end mr-5">
+
+            <!-- Mobile toggle -->
             <button class="md:hidden" @click="toggleMenu">
                 <Icon icon="line-md:align-right" style="width: 30; height: inherit;" />
             </button>
-        </div>
 
-        <div :class="[
-            menuOpen ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0',
-            'md:hidden mt-4 bg-gray-100 p-4 rounded-lg absolute transition-all duration-300 ease-in-out'
-        ]"
-        >
-            <ul class="space-y-4">
-                <li>
-                    <NuxtLink to="/" class="block" @click="toggleMenu">Home</NuxtLink>
-                </li>
-                <li>
-                    <NuxtLink to="/user/login" class="block text-red-500" @click="handleLogout">Logout</NuxtLink>
-                </li>
-            </ul>
+            <!-- For Desktop -->
+            <!-- <div class="hidden md:block">
+                <ul class="flex space-x-8 text-sm font-sans">
+                    <li><a href="#" class="active border-b-2 border-black-500 pb-1">Home</a></li>
+                    <li><a href="#" class="">Services</a></li>
+                    <li><a href="#" class="">Features</a></li>
+                    <li><a href="#" class="">FAQ</a></li>
+                    <li><a href="#" class="">Contact</a></li>
+                    <li>
+                        <NuxtLink class="w-full text-center font-semibold cta inline-block bg-red-500 hover:bg-red-600 px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
+                    </li>
+                </ul>
+            </div> -->
+
+            <!-- Dark Background Transition -->
+            <!-- <transition enter-class="opacity-0" enter-active-class="ease-out transition-medium"
+                enter-to-class="opacity-100" leave-class="opacity-100" leave-active-class="ease-out transition-medium"
+                leave-to-class="opacity-0">
+                <div @keydown.esc="menuOpen = false" v-show="menuOpen" class="z-10 fixed inset-0 transition-opacity">
+                    <div @click="menuOpen = false" class="absolute inset-0 bg-black opacity-50" tabindex="0"></div>
+                </div>
+            </transition> -->
+
+            <!-- Drawer Menu -->
+            <aside
+                class="p-5 transform drop-shadow-xl top-0 left-0 w-64 bg-white fixed h-full overflow-auto ease-in-out transition-all duration-300 z-30"
+                :class="menuOpen ? 'translate-x-0' : '-translate-x-full'">
+
+                <div class="flex flex-col justify-center items-center">
+                    <img src="/assets/userpf.jpg" alt="Profile Image" class="w-30 h-30 rounded-full object-cover">
+                    <p class="pt-5">Kang</p>
+                </div>
+
+                <ul class="divide-y-1 mx-3">
+                    <li><a href="#" @click="toggleMenu" class="my-4 inline-block text-red-300">Home</a></li>
+                    <li><a href="#" @click="toggleMenu" class="my-4 inline-block">Appointments</a></li>
+                    <li><a href="#" @click="toggleMenu" class="my-4 inline-block">Create new package</a></li>
+                    <li><a href="#" @click="toggleMenu" class="my-4 inline-block">Profile</a></li>
+                    <li>
+                        <NuxtLink class="my-8 w-full text-center font-semibold cta inline-block bg-red-500 hover:bg-red-600 px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
+                    </li>
+                </ul>
+            </aside>
+
         </div>
     </nav>
 </template>
