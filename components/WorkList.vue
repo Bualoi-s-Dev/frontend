@@ -1,18 +1,16 @@
 <script setup lang="ts">
+  const props = defineProps<{
+    data: {
+        id?: string;
+        photo_urls: string[];
+        title: string;
+        owner?: string;
+        type: string;
+        editable?: boolean;
+        addable?: boolean;
+      }[];
+  }>();
 
-const props = defineProps({
-  data: {
-    type: Array as () => Array<{
-      photo_urls: string[];
-      title: string;
-      owner?: string;
-      type: string;
-      editable?: boolean;
-      addable?: boolean;
-    }>,
-    required: true,
-  },
-});
 </script>
 
 <template>
@@ -23,7 +21,8 @@ const props = defineProps({
         :title="work.title"
         :owner="work.owner"
         :type="work.type"
-        :editable="work.editable"
+        :id="work.id"
+        editable
         :addable="work.addable"
       />
       <!-- <pre>{{ console.log(work.photo_urls) }}</pre>  -->

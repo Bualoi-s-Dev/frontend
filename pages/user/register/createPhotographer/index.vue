@@ -24,6 +24,8 @@ const instagram = ref("");
 const bankName = ref("");
 const bankAccount = ref("");
 
+const router = useRouter();
+
 const errors = ref<Record<string, string>>({});
 const api = useApiStore();
 
@@ -47,33 +49,62 @@ const validate = () => {
   return Object.keys(errors.value).length === 0;
 };
 
+const updating = ref(false);
+
+const config = useRuntimeConfig();
+
+const base64Image = ref("");
+
+async function fetchImageAsBase64(url: string) {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+
+        reader.onloadend = () => {
+            base64Image.value = reader.result as string;
+        };
+    } catch (error) {
+        console.error('Error fetching image:', error);
+    }
+};
+
+const imageUrl = ref('')
+const urlToPrint = ref('')
 const updateUserProfile = async () => {
   if (!validate()) return;
 
+  updating.value = true;
   try {
+    // TODO: use partial field update when backend is ready.
     const response = await api.fetchUserProfile();
+    console.log("user profile", response)
     id.value = response.id;
+
+    // TODO: do something better than convert to base64 every time
+    await fetchImageAsBase64(response.profile);
+    imageUrl.value = base64Image.value
+    urlToPrint.value = response.profile
     const payload = {
-      id: id.value,
-      email: email.value,
-      name: name.value,
-      gender: gender.value,
-      profile: profile.value || null,
-      phone: phone.value,
-      location: location.value,
+      ...response,
+      profile: urlToPrint.value,
       isPhotographer: true,
       bankName: bankName.value,
       bankAccount: bankAccount.value,
       lineID: lineID.value,
       facebook: facebook.value,
       instagram: instagram.value,
-      showcasePackages: null,
-      packages: null,
     };
+    console.log('payload', payload);
     const response2 = await api.updateUserInformation(payload);
-    console.log(response2);
-  } catch (error) {
+    router.push("/");
+  } catch (error: any) {
     console.error("Error updating profile:", error);
+    useToastify(error.message, { type: "error" });
+  } finally {
+    updating.value = false;
   }
 };
 </script>
@@ -95,12 +126,9 @@ const updateUserProfile = async () => {
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-1">
           <label>Line ID<span class="text-primary">*</span></label>
-          <input
-            v-model="lineID"
-            type="text"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.lineID }"
-          />
+          <input :disabled="updating" v-model="lineID" type="text"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.lineID }" />
           <p v-if="errors.lineID" class="text-red-500 text-xs">
             {{ errors.lineID }}
           </p>
@@ -108,12 +136,9 @@ const updateUserProfile = async () => {
 
         <div class="flex flex-col gap-1">
           <label>Facebook<span class="text-primary">*</span></label>
-          <input
-            v-model="facebook"
-            type="text"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.facebook }"
-          />
+          <input :disabled="updating" v-model="facebook" type="text"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.facebook }" />
           <p v-if="errors.facebook" class="text-red-500 text-xs">
             {{ errors.facebook }}
           </p>
@@ -121,12 +146,9 @@ const updateUserProfile = async () => {
 
         <div class="flex flex-col gap-1">
           <label>Instagram<span class="text-primary">*</span></label>
-          <input
-            v-model="instagram"
-            type="text"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.instagram }"
-          />
+          <input :disabled="updating" v-model="instagram" type="text"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.instagram }" />
           <p v-if="errors.instagram" class="text-red-500 text-xs">
             {{ errors.instagram }}
           </p>
@@ -134,11 +156,9 @@ const updateUserProfile = async () => {
 
         <div class="flex flex-col gap-1">
           <label>Bank Name<span class="text-primary">*</span></label>
-          <select
-            v-model="bankName"
-            class="border w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.bankName }"
-          >
+          <select :disabled="updating" v-model="bankName"
+            class="border disabled:opacity-50 w-full rounded-md py-1.5 px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.bankName }">
             <option disabled value="">Select Bank</option>
             <option v-for="(label, key) in BankName" :key="key" :value="label">
               {{ formatBankName(label) }}
@@ -151,23 +171,17 @@ const updateUserProfile = async () => {
 
         <div class="flex flex-col gap-1">
           <label>Bank Account<span class="text-primary">*</span></label>
-          <input
-            v-model="bankAccount"
-            type="text"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.bankAccount }"
-          />
+          <input :disabled="updating" v-model="bankAccount" type="text"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.bankAccount }" />
           <p v-if="errors.bankAccount" class="text-red-500 text-xs">
             {{ errors.bankAccount }}
           </p>
         </div>
 
         <!-- Submit Button -->
-        <Button
-          class="flex items-center justify-center py-[12px]"
-          textOptions="text-white text-[14px] font-poppins tracking-wider"
-          @click="updateUserProfile"
-        >
+        <Button :disabled="updating" class="flex disabled:opacity-50 items-center justify-center py-[12px]"
+          textOptions="text-white text-[14px] font-poppins tracking-wider" @click="updateUserProfile">
           Submit
         </Button>
       </div>
