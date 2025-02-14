@@ -38,3 +38,19 @@ export function deepEqual(x: any, y: any): boolean {
         ok(x).every(key => deepEqual(x[key], y[key]))
     ) : (x === y);
   }
+
+  export async function fetchImageAsBase64  (url: string) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      
+      reader.onloadend = () => {
+        base64Image.value = reader.result as string;
+      };
+    } catch (error) {
+      console.error('Error fetching image:', error);
+    }
+  };

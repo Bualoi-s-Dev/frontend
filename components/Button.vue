@@ -4,6 +4,7 @@ import { Icon } from '@iconify/vue';
 
 const props = withDefaults(
   defineProps<{
+    disabled?: boolean;
     leftIcon?: string;
     rightIcon?: string;
     middleIcon?: string;
@@ -42,7 +43,7 @@ const slots = useSlots();
 </script>
 
 <template>
-  <button :class="buttonClasses" type="button">
+  <button :disabled="disabled" :class="buttonClasses" type="button">
     <!-- Left Icon -->
     <slot name="leftIcon">
       <Icon v-if="!slots.leftIcon && isIconifyName(props.leftIcon)"

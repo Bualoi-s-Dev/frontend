@@ -76,7 +76,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-gray-100 flex flex-col items-center w-full rounded-2xl shadow-md">
+  <div class="bg-gray-100 relative flex flex-col items-center w-full rounded-2xl shadow-md">
     <div>
       <div v-if="!toAdd" class="border border-gray-300 rounded-lg mt-3 w-77 aspect-[334/200] overflow-hidden shadow-md">
         <div ref="carousel" class="flex transition-transform duration-300 ease-in-out w-full h-full"
@@ -121,5 +121,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <button v-if="toAdd" @click="router.push(`/package/create`)" class="absolute w-full h-full top-0 left-0"></button>
   </div>
 </template>

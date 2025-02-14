@@ -29,14 +29,11 @@ const isFormValid = computed(
 );
 
 const onLoginSuccess = async () => {
-
-  console.log("on success");
   try {
     await user.updateProfile();
   } catch (error: any) {
     console.log(error.message)
   }
-  console.log("after update profile");
   await router.push("/");
 }
 
@@ -52,7 +49,6 @@ const handleGoogleLogin = async () => {
 const handleFacebookLogin = async () => {
   try {
     await auth.handleFacebookLogin();
-    console.log('calling on login success')
     onLoginSuccess();
   } catch (error: any) {
     errorMessage.value = error.message;
@@ -62,10 +58,7 @@ const handleFacebookLogin = async () => {
 // Handle form submission
 const handleSubmit = async () => {
   try {
-    console.log('handle submit')
     await auth.handleLogin(email.value, password.value);
-
-    console.log('after handle submit')
     onLoginSuccess();
   } catch (error: any) {
     console.log("error", error.message)
