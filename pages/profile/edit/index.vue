@@ -6,9 +6,10 @@ const allData = ref<any>(null)
 const config = useRuntimeConfig();
 const user = ref({ name: '', gender:'', email: '', location: '' })
 const responesMessage = ref("");
-const imageUrl = ref("");
+const imageUrl = ref<any>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const packages = ref<any>(null)
+const urlToPrint = ref("");
 
 const onFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -19,20 +20,40 @@ const onFileChange = (event: Event) => {
     reader.readAsDataURL(file);
     reader.onload = () => {
       imageUrl.value = reader.result as string;
+      urlToPrint.value = imageUrl.value
       console.log(imageUrl.value)
     };
   }
 };
 
 const errorMessage = ref("")
-
+const base64Image = ref("")
 const api = useApiStore();
+
+const fetchImageAsBase64 = async (url: string) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    
+    reader.onloadend = () => {
+      base64Image.value = reader.result as string;
+    };
+  } catch (error) {
+    console.error('Error fetching image:', error);
+  }
+};
 
 const fetchUserProfile = async () => {
   try {
     const response = await api.fetchUserProfile();
     user.value.name = response.name
-    imageUrl.value = config.public.s3URL + response.profile
+    // imageUrl.value = response.profile
+    fetchImageAsBase64(response.profile)
+    imageUrl.value = base64Image.value
+    urlToPrint.value = config.public.s3URL + response.profile
     user.value.gender = response.gender
     user.value.email = response.email
     user.value.location = response.location
@@ -120,7 +141,7 @@ const handleChooseImage = () => fileInput.value?.click();
                     accept="image/*"
                     style="display: none"
                 />
-                <ProfileImage @click="handleChooseImage" :src="imageUrl" :can-edit="true"/>
+                <ProfileImage @click="handleChooseImage" :src="urlToPrint" :can-edit="true"/>
             </div>
             <div>
   </div>
