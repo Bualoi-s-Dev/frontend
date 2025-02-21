@@ -40,6 +40,10 @@ const handleLogout = async () => {
     }
 }
 
+onMounted(async () => {
+  await fetchUserProfile();
+})
+
 </script>
 
 <template>
