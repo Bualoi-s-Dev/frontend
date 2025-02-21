@@ -23,8 +23,11 @@ const fetchUserProfile = async () => {
   }
 }
 
-const toggleMenu = () => {
+console.log(fetchUserProfile());
+
+const toggleMenu = async () => {
     menuOpen.value = !menuOpen.value;
+    if(menuOpen.value) await fetchUserProfile();
 };
 
 const onLogoutSuccess = () => {
@@ -39,10 +42,6 @@ const handleLogout = async () => {
       errorMessage.value = error.message;
     }
 }
-
-onMounted(async () => {
-  await fetchUserProfile();
-})
 
 </script>
 
@@ -86,6 +85,8 @@ onMounted(async () => {
                 <div class="flex flex-col justify-center items-center">
                     <img :src=user.profile alt="Profile Image" class="w-30 h-30 rounded-full object-cover">
                     <p class="pt-5">{{ user.name }}</p>
+                    <!-- <img src="/assets/userpf.jpg" alt="Profile Image" class="w-30 h-30 rounded-full object-cover">
+                    <p class="pt-5">Kang</p> -->
                 </div>
 
                 <ul class="divide-y-1 mx-3">
@@ -94,7 +95,7 @@ onMounted(async () => {
                     <li><a href="#" @click="toggleMenu" class="my-4 inline-block">Create new package</a></li>
                     <li><a href="/profile" @click="toggleMenu" class="my-4 inline-block">Profile</a></li>
                     <li>
-                        <NuxtLink class="my-8 w-full text-center font-semibold cta inline-block bg-red-500 hover:bg-red-600 px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
+                        <NuxtLink class="my-8 w-full text-center cta inline-block bg-black hover:bg-black px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
                     </li>
                 </ul>
             </aside>
