@@ -34,6 +34,16 @@ const onLogoutSuccess = () => {
   router.push("/user/login");
 }
 
+const onHome = async () => {
+    await toggleMenu();
+    router.push("/");
+}
+
+const onProfile = async () => {
+    await toggleMenu();
+    router.push("/profile");
+}
+
 const handleLogout = async () => {
     try {
       await auth.handleLogout();
@@ -46,6 +56,7 @@ const handleLogout = async () => {
 </script>
 
 <template>
+    <div v-if="menuOpen" class="bg-black absolute top-0 left-0 w-screen h-screen" :class="menuOpen ? 'opacity-50' : 'opacity-0'"></div>
     <nav class="fixed w-full p-6 bg-transparent">
         <div class="flex items-center justify-end mr-5">
 
@@ -90,10 +101,10 @@ const handleLogout = async () => {
                 </div>
 
                 <ul class="divide-y-1 mx-3">
-                    <li><a href="/" @click="toggleMenu" class="my-4 inline-block text-red-300">Home</a></li>
-                    <li><a href="#" @click="toggleMenu" class="my-4 inline-block">Appointments</a></li>
-                    <li><a href="#" @click="toggleMenu" class="my-4 inline-block">Create new package</a></li>
-                    <li><a href="/profile" @click="toggleMenu" class="my-4 inline-block">Profile</a></li>
+                    <li><a @click="onHome" class="my-4 inline-block text-red-300">Home</a></li>
+                    <li><a @click="toggleMenu" class="my-4 inline-block">Appointments</a></li>
+                    <li><a @click="toggleMenu" class="my-4 inline-block">Create new package</a></li>
+                    <li><a @click="onProfile" class="my-4 inline-block">Profile</a></li>
                     <li>
                         <NuxtLink class="my-8 w-full text-center cta inline-block bg-black hover:bg-black px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
                     </li>
