@@ -39,7 +39,7 @@ export function deepEqual(x: any, y: any): boolean {
   ) : (x === y);
 }
 
-export async function fetchImageAsBase64(url: string) {
+export async function fetchImageAsBase64(url: string): Promise<string> {
   return new Promise(async (resolve) => {
     const response = await fetch(url);
     const blob = await response.blob();
@@ -48,7 +48,7 @@ export async function fetchImageAsBase64(url: string) {
     reader.readAsDataURL(blob);
 
     reader.onloadend = () => {
-      resolve(reader.result)
+      resolve(reader.result as string)
     };
   })
 };
