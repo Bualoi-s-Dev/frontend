@@ -67,7 +67,7 @@ const handleSubmit = async () => {
       <h1 class="text-[18px] text-titleActive tracking-wide">Create User</h1>
 
       <div class="flex flex-col gap-4">
-        <FileChooser v-model="imageUrl" :disabled="updating"/>
+        <FileChooser v-model="imageUrl" :disabled="updating" class=" h-[142px]" label="Profile Picture"/>
         <p v-if="errors.imageUrl" class="text-red-500 text-xs">
           {{ errors.imageUrl }}
         </p>
