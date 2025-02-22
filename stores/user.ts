@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia';
-import type { User } from '~/types/api';
+import type { UserResponse } from '~/types/api';
 
+// Not using the user store for now. Considering to using it in the future or remove it.
 export const useUserStore = defineStore('user', () => {
     const api = useApiStore();
 
-    const profile = ref<User | null>(null);
+    const profile = ref<UserResponse | null>(null);
 
     /**
      * Updates the user's profile by fetching the latest data from the API.
