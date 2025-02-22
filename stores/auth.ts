@@ -17,7 +17,6 @@ export const useAuthStore = defineStore('auth', () => {
 
     const { $auth, $facebookProvider, $googleProvider } = useNuxtApp();
 
-    // onAuthStateChanged($auth, (u) => user.value = u);
     const handleRegister = async (email: string, password: string,): Promise<void> => {
         await setPersistence($auth, browserLocalPersistence);
         const userCredential = await createUserWithEmailAndPassword($auth, email, password);
@@ -75,24 +74,19 @@ export const useAuthStore = defineStore('auth', () => {
         return token;
     };
 
-    // const fetchUserProfile = async (): Promise<void> => {
-    //     if (!jwtToken.value) {
-    //         error.value = 'You need to log in first.';
-    //         return;
-    //     }
-    //     try {
-    //         const response = await axios.get(config.public.apiUrl, {
-    //             headers: { Authorization: `Bearer ${jwtToken.value}` }
-    //         });
-    //         alert(`User Profile: ${JSON.stringify(response.data)}`);
-    //     } catch {
-    //         error.value = 'Failed to fetch profile.';
-    //     }
-    // };
+    /**
+     * Checks if the user is currently signed in.
+     * 
+     * @returns {Promise<boolean>} A promise that resolves to true if the user is signed in, false otherwise.
+     */
+    const isSignedIn = async () => {
+        try { await fetchToken(); return true; } catch (e) { return false; }
+    }
 
     return {
         user,
         fetchToken,
+        isSignedIn,
         handleRegister,
         handleLogin,
         handleGoogleLogin,
