@@ -5,7 +5,6 @@ import { Icon } from "@iconify/vue";
 const allData = ref<any>(null)
 const config = useRuntimeConfig();
 const user = ref({ name: '', gender: '', email: '', location: '' })
-const responesMessage = ref("");
 const imageUrl = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 const packages = ref<any>(null)
@@ -62,8 +61,12 @@ const fetchUserProfile = async () => {
         user.value.gender = response.gender
         user.value.email = response.email
         user.value.location = response.location
+
+        packages.value = response.photographerPackages;
+
         allData.value = response;  // Storing response in data
     } catch (error: any) {
+        console.log('error', error.message)
         useToastify(error.message, { type: 'error' });
         errorMessage.value = error.message;
     } finally {
@@ -71,17 +74,6 @@ const fetchUserProfile = async () => {
     }
 }
 
-const fetchUserPackage = async () => {
-    try {
-        const response = await api.fetchUserPackage();
-        console.log('package', response)
-        // TODO: after backend query only user's data, we should not have to filter anymore
-        packages.value = response.filter(p => p.ownerId === user.value.id);
-    } catch (error: any) {
-        errorMessage.value = error.message;
-        console.log(errorMessage)
-    }
-}
 
 
 const updating = ref(false);
@@ -114,7 +106,6 @@ const updateUserInformation = async () => {
 
 onMounted(() => {
     fetchUserProfile();
-    fetchUserPackage();
 })
 
 const isModalOpen = ref(false)
