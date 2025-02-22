@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import type { Package, PackageStrictRequest, User, UserRequest, UserResponse } from "~/types/api";
+import type { Package, PackageRequest, PackageStrictRequest, User, UserRequest, UserResponse } from "~/types/api";
 import { useAuthStore } from "./auth";
 
 export const useApiStore = defineStore("api", () => {
@@ -20,7 +20,7 @@ export const useApiStore = defineStore("api", () => {
     });
   };
 
-  const updatePackage = async (id: string, pkg: PackageStrictRequest) => {
+  const updatePackage = async (id: string, pkg: PackageRequest) => {
     const response = await axios.patch(
       `${config.public.apiUrl}/package/${id}`,
       pkg,
