@@ -31,7 +31,6 @@ const handleCustomerSelect = async () => {
 };
 
 const handlePhotographerSelect = async () => {
-  // TODO: use partial field update when backend is ready.
   try {
     const payload = {
       role: UserRole.Photographer,
