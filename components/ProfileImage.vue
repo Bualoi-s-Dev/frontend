@@ -29,7 +29,7 @@ const props = defineProps<{
   src?: string;
   altText?: string;
   canEdit?: boolean;
-  disabled: boolean;
+  disabled?: boolean;
 }>();
 
 const defaultSrc = "/default-avatar.png"; // Provide a fallback image
