@@ -61,7 +61,7 @@ const slots = useSlots();
     </slot>
 
     <!-- Button Text -->
-    <slot />
+    <slot></slot>
 
     <!-- Right Icon -->
     <slot name="rightIcon">
