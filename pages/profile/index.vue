@@ -2,12 +2,13 @@
 import Button from "@/components/Button.vue"
 import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue/dist/iconify.js";
+import type { Package } from "~/types/api";
 // TODO: can refactor from fetching user profile from backend to using user store instead.
 // but we will have to call updateProfile everywhere that modify the profile first.
 const router = useRouter();
 const user = ref({ name: '', description: '', location: '', profile: '', id: '' })
 const data = ref<any>(null)
-const packages = ref<any>(null)
+const packages = ref<Package[] | null>(null)
 const errorMessage = ref("")
 
 const api = useApiStore();
@@ -15,32 +16,21 @@ const api = useApiStore();
 const fetchUserProfile = async () => {
   try {
     const response = await api.fetchUserProfile();
+
     user.value.name = response.name
     user.value.profile = config.public.s3URL + response.profile
     user.value.location = response.location
     user.value.id = response.id;
+
+    packages.value = response.photographerPackages;
   } catch (error: any) {
     errorMessage.value = error.message;
   }
 }
 const config = useRuntimeConfig();
-const fetchUserPackage = async () => {
-  try {
-    const response = await api.fetchUserPackage();
-
-    // TODO: after backend query only user's data, we should not have to filter anymore
-    packages.value = response.filter(p => p.ownerId === user.value.id);
-  } catch (error: any) {
-    errorMessage.value = error.message;
-    console.log(errorMessage)
-  }
-}
 
 onMounted(async () => {
-  // has to be sequential because wait for profile to have user id before filtering package
-  // after refactoring this should only contain package fetching.
   await fetchUserProfile();
-  await fetchUserPackage();
 })
 
 
@@ -63,7 +53,7 @@ onMounted(async () => {
         <Button @click="router.push('/package/create')">Add Package</Button>
       </div>
 
-      <WorkList :data="packages" />
+      <WorkList v-if="packages" :data="packages" />
       <div>
         <div class="flex items-center ml-5 mb-3">
           <Button middle-icon="material-symbols:mail-outline-sharp" icon-color="black" height="h-10"
