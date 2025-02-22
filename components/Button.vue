@@ -31,7 +31,7 @@ const props = withDefaults(
 
 const buttonClasses = computed(() =>
   `inline-flex items-center justify-center transition duration-200 
-  hover:brightness-90 ${props.bgColor} ${props.width} ${props.height} 
+  hover:brightness-90 disabled:opacity-50 ${props.bgColor} ${props.width} ${props.height} 
   ${props.textOptions} ${props.buttonOptions}`
 );
 

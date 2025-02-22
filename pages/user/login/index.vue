@@ -28,7 +28,10 @@ const isFormValid = computed(
     isEmailValid.value && isPasswordValid.value
 );
 
+const processing = ref(false);
+
 const onLoginSuccess = async () => {
+  processing.value = true;
   try {
     await user.updateProfile();
   } catch (error: any) {
@@ -38,31 +41,40 @@ const onLoginSuccess = async () => {
 }
 
 const handleGoogleLogin = async () => {
+  processing.value = true;
   try {
     await auth.handleGoogleLogin();
     onLoginSuccess();
   } catch (error: any) {
     errorMessage.value = error.message;
+  } finally {
+    processing.value = false;
   }
 }
 
 const handleFacebookLogin = async () => {
+  processing.value = true;
   try {
     await auth.handleFacebookLogin();
     onLoginSuccess();
   } catch (error: any) {
     errorMessage.value = error.message;
+  } finally {
+    processing.value = false;
   }
 }
 
 // Handle form submission
 const handleSubmit = async () => {
+  processing.value = true;
   try {
     await auth.handleLogin(email.value, password.value);
     onLoginSuccess();
   } catch (error: any) {
     console.log("error", error.message)
     errorMessage.value = error.message;
+  } finally {
+    processing.value = false;
   }
 }
 </script>
@@ -77,8 +89,8 @@ const handleSubmit = async () => {
       <div class="flex flex-col gap-[16px]">
         <div>
           <label>Email</label>
-          <input v-model="email" type="email"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
+          <input :disabled="processing" v-model="email" type="email"
+            class="border w-full disabled:opacity-50 rounded-md py-[6px] px-2 text-[14px] border-stroke" />
           <p v-if="email && !isEmailValid" class="text-red-500 text-xs">
             Invalid email format
           </p>
@@ -86,30 +98,31 @@ const handleSubmit = async () => {
 
         <div>
           <label>Password</label>
-          <input v-model="password" type="password"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
+          <input :disabled="processing" v-model="password" type="password"
+            class="border w-full disabled:opacity-50 rounded-md py-[6px] px-2 text-[14px] border-stroke" />
           <p v-if="password && !isPasswordValid" class="text-red-500 text-xs">
             Password must be at least 6 characters
           </p>
         </div>
         <div class="">
           <label class="text-label text-[14px]">
-            <span class="cursor-pointer underline" @click="router.push('/user/login/reset/1')">Forgot your
-              password?</span>
+            <button :disabled="processing" class="cursor-pointer  disabled:opacity-50 underline"
+              @click="router.push('/user/login/reset/1')">Forgot your
+              password?</button>
           </label>
         </div>
       </div>
       <div class="flex flex-col gap-[16px]">
         <span class="text-xs text-red-500">{{ errorMessage }}</span>
-        <Button :disabled="!isFormValid" class="flex items-center justify-center py-[12px]"
+        <Button :disabled="!isFormValid || processing" class="flex items-center justify-center py-[12px]"
           textOptions="text-white text-[14px] font-poppins" @click="handleSubmit">Login
         </Button>
-        <Button bgColor="bg-gray-200" class="flex items-center justify-center py-[18px]"
+        <Button :disabled="processing" bgColor="bg-gray-200" class="flex items-center justify-center py-[18px]"
           textOptions="text-black text-[14px] font-poppins" leftIcon="flat-color-icons:google"
           @click="handleGoogleLogin">
           Login with Google
         </Button>
-        <Button class="flex items-center justify-center py-[12px] bg-facebook"
+        <Button :disabled="processing" class="flex items-center justify-center py-[12px] bg-facebook"
           textOptions="text-white text-[14px] font-poppins" leftIcon="logos:facebook" @click="handleFacebookLogin">
           Login With Facebook
         </Button>
@@ -117,7 +130,8 @@ const handleSubmit = async () => {
       <div class="pl-[8px] pt-[20px]">
         <label class="text-label text-[14px]">
           new to Photomatch?
-          <span class="ml-[6px] cursor-pointer underline" @click="router.push('/user/register')">Get Started</span>
+          <button :disabled="processing" class="ml-[6px] disabled:opacity-50 cursor-pointer underline"
+            @click="router.push('/user/register')">Get Started</button>
         </label>
       </div>
     </div>
