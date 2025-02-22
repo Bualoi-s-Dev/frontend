@@ -7,7 +7,7 @@ const props = defineProps<{
   editable?: boolean;
   addable?: boolean;
   toAdd?: boolean;
-  images: string[];
+  images?: string[];
   title?: string;
   owner?: string;
   type?: string;
@@ -48,7 +48,7 @@ const endDrag = () => {
 
   if (diff > threshold && currentIndex.value > 0) {
     prevImage();
-  } else if (diff < -threshold && currentIndex.value < props.images.length - 1) {
+  } else if (diff < -threshold && currentIndex.value < (props.images?.length ?? 0) - 1) {
     nextImage();
   } else {
     offset.value = -currentIndex.value * containerWidth.value;
@@ -64,7 +64,7 @@ const prevImage = () => {
 };
 
 const nextImage = () => {
-  if (currentIndex.value < props.images.length - 1) {
+  if (currentIndex.value < (props.images?.length ?? 0) - 1) {
     currentIndex.value++;
     offset.value = -currentIndex.value * containerWidth.value;
   }
@@ -84,9 +84,7 @@ onMounted(() => {
           @mousemove="onDrag" @touchmove="onDrag" @mouseup="endDrag" @touchend="endDrag" @mouseleave="endDrag">
           <!-- Images -->
           <div v-for="(image, index) in images" :key="index" class="w-full h-full flex-shrink-0">
-            <!-- Append timestamp to make browser not cache image, so that the image updates would change immediately -->
-            <!-- TODO: when backend return new image url every time the image is updated, we can remove the suffix and we can safely cache the images -->
-            <img class="w-full h-full object-cover object-center" :src="`${image}?${Date.now()}`" alt="Carousel Image" />
+            <img class="w-full h-full object-cover object-center" :src="image" alt="Carousel Image" />
           </div>
         </div>
       </div>

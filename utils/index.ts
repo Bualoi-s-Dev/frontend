@@ -1,8 +1,8 @@
 export function toTitleCase(str: string): string {
-    return str.replace(
-        /\w\S*/g,
-        (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
-    );
+  return str.replace(
+    /\w\S*/g,
+    (txt) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+  );
 }
 
 /**
@@ -13,12 +13,12 @@ export function toTitleCase(str: string): string {
  */
 
 export function readFileAsDataURL(file: File | Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = (error) => reject(error);
-    });
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 };
 
 /**
@@ -32,25 +32,23 @@ export function readFileAsDataURL(file: File | Blob): Promise<string> {
  * @see https://stackoverflow.com/a/32922084
  */
 export function deepEqual(x: any, y: any): boolean {
-    const ok = Object.keys, tx = typeof x, ty = typeof y;
-    return x && y && tx === 'object' && tx === ty ? (
-      ok(x).length === ok(y).length &&
-        ok(x).every(key => deepEqual(x[key], y[key]))
-    ) : (x === y);
-  }
+  const ok = Object.keys, tx = typeof x, ty = typeof y;
+  return x && y && tx === 'object' && tx === ty ? (
+    ok(x).length === ok(y).length &&
+    ok(x).every(key => deepEqual(x[key], y[key]))
+  ) : (x === y);
+}
 
-  export async function fetchImageAsBase64  (url: string) {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      
-      reader.onloadend = () => {
-        base64Image.value = reader.result as string;
-      };
-    } catch (error) {
-      console.error('Error fetching image:', error);
-    }
-  };
+export async function fetchImageAsBase64(url: string): Promise<string> {
+  return new Promise(async (resolve) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+
+    reader.onloadend = () => {
+      resolve(reader.result as string)
+    };
+  })
+};

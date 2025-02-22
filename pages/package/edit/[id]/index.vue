@@ -1,29 +1,38 @@
 <script setup lang="ts">
-import type { Package, PackageType } from '~/types/api';
+import type { Package, PackageRequest, PackageStrictRequest, PackageType } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
 
 const api = useApiStore();
 
+const config = useRuntimeConfig();
+
 const oldData = ref<Package | undefined>();
 onMounted(async () => {
     const id = route.params.id as string;
-    oldData.value = await api.fetchPackage(id);
+    const response = await api.fetchPackage(id);
+
+    const imgUrl = config.public.s3URL + response.photoUrls[0];
+    const imgBlob = await fetch(imgUrl).then(res => res.blob());
+    response.photoUrls[0] = await readFileAsDataURL(imgBlob);
+
+    oldData.value = response;
 })
 
 const updating = ref(false);
 
 const submit = async (image: string, name: string, type: string) => {
     if (!oldData.value) throw Error("No old package data");
+
+    updating.value = true;
     try {
-        updating.value = true;
-        await api.updatePackage(oldData.value.id!, {
-            ...oldData.value,
-            photos: [image],
+        const payload: PackageRequest = {
             title: name,
             type: type as PackageType
-        });
+        };
+        if(image !== oldData.value.photoUrls[0]) payload.photos = [image];
+        await api.updatePackage(oldData.value.id!, payload);
         useToastify('Successfully updated package.', { type: 'success', });
 
         router.push(`/profile`);
