@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import Button from "@/components/Button.vue"
 import { Icon } from "@iconify/vue";
+import type { Package, UserRequest } from "~/types/api";
+
+type EditData = { name: string, gender: string, location: string };
 
 const allData = ref<any>(null)
 const config = useRuntimeConfig();
-const user = ref({ name: '', gender: '', email: '', location: '' })
+const user = ref<EditData>({ name: '', gender: '', location: '' })
 const imageUrl = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
-const packages = ref<any>(null)
-const urlToPrint = ref("")
+const packages = ref<Package[] | null>(null)
+const oldImage = ref("")
 const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
     const file = target?.files?.[0];
@@ -18,8 +21,6 @@ const onFileChange = (event: Event) => {
         reader.readAsDataURL(file);
         reader.onload = () => {
             imageUrl.value = reader.result as string;
-            urlToPrint.value = imageUrl.value
-            console.log(imageUrl.value)
         };
     }
 };
@@ -28,38 +29,17 @@ const errorMessage = ref("")
 
 const api = useApiStore();
 
-const base64Image = ref("")
-
-
-async function fetchImageAsBase64(url: string) {
-    try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-
-        reader.onloadend = () => {
-            base64Image.value = reader.result as string;
-        };
-    } catch (error) {
-        console.error('Error fetching image:', error);
-    }
-};
-
 const fetchUserProfile = async () => {
     updating.value = true;
     try {
         const response = await api.fetchUserProfile();
         user.value.name = response.name
+        const base64 = await fetchImageAsBase64(config.public.s3URL + response.profile)
 
-        // TODO: do something better than convert to base64 every time
-        fetchImageAsBase64(response.profile);
-        imageUrl.value = base64Image.value
-        urlToPrint.value = config.public.s3URL + response.profile
+        imageUrl.value = base64;
+        oldImage.value = base64;
 
         user.value.gender = response.gender
-        user.value.email = response.email
         user.value.location = response.location
 
         packages.value = response.photographerPackages;
@@ -74,31 +54,25 @@ const fetchUserProfile = async () => {
     }
 }
 
-
-
 const updating = ref(false);
 
 const updateUserInformation = async () => {
     updating.value = true;
-    const payload = {
-        id: allData.value.id,
-        email: allData.value.email,
+    const payload: UserRequest = {
         name: user.value.name,
         gender: user.value.gender,
-        profile: imageUrl.value,
         phone: allData.value.phone,
         location: user.value.location,
-        isPhotographer: true,
-        showcasePackages: null,
-        packages: null,
     }
+    if (imageUrl.value !== oldImage.value) payload.profile = imageUrl.value
+
     try {
         await api.updateUserInformation(payload);
         useToastify('Successfully updated profile.', { type: 'success' });
     } catch (error: any) {
         useToastify(error.message, { type: 'error' });
         errorMessage.value = error.message;
-        console.log(errorMessage)
+        console.error(errorMessage)
     } finally {
         updating.value = false;
     }
@@ -109,10 +83,10 @@ onMounted(() => {
 })
 
 const isModalOpen = ref(false)
-const currentField = ref('')
+const currentField = ref<keyof EditData | null>(null)
 const editedValue = ref('')
 
-const openEditModal = (field) => {
+const openEditModal = (field: keyof EditData) => {
     currentField.value = field
     editedValue.value = user.value[field]
     isModalOpen.value = true
@@ -123,6 +97,7 @@ const closeEditModal = () => {
 }
 
 const saveChanges = () => {
+    if (currentField.value === null) return
     user.value[currentField.value] = editedValue.value;
     closeEditModal()
 }
@@ -141,7 +116,7 @@ const handleChooseImage = () => fileInput.value?.click();
             </div>
             <div class="flex flex-col items-center">
                 <input type="file" ref="fileInput" @change="onFileChange" accept="image/*" style="display: none" />
-                <ProfileImage :disabled="updating" @click="handleChooseImage" :src="urlToPrint" :can-edit="true" />
+                <ProfileImage :disabled="updating" @click="handleChooseImage" :src="imageUrl" :can-edit="true" />
             </div>
             <div>
             </div>
@@ -154,7 +129,7 @@ const handleChooseImage = () => fileInput.value?.click();
                     </div>
                     <div class="mr-3 text-right text-gray-600">
                         {{ key === 'description' && value.length > 17 ? value.slice(0, 17) + '...' : value }}
-                        <button :disabled="updating" class="disabled:opacity-50" @click="openEditModal(key)">
+                        <button :disabled="updating" class="disabled:opacity-50" @click="openEditModal(key as keyof EditData)">
                             <Icon icon="iconoir:edit" />
                         </button>
                     </div>
@@ -163,7 +138,7 @@ const handleChooseImage = () => fileInput.value?.click();
             </div>
             <h2 class="ml-6 mt-6">Work showcase</h2>
 
-            <WorkList :data="packages" />
+            <WorkList v-if="packages" :data="packages" />
 
             <div class="m-5">
                 <WorkCard :to-add="true" />
@@ -172,7 +147,8 @@ const handleChooseImage = () => fileInput.value?.click();
             <div v-if="isModalOpen" class="fixed inset-0 bg-opacity-50 flex items-center justify-center"
                 @click.self="closeEditModal">
                 <div class="bg-white p-6 rounded-lg shadow-lg w-80">
-                    <h3 class="text-lg font-semibold mb-4">Edit {{ formattedField }}</h3>
+                    <h3 class="text-lg font-semibold mb-4">Edit {{ (currentField?.charAt(0).toUpperCase() ?? "") +
+                        currentField?.slice(1) }}</h3>
 
                     <div v-if="currentField === 'gender'">
                         <label class="block font-semibold mb-2">Select Gender:</label>
