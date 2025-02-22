@@ -84,9 +84,7 @@ onMounted(() => {
           @mousemove="onDrag" @touchmove="onDrag" @mouseup="endDrag" @touchend="endDrag" @mouseleave="endDrag">
           <!-- Images -->
           <div v-for="(image, index) in images" :key="index" class="w-full h-full flex-shrink-0">
-            <!-- Append timestamp to make browser not cache image, so that the image updates would change immediately -->
-            <!-- TODO: when backend return new image url every time the image is updated, we can remove the suffix and we can safely cache the images -->
-            <img class="w-full h-full object-cover object-center" :src="`${image}?${Date.now()}`" alt="Carousel Image" />
+            <img class="w-full h-full object-cover object-center" :src="image" alt="Carousel Image" />
           </div>
         </div>
       </div>

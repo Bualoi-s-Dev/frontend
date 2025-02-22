@@ -24,7 +24,7 @@ watch(() => props.data, async (val, old) => {
 
   loadingData.value = true;
 
-  const imgUrl = config.public.s3URL + val.photo_urls[0];
+  const imgUrl = config.public.s3URL + val.photoUrls[0];
   const imgBlob = await fetch(imgUrl).then(res => res.blob());
   imageUrl.value = await readFileAsDataURL(imgBlob);
 
