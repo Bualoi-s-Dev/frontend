@@ -8,49 +8,49 @@ import {
     getIdToken,
     sendPasswordResetEmail,
     type User,
+    setPersistence,
+    browserLocalPersistence
 } from 'firebase/auth';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<User | null>(null);
-    
-    const { $auth, $facebookProvider, $googleProvider } = useNuxtApp();
-    // const config = useRuntimeConfig();
 
+    const { $auth, $facebookProvider, $googleProvider } = useNuxtApp();
+
+    // onAuthStateChanged($auth, (u) => user.value = u);
     const handleRegister = async (email: string, password: string,): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await createUserWithEmailAndPassword($auth, email, password);
-        user.value = userCredential.user;
     };
 
     const handleLogin = async (email: string, password: string): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await signInWithEmailAndPassword($auth, email, password);
-        user.value = userCredential.user;
-        console.log(await fetchToken())
     };
 
     const handleGoogleLogin = async (): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await signInWithPopup($auth, $googleProvider);
-        user.value = userCredential.user;
     };
 
     const handleFacebookLogin = async (): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await signInWithPopup($auth, $facebookProvider);
-        user.value = userCredential.user;
     };
+
 
     const actionCodeSettings = {
-        url: 'http://localhost:3000/user/login/reset/success', // Replace with your app's URL
+        url: `${window.location.origin}/user/login/reset/success`,
         handleCodeInApp: false, // Ensures the action is handled in your app
     };
-      
 
     const handleForgotPassword = async (email: string): Promise<void> => {
-        if(!email) return;
+        if (!email) return;
         await sendPasswordResetEmail($auth, email, actionCodeSettings);
     };
 
     const handleLogout = async (): Promise<void> => {
         await signOut($auth);
-        user.value = null;
     };
 
     /**
@@ -62,7 +62,15 @@ export const useAuthStore = defineStore('auth', () => {
      * @throws Will throw an error if no user is currently logged in.
      */
     const fetchToken = async (): Promise<string> => {
-        if (!user.value) throw Error("No user logged in.");
+        if (!user.value) {
+            await $auth.authStateReady();
+            if ($auth.currentUser) {
+                user.value = $auth.currentUser;
+            } else {
+                console.error('No user logged in.');
+                throw new Error('No user logged in.');
+            }
+        }
         const token = await getIdToken(user.value);
         return token;
     };
