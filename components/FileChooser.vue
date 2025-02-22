@@ -5,6 +5,7 @@ const props = defineProps<{
   accept?: string;
   class?: string;
   disabled?: boolean;
+  label?: string;
 }>();
 
 const clazz = computed(() => props.class ?? '');
@@ -12,18 +13,14 @@ const clazz = computed(() => props.class ?? '');
 const fileInput = useTemplateRef('fileInput');
 
 /**
- * Base64
+ * The image that is updated by this component will be base64 string.
  */
 const image = defineModel<string>();
 
-const onFileChange = () => {
+const onFileChange = async () => {
   const file = fileInput.value?.files?.[0];
   if (file && file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      image.value = reader.result as string;
-    };
+    image.value = await readFileAsDataURL(file);
   }
 };
 
@@ -31,13 +28,14 @@ const handleChooseImage = () => fileInput.value?.click();
 </script>
 
 <template>
-  <button @click="handleChooseImage" :disabled="disabled" :style="{ backgroundImage: `url(${image})` }"
-    :class="clazz"
-    class="flex disabled:opacity-50 border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center">
-    <template v-if="!image">
-      <img class="w-[41px]" :src="imageIcon" alt="image" />
-      <h1 class="text-[10px] text-label">Profile Picture</h1>
-    </template>
+  <button @click="handleChooseImage" :disabled="disabled" :style="{ backgroundImage: `url(${image})` }" :class="clazz"
+    class="flex disabled:opacity-50 border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full font-light bg-cover bg-center">
+    <slot>
+      <template v-if="!image">
+        <img class="w-[41px]" :src="imageIcon" alt="image" />
+        <h1 class="text-[10px] text-label">{{label}}</h1>
+      </template>
+    </slot>
   </button>
 
   <input type="file" ref="fileInput" @change="onFileChange" :accept="accept ?? 'image/*'" class="hidden" />

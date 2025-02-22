@@ -12,16 +12,11 @@ const imageUrl = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 const packages = ref<Package[] | null>(null)
 const oldImage = ref("")
-const onFileChange = (event: Event) => {
+const onFileChange = async (event: Event) => {
     const target = event.target as HTMLInputElement;
     const file = target?.files?.[0];
     if (file && file.type.startsWith("image/")) {
-        console.log(target.value)
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            imageUrl.value = reader.result as string;
-        };
+        imageUrl.value = await readFileAsDataURL(file);
     }
 };
 
@@ -46,7 +41,7 @@ const fetchUserProfile = async () => {
 
         allData.value = response;  // Storing response in data
     } catch (error: any) {
-        console.log('error', error.message)
+        console.error(error.message)
         useToastify(error.message, { type: 'error' });
         errorMessage.value = error.message;
     } finally {
@@ -170,7 +165,6 @@ const handleChooseImage = () => fileInput.value?.click();
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </template>
