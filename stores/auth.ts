@@ -37,7 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
         user.value = userCredential.user;
     };
 
-    const actionCodeSettings = {
+    const actionCodeSettings = { // TODO: use env varieble instead
         url: 'http://localhost:3000/user/login/reset/success', // Replace with your app's URL
         handleCodeInApp: false, // Ensures the action is handled in your app
     };
