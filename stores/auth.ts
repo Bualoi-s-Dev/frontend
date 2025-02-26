@@ -37,8 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
         const userCredential = await signInWithPopup($auth, $facebookProvider);
     };
 
-
-    const actionCodeSettings = {
+    const actionCodeSettings = { // TODO: use env varieble instead
         url: `${window.location.origin}/user/login/reset/success`,
         handleCodeInApp: false, // Ensures the action is handled in your app
     };
