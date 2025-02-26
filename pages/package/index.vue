@@ -42,6 +42,17 @@ import { Icon } from "@iconify/vue";
         :activeDays="['Mon', 'Wed', 'Fri']"
         :isOwner="true"
       />
+      <SubpackageCard
+        title="Premium Package"
+        description="A great package with full features."
+        :price="1999"
+        timeStart="09:00"
+        timeEnd="15:00"
+        dateStart="2025-03-01"
+        dateEnd="2025-03-31"
+        :activeDays="['Mon', 'Wed', 'Fri']"
+        :isOwner="true"
+      />
     </div>
   </div>
 </template>
