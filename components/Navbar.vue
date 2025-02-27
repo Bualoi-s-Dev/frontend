@@ -39,6 +39,11 @@ const onHome = async () => {
     router.push("/");
 }
 
+const onAppointment = async () => {
+    await toggleMenu();
+    router.push("/appointment/list");
+}
+
 const onProfile = async () => {
     await toggleMenu();
     router.push("/profile");
@@ -102,7 +107,7 @@ const handleLogout = async () => {
 
                 <ul class="divide-y-1 mx-3">
                     <li><a @click="onHome" class="my-4 inline-block text-red-300">Home</a></li>
-                    <li><a @click="toggleMenu" class="my-4 inline-block">Appointments</a></li>
+                    <li><a @click="onAppointment" class="my-4 inline-block">Appointments</a></li>
                     <li><a @click="toggleMenu" class="my-4 inline-block">Create new package</a></li>
                     <li><a @click="onProfile" class="my-4 inline-block">Profile</a></li>
                     <li>
