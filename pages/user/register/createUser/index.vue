@@ -4,9 +4,8 @@ definePageMeta({
 });
 
 import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import logo from "assets/logo.png";
-import imageIcon from "assets/icons/image.svg";
 
 const router = useRouter();
 
@@ -15,26 +14,10 @@ const name = ref("");
 const gender = ref("");
 const phoneNumber = ref("");
 const location = ref("");
-const fileInput = ref<HTMLInputElement | null>(null);
 const errors = ref<Record<string, string>>({});
-
-const auth = useAuthStore();
 
 const api = useApiStore();
 
-const onFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target?.files?.[0];
-  if (file && file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      imageUrl.value = reader.result as string;
-      errors.value.imageUrl = "";
-    };
-  }
-};
-console.log(auth.fetchToken());
 const validate = () => {
   errors.value = {};
   if (!imageUrl.value) errors.value.imageUrl = "Profile picture is required.";
@@ -52,7 +35,6 @@ const handleSubmit = async () => {
   if (!validate()) return;
   updating.value = true;
   try {
-    // TODO: use partial field update when backend is ready.
     const payload = {
       name: name.value,
       gender: gender.value,
@@ -61,7 +43,7 @@ const handleSubmit = async () => {
       location: location.value,
     };
     const response = await api.updateUserInformation(payload);
-    router.push({ path: "/user/register/selectRole" });
+    await router.push({ path: "/user/register/selectRole" });
   } catch (error: any) {
     console.error("Error updating profile:", error);
     useToastify(error.message, { type: "error" });
@@ -70,7 +52,6 @@ const handleSubmit = async () => {
   }
 };
 
-const handleChooseImage = () => fileInput.value?.click();
 </script>
 
 <template>
@@ -86,18 +67,7 @@ const handleChooseImage = () => fileInput.value?.click();
       <h1 class="text-[18px] text-titleActive tracking-wide">Create User</h1>
 
       <div class="flex flex-col gap-4">
-        <button
-          :disabled="updating"
-          @click="handleChooseImage"
-          :style="{ backgroundImage: `url(${imageUrl})` }"
-          class="flex disabled:opacity-50 border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center"
-          :class="{ 'border-red-500': errors.imageUrl }"
-        >
-          <template v-if="!imageUrl">
-            <img class="w-[41px]" :src="imageIcon" alt="image" />
-            <h1 class="text-[10px] text-label">Profile Picture</h1>
-          </template>
-        </button>
+        <FileChooser v-model="imageUrl" :disabled="updating" class=" h-[142px]" label="Profile Picture"/>
         <p v-if="errors.imageUrl" class="text-red-500 text-xs">
           {{ errors.imageUrl }}
         </p>
@@ -185,13 +155,4 @@ const handleChooseImage = () => fileInput.value?.click();
       </div>
     </div>
   </LoginRegisterCard>
-
-  <!-- Hidden File Input -->
-  <input
-    type="file"
-    ref="fileInput"
-    @change="onFileChange"
-    accept="image/*"
-    style="display: none"
-  />
 </template>

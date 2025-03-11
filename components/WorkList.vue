@@ -2,7 +2,7 @@
   const props = defineProps<{
     data: {
         id?: string;
-        photo_urls: string[];
+        photoUrls: string[];
         title: string;
         owner?: string;
         type: string;
@@ -11,13 +11,14 @@
       }[];
   }>();
 
+  const config = useRuntimeConfig();
 </script>
 
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
     <div v-for="(work, index) in data" :key="index">
       <WorkCard
-        :images="work.photo_urls.map(url => `https://pub-58a5559d12b34ac5999431d8764da7fa.r2.dev${url}`)"
+        :images="work.photoUrls.map(url => `${config.public.s3URL}${url}`)"
         :title="work.title"
         :owner="work.owner"
         :type="work.type"
@@ -25,7 +26,6 @@
         editable
         :addable="work.addable"
       />
-      <!-- <pre>{{ console.log(work.photo_urls) }}</pre>  -->
     </div>
   </div>
 </template>

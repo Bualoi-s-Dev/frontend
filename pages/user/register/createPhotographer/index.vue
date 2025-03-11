@@ -45,11 +45,8 @@ const updateUserProfile = async () => {
 
   updating.value = true;
   try {
-    // TODO: use partial field update when backend is ready.
-
-    // TODO: do something better than convert to base64 every time
     const payload = {
-      bankName: bankName.value,
+      bankName: bankName.value as BankName,
       bankAccount: bankAccount.value,
       lineID: lineID.value,
       facebook: facebook.value,

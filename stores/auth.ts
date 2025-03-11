@@ -8,49 +8,47 @@ import {
     getIdToken,
     sendPasswordResetEmail,
     type User,
+    setPersistence,
+    browserLocalPersistence
 } from 'firebase/auth';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<User | null>(null);
-    
+
     const { $auth, $facebookProvider, $googleProvider } = useNuxtApp();
-    // const config = useRuntimeConfig();
 
     const handleRegister = async (email: string, password: string,): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await createUserWithEmailAndPassword($auth, email, password);
-        user.value = userCredential.user;
     };
 
     const handleLogin = async (email: string, password: string): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await signInWithEmailAndPassword($auth, email, password);
-        user.value = userCredential.user;
-        console.log(await fetchToken())
     };
 
     const handleGoogleLogin = async (): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await signInWithPopup($auth, $googleProvider);
-        user.value = userCredential.user;
     };
 
     const handleFacebookLogin = async (): Promise<void> => {
+        await setPersistence($auth, browserLocalPersistence);
         const userCredential = await signInWithPopup($auth, $facebookProvider);
-        user.value = userCredential.user;
     };
 
-    const actionCodeSettings = { // TODO: use env varieble instead
-        url: 'http://localhost:3000/user/login/reset/success', // Replace with your app's URL
+    const actionCodeSettings = {
+        url: `${window.location.origin}/user/login/reset/success`,
         handleCodeInApp: false, // Ensures the action is handled in your app
     };
-      
 
     const handleForgotPassword = async (email: string): Promise<void> => {
-        if(!email) return;
+        if (!email) return;
         await sendPasswordResetEmail($auth, email, actionCodeSettings);
     };
 
     const handleLogout = async (): Promise<void> => {
         await signOut($auth);
-        user.value = null;
     };
 
     /**
@@ -62,29 +60,32 @@ export const useAuthStore = defineStore('auth', () => {
      * @throws Will throw an error if no user is currently logged in.
      */
     const fetchToken = async (): Promise<string> => {
-        if (!user.value) throw Error("No user logged in.");
+        if (!user.value) {
+            await $auth.authStateReady();
+            if ($auth.currentUser) {
+                user.value = $auth.currentUser;
+            } else {
+                console.error('No user logged in.');
+                throw new Error('No user logged in.');
+            }
+        }
         const token = await getIdToken(user.value);
         return token;
     };
 
-    // const fetchUserProfile = async (): Promise<void> => {
-    //     if (!jwtToken.value) {
-    //         error.value = 'You need to log in first.';
-    //         return;
-    //     }
-    //     try {
-    //         const response = await axios.get(config.public.apiUrl, {
-    //             headers: { Authorization: `Bearer ${jwtToken.value}` }
-    //         });
-    //         alert(`User Profile: ${JSON.stringify(response.data)}`);
-    //     } catch {
-    //         error.value = 'Failed to fetch profile.';
-    //     }
-    // };
+    /**
+     * Checks if the user is currently signed in.
+     * 
+     * @returns {Promise<boolean>} A promise that resolves to true if the user is signed in, false otherwise.
+     */
+    const isSignedIn = async () => {
+        try { await fetchToken(); return true; } catch (e) { return false; }
+    }
 
     return {
         user,
         fetchToken,
+        isSignedIn,
         handleRegister,
         handleLogin,
         handleGoogleLogin,
