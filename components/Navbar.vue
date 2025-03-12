@@ -61,7 +61,7 @@ const handleLogout = async () => {
 </script>
 
 <template>
-    <div v-if="menuOpen" class="bg-black absolute top-0 left-0 w-screen h-screen" :class="menuOpen ? 'opacity-50' : 'opacity-0'"></div>
+    <div v-if="menuOpen" @click="toggleMenu" onc class="bg-black absolute top-0 left-0 w-screen h-screen" :class="menuOpen ? 'opacity-50' : 'opacity-0'"></div>
     <nav class="fixed w-full p-6 bg-transparent">
         <div class="flex items-center justify-end mr-5">
 
