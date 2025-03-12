@@ -1,67 +1,165 @@
 /* Do not change, this code is generated from Golang structs */
+
+
 export enum PackageType {
-    WEDDING_BLISS = "WEDDING_BLISS",
-    BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",
-    MATERNITY_GLOW = "MATERNITY_GLOW",
-    FAMILY_PORTRAITS = "FAMILY_PORTRAITS",
-    GRADUATION_MEMORIES = "GRADUATION_MEMORIES",
-    NEWBORN_MOMENTS = "NEWBORN_MOMENTS",
-    ENGAGEMENT_LOVE_STORY = "ENGAGEMENT_LOVE_STORY",
-    CORPORATE_HEADSHOTS = "CORPORATE_HEADSHOTS",
-    FASHION_EDITORIAL = "FASHION_EDITORIAL",
-    TRAVEL_DIARIES = "TRAVEL_DIARIES",
-    OTHER = "OTHER",
+  WEDDING_BLISS = "WEDDING_BLISS",
+  BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",
+  MATERNITY_GLOW = "MATERNITY_GLOW",
+  FAMILY_PORTRAITS = "FAMILY_PORTRAITS",
+  GRADUATION_MEMORIES = "GRADUATION_MEMORIES",
+  NEWBORN_MOMENTS = "NEWBORN_MOMENTS",
+  ENGAGEMENT_LOVE_STORY = "ENGAGEMENT_LOVE_STORY",
+  CORPORATE_HEADSHOTS = "CORPORATE_HEADSHOTS",
+  FASHION_EDITORIAL = "FASHION_EDITORIAL",
+  TRAVEL_DIARIES = "TRAVEL_DIARIES",
+  OTHER = "OTHER",
 }
-
+export enum UserRole {
+  Photographer = "Photographer",
+  Customer = "Customer",
+  Guest = "Guest",
+}
 export enum BankName {
-    KRUNG_THAI_BANK = "KRUNG_THAI_BANK",
-    BANGKOK_BANK = "BANGKOK_BANK",
-    SIAM_COMMERCIAL_BANK = "SIAM_COMMERCIAL_BANK",
-    KASIKORN_BANK = "KASIKORN_BANK",
-    TMB_THANACHART_BANK = "TMB_THANACHART_BANK",
-    KRUNGSRI_BANK = "KRUNGSRI_BANK",
-    GOVERNMENT_SAVINGS_BANK = "GOVERNMENT_SAVINGS_BANK",
-    THAI_MILITARY_BANK = "THAI_MILITARY_BANK",
-    UOB_THAILAND = "UOB_THAILAND",
-    CIMB_THAILAND = "CIMB_THAILAND",
-    STANDARD_CHARTERED = "STANDARD_CHARTERED",
-    ICBC_THAILAND = "ICBC_THAILAND",
+  KRUNG_THAI_BANK = "KRUNG_THAI_BANK",
+  BANGKOK_BANK = "BANGKOK_BANK",
+  SIAM_COMMERCIAL_BANK = "SIAM_COMMERCIAL_BANK",
+  KASIKORN_BANK = "KASIKORN_BANK",
+  TMB_THANACHART_BANK = "TMB_THANACHART_BANK",
+  KRUNGSRI_BANK = "KRUNGSRI_BANK",
+  GOVERNMENT_SAVINGS_BANK = "GOVERNMENT_SAVINGS_BANK",
+  THAI_MILITARY_BANK = "THAI_MILITARY_BANK",
+  UOB_THAILAND = "UOB_THAILAND",
+  CIMB_THAILAND = "CIMB_THAILAND",
+  STANDARD_CHARTERED = "STANDARD_CHARTERED",
+  ICBC_THAILAND = "ICBC_THAILAND",
 }
-
-export interface Package {
-    id?: string;
-    ownerId?: string;
-    title: string;
-    type: PackageType;
-    photo_urls: string[];
+export enum DayName {
+  SUN = "SUN",
+  MON = "MON",
+  TUE = "TUE",
+  WED = "WED",
+  THU = "THU",
+  FRI = "FRI",
+  SAT = "SAT",
 }
-
+export enum BusyTimeType {
+  Photographer = "Photographer",
+  Appointment = "Appointment",
+}
+export enum AppointmentStatus {
+  Pending = "Pending",
+  Accepted = "Accepted",
+  Rejected = "Rejected",
+  Canceled = "Canceled",
+  Completed = "Completed",
+}
 export interface PackageRequest {
-    title?: string;
-    type?: PackageType;
-    photos?: string[];
+  title?: string;
+  type?: PackageType;
+  photos?: string[];
+}
+export interface Subpackage {
+  id: string;
+  packageId: string;
+  title: string;
+  description: string;
+  duration: number;
+  price: number;
+  isInf: boolean;
+  repeatedDay: DayName[];
+  avaliableStartTime: string;
+  avaliableEndTime: string;
+  avaliableStartDay: string;
+  avaliableEndDay: string;
+}
+export interface PackageResponse {
+  id: string;
+  ownerId: string;
+  title: string;
+  type: PackageType;
+  photoUrls: string[];
+  subPackages: Subpackage[];
+}
+export interface UserRequest {
+  name?: string;
+  gender?: string;
+  profile?: string;
+  phone?: string;
+  location?: string;
+  role?: UserRole;
+  description?: string;
+  bankName?: BankName;
+  bankAccount?: string;
+  lineID?: string;
+  facebook?: string;
+  instagram?: string;
+  showcasePackages?: string[];
+}
+export interface UserResponse {
+  id: string;
+  email: string;
+  name: string;
+  gender: string;
+  profile: string;
+  phone: string;
+  location: string;
+  role: UserRole;
+  description: string;
+  bankName: BankName;
+  bankAccount: string;
+  lineID: string;
+  facebook: string;
+  instagram: string;
+  showcasePackages: PackageResponse[];
+  photographerPackages: PackageResponse[];
 }
 
-export interface PackageStrictRequest {
-    title: string;
-    type: PackageType;
-    photos: string[];
+export interface SubpackageRequest {
+  title?: string;
+  description?: string;
+  price?: number;
+  duration?: number;
+  isInf?: boolean;
+  repeatedDay?: string[];
+  avaliableStartTime?: string;
+  avaliableEndTime?: string;
+  avaliableStartDay?: string;
+  avaliableEndDay?: string;
 }
-
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    gender: string;
-    profile: string;
-    phone: string;
-    location: string;
-    isPhotographer: boolean;
-    bankName: BankName;
-    bankAccount: string;
-    lineID: string;
-    facebook: string;
-    instagram: string;
-    showcasePackages: string[];
-    packages: string[];
+export interface BusyTime {
+  id: string;
+  photographerId: string;
+  type: BusyTimeType;
+  startTime: string;
+  endTime: string;
+  isValid: boolean;
+}
+export interface BusyTimeRequest {
+  type?: BusyTimeType;
+  startTime?: string;
+  endTime?: string;
+  isValid?: boolean;
+}
+export interface AppointmentRequest {
+  start_time?: string;
+  location?: string;
+}
+export interface AppointmenStrictRequest {
+  start_time: string;
+  status: AppointmentStatus;
+  location: string;
+}
+export interface AppointmentUpdateStatusRequest {
+  status: AppointmentStatus;
+}
+export interface AppointmentResponse {
+  id: string;
+  customer_id: string;
+  photographer_id: string;
+  package_id: string;
+  sub_package_id: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+  location: string;
 }

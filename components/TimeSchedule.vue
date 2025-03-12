@@ -1,21 +1,34 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { format, startOfWeek, addDays, isSameDay, setDate, setMonth, setYear } from "date-fns";
+import {
+  format,
+  startOfWeek,
+  addDays,
+  isSameDay,
+  setDate,
+  setMonth,
+  setYear,
+} from "date-fns";
 
-const props = defineProps<{ 
-    inputDate: string, 
-    showDate?: boolean,
+const props = defineProps<{
+  inputDate: string;
+  showDate?: boolean;
 }>();
 
-const selectedDate = ref(new Date( props.inputDate ));
+const selectedDate = ref(new Date(props.inputDate));
 
-const day = computed(() => selectedDate.value ? new Date(selectedDate.value).getDate() : '');
-const month = computed(() => selectedDate.value ? new Date(selectedDate.value).getMonth() + 1 : '');
-const year = computed(() => selectedDate.value ? new Date(selectedDate.value).getFullYear() : '');
-
+const day = computed(() =>
+  selectedDate.value ? new Date(selectedDate.value).getDate() : ""
+);
+const month = computed(() =>
+  selectedDate.value ? new Date(selectedDate.value).getMonth() + 1 : ""
+);
+const year = computed(() =>
+  selectedDate.value ? new Date(selectedDate.value).getFullYear() : ""
+);
 
 watch(props, (newProps) => {
-  selectedDate.value = new Date( newProps.inputDate );
+  selectedDate.value = new Date(newProps.inputDate);
 });
 
 const weekDays = computed(() => {
@@ -38,10 +51,9 @@ const isSelected = (date: Date) => {
         'border-primary text-primary': isSelected(day),
         'border-body text-body': !isSelected(day),
       }"
-      
     >
-    <div class="text-sm">{{ format(day, "EEE") }}</div>
-    <div v-if="showDate" class="text-sm">{{ format(day, "d") }}</div>
+      <div class="text-sm">{{ format(day, "EEE") }}</div>
+      <div v-if="showDate" class="text-sm">{{ format(day, "d") }}</div>
     </div>
   </div>
 </template>

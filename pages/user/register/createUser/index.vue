@@ -4,37 +4,19 @@ definePageMeta({
 });
 
 import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 import logo from "assets/logo.png";
-import imageIcon from "assets/icons/image.svg";
 
 const router = useRouter();
-const route = useRoute();
-
-const email = ref(route.query.email || "");
 
 const imageUrl = ref("");
 const name = ref("");
 const gender = ref("");
 const phoneNumber = ref("");
 const location = ref("");
-const fileInput = ref<HTMLInputElement | null>(null);
 const errors = ref<Record<string, string>>({});
 
 const api = useApiStore();
-
-const onFileChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target?.files?.[0];
-  if (file && file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      imageUrl.value = reader.result as string;
-      errors.value.imageUrl = "";
-    };
-  }
-};
 
 const validate = () => {
   errors.value = {};
@@ -51,45 +33,31 @@ const updating = ref(false);
 
 const handleSubmit = async () => {
   if (!validate()) return;
-
   updating.value = true;
   try {
-    // TODO: use partial field update when backend is ready.
-    const response = await api.fetchUserProfile();
     const payload = {
-      id: response.id,
-      email: response.email,
       name: name.value,
       gender: gender.value,
       profile: imageUrl.value,
       phone: phoneNumber.value,
       location: location.value,
-      isPhotographer: false,
-      bankName: response.bankName,
-      bankAccount: response.bankAccount,
-      lineID: response.lineID,
-      facebook: response.facebook,
-      instagram: response.instagram,
-      showcasePackages: null,
-      packages: null,
     };
-    const response2 = await api.updateUserInformation(payload);
-    router.push({ path: "/user/register/selectRole" });
+    const response = await api.updateUserInformation(payload);
+    await router.push({ path: "/user/register/selectRole" });
   } catch (error: any) {
     console.error("Error updating profile:", error);
     useToastify(error.message, { type: "error" });
-  }finally{
+  } finally {
     updating.value = false;
   }
 };
 
-const handleChooseImage = () => fileInput.value?.click();
 </script>
 
 <template>
   <LoginRegisterCard>
     <template #backButton>
-      <BackButton />
+      <BackButton @click="() => router.push('/user/login')" />
     </template>
     <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
       <img :src="logo" alt="logo" class="w-9" />
@@ -99,23 +67,23 @@ const handleChooseImage = () => fileInput.value?.click();
       <h1 class="text-[18px] text-titleActive tracking-wide">Create User</h1>
 
       <div class="flex flex-col gap-4">
-        <button :disabled="updating" @click="handleChooseImage" :style="{ backgroundImage: `url(${imageUrl})` }"
-          class="flex disabled:opacity-50 border border-stroke rounded-xl flex-col text-label text-base items-center justify-center gap-4 w-full h-[142px] font-light bg-cover bg-center"
-          :class="{ 'border-red-500': errors.imageUrl }">
-          <template v-if="!imageUrl">
-            <img class="w-[41px]" :src="imageIcon" alt="image" />
-            <h1 class="text-[10px] text-label">Profile Picture</h1>
-          </template>
-        </button>
+        <FileChooser v-model="imageUrl" :disabled="updating" class=" h-[142px]" label="Profile Picture"/>
         <p v-if="errors.imageUrl" class="text-red-500 text-xs">
           {{ errors.imageUrl }}
         </p>
 
         <!-- First Name -->
         <div class="flex flex-col gap-1">
-          <label class="text-[16px]">Name<span class="text-primary">*</span></label>
-          <input :disabled="updating" v-model="name" type="text" class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.name }" />
+          <label class="text-[16px]"
+            >Name<span class="text-primary">*</span></label
+          >
+          <input
+            :disabled="updating"
+            v-model="name"
+            type="text"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.name }"
+          />
           <p v-if="errors.name" class="text-red-500 text-xs">
             {{ errors.name }}
           </p>
@@ -123,9 +91,15 @@ const handleChooseImage = () => fileInput.value?.click();
 
         <!-- Gender -->
         <div class="flex flex-col gap-1">
-          <label class="text-[16px]">Gender<span class="text-primary">*</span></label>
-          <select :disabled="updating" class="border w-full disabled:opacity-50 rounded-md py-1.5 px-2 text-[14px] border-stroke" v-model="gender"
-            :class="{ 'border-red-500': errors.gender }">
+          <label class="text-[16px]"
+            >Gender<span class="text-primary">*</span></label
+          >
+          <select
+            :disabled="updating"
+            class="border w-full disabled:opacity-50 rounded-md py-1.5 px-2 text-[14px] border-stroke"
+            v-model="gender"
+            :class="{ 'border-red-500': errors.gender }"
+          >
             <option disabled value="">Select Gender</option>
             <option>Male</option>
             <option>Female</option>
@@ -137,10 +111,16 @@ const handleChooseImage = () => fileInput.value?.click();
 
         <!-- Phone Number -->
         <div class="flex flex-col gap-1">
-          <label class="text-[16px]">Phone Number<span class="text-primary">*</span></label>
-          <input :disabled="updating" v-model="phoneNumber" type="text"
+          <label class="text-[16px]"
+            >Phone Number<span class="text-primary">*</span></label
+          >
+          <input
+            :disabled="updating"
+            v-model="phoneNumber"
+            type="text"
             class="border w-full rounded-md py-[6px] disabled:opacity-50 px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.phoneNumber }" />
+            :class="{ 'border-red-500': errors.phoneNumber }"
+          />
           <p v-if="errors.phoneNumber" class="text-red-500 text-xs">
             {{ errors.phoneNumber }}
           </p>
@@ -148,23 +128,31 @@ const handleChooseImage = () => fileInput.value?.click();
 
         <!-- Location -->
         <div class="flex flex-col gap-1">
-          <label class="text-[16px]">Location<span class="text-primary">*</span></label>
-          <input :disabled="updating" v-model="location" type="text" class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-            :class="{ 'border-red-500': errors.location }" />
+          <label class="text-[16px]"
+            >Location<span class="text-primary">*</span></label
+          >
+          <input
+            :disabled="updating"
+            v-model="location"
+            type="text"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
+            :class="{ 'border-red-500': errors.location }"
+          />
           <p v-if="errors.location" class="text-red-500 text-xs">
             {{ errors.location }}
           </p>
         </div>
 
         <!-- Submit Button -->
-        <Button :disabled="updating" class="flex disabled:opacity-50 items-center justify-center py-[12px]"
-          textOptions="text-white text-[14px] font-poppins tracking-wider" @click="handleSubmit">
+        <Button
+          :disabled="updating"
+          class="flex disabled:opacity-50 items-center justify-center py-[12px]"
+          textOptions="text-white text-[14px] font-poppins tracking-wider"
+          @click="handleSubmit"
+        >
           Submit
         </Button>
       </div>
     </div>
   </LoginRegisterCard>
-
-  <!-- Hidden File Input -->
-  <input type="file" ref="fileInput" @change="onFileChange" accept="image/*" style="display: none" />
 </template>

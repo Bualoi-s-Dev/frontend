@@ -14,7 +14,7 @@ const submit = async (image: string, name: string, type: string) => {
             title: name,
             type: type as PackageType
         });
-        useToastify('Successfully created package.', { type: 'success',  });
+        useToastify('Successfully created package.', { type: 'success' });
 
         router.push(`/profile`);
     } catch (error: any) {
