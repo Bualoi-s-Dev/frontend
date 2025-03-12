@@ -51,7 +51,7 @@ const deleteItem = () => {
 
 const editItem = () => {
   router.push(
-    `/package/${props.packageId}/subpackage/editSubpackage/${props.subpackageId}`
+    `/package/${props.packageId}/subpackage/edit/${props.subpackageId}`
   );
 };
 </script>
