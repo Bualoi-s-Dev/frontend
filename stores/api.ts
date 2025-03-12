@@ -10,7 +10,8 @@ import type {
   AppointmentResponse, 
   AppointmentUpdateStatusRequest, 
   AppointmentRequest,
-  AppointmentDetailResponse
+  AppointmentDetailResponse, 
+  SubpackageResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 
@@ -105,14 +106,14 @@ export const useApiStore = defineStore("api", () => {
     return response.data;
   };
 
-  const fetchSubpackage = async (id: string): Promise<Subpackage> => {
+  const fetchSubpackage = async (id: string): Promise<SubpackageResponse> => {
     const response = await axios.get(
       `${config.public.apiUrl}/subpackage/${id}`,
       {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
-    return response.data as Subpackage;
+    return response.data as SubpackageResponse;
   };
 
   const fetchAllAppointment = async (): Promise<AppointmentResponse[]> => {

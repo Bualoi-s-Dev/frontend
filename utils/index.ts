@@ -1,3 +1,5 @@
+import { DayName } from "~/types/api";
+
 export function toTitleCase(str: string): string {
   return str.replace(
     /\w\S*/g,
@@ -52,3 +54,16 @@ export async function fetchImageAsBase64(url: string): Promise<string> {
     };
   })
 };
+
+export const dayNameToDayIndex = (n: DayName): number => {
+  switch (n) {
+    case DayName.SUN: return 0;
+    case DayName.MON: return 1;
+    case DayName.TUE: return 2;
+    case DayName.WED: return 3;
+    case DayName.THU: return 4;
+    case DayName.FRI: return 5;
+    case DayName.SAT: return 6;
+    default: throw Error("Invalid day name: " + n);
+  }
+}

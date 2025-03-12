@@ -1,5 +1,3 @@
-/* Do not change, this code is generated from Golang structs */
-
 export enum PackageType {
   WEDDING_BLISS = "WEDDING_BLISS",
   BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",
@@ -112,7 +110,6 @@ export interface UserResponse {
   showcasePackages: PackageResponse[];
   photographerPackages: PackageResponse[];
 }
-
 export interface SubpackageRequest {
   title?: string;
   description?: string;
@@ -133,6 +130,23 @@ export interface BusyTime {
   endTime: string;
   isValid: boolean;
 }
+export interface SubpackageResponse {
+  id: string;
+  packageId: string;
+  title: string;
+  description: string;
+  price: number;
+  duration: number;
+  isInf: boolean;
+  repeatedDay: string[];
+  avaliableStartTime: string;
+  avaliableEndTime: string;
+  avaliableStartDay: string;
+  avaliableEndDay: string;
+  busyTimes: BusyTime[];
+  busyTimeMap: {[key: string]: BusyTime[]};
+}
+
 export interface BusyTimeRequest {
   type?: BusyTimeType;
   startTime?: string;
@@ -144,8 +158,7 @@ export interface AppointmentRequest {
   location?: string;
 }
 export interface AppointmenStrictRequest {
-  startTime: string;
-  status: AppointmentStatus;
+  start_time: string;
   location: string;
 }
 export interface AppointmentUpdateStatusRequest {

@@ -56,7 +56,7 @@ const formatPackageType = (type: string): string => {
 };
 
 const goToCreateSubpackage = () => {
-  router.push(`/package/${id}/subpackage/createSubpackage`);
+  router.push(`/package/${id}/subpackage/create`);
 };
 </script>
 
