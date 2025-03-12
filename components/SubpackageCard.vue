@@ -1,43 +1,66 @@
 <script setup lang="ts">
-import { defineProps, computed, ref } from "vue";
+import { defineProps, defineEmits, computed, ref } from "vue";
 import { Icon } from "@iconify/vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const props = defineProps<{
+  packageId: string;
+  subpackageId: string;
   title: string;
   description: string;
   price: number;
+  duration: number;
   timeStart: string;
   timeEnd: string;
   dateStart: string;
   dateEnd: string;
   activeDays: string[];
+  isInf: boolean;
   isOwner?: boolean;
 }>();
+
+const emit = defineEmits(["delete"]);
 
 const showConfirmDialog = ref(false);
 
 const days = computed(() => [
-  { name: "Sun", active: props.activeDays.includes("Sun") },
-  { name: "Mon", active: props.activeDays.includes("Mon") },
-  { name: "Tue", active: props.activeDays.includes("Tue") },
-  { name: "Wed", active: props.activeDays.includes("Wed") },
-  { name: "Thu", active: props.activeDays.includes("Thu") },
-  { name: "Fri", active: props.activeDays.includes("Fri") },
-  { name: "Sat", active: props.activeDays.includes("Sat") },
+  { name: "Sun", active: props.activeDays.includes("SUN") },
+  { name: "Mon", active: props.activeDays.includes("MON") },
+  { name: "Tue", active: props.activeDays.includes("TUE") },
+  { name: "Wed", active: props.activeDays.includes("WED") },
+  { name: "Thu", active: props.activeDays.includes("THU") },
+  { name: "Fri", active: props.activeDays.includes("FRI") },
+  { name: "Sat", active: props.activeDays.includes("SAT") },
 ]);
+
+// Compute formatted duration string
+const formattedDuration = computed(() => {
+  return `${props.duration} ${props.duration === 1 ? "Min" : "Mins"}`;
+});
 
 const confirmDelete = () => {
   showConfirmDialog.value = true;
 };
 
 const deleteItem = () => {
-  // Handle delete logic here
-  console.log("Item deleted");
+  emit("delete", props.subpackageId);
   showConfirmDialog.value = false;
+};
+
+const editItem = () => {
+  router.push(
+    `/package/${props.packageId}/subpackage/editSubpackage/${props.subpackageId}`
+  );
 };
 </script>
 
 <template>
+  <div
+    v-if="showConfirmDialog"
+    class="fixed top-0 left-0 w-screen h-screen bg-black opacity-50 z-[101]"
+  ></div>
   <div
     class="flex flex-col gap-[10px] py-[20px] px-[15px] w-full h-fit shadow-lg bg-innerBackground rounded-lg"
   >
@@ -47,7 +70,9 @@ const deleteItem = () => {
         <Icon
           icon="icon-park-outline:edit-two"
           class="w-[27px] h-[27px] text-body cursor-pointer"
+          @click="editItem"
         />
+
         <Icon
           icon="pajamas:remove-all"
           class="w-[27px] h-[27px] text-body cursor-pointer"
@@ -74,9 +99,12 @@ const deleteItem = () => {
     <div class="flex justify-between items-end">
       <div class="flex flex-col gap-[10px]">
         <p class="text-primary text-[16px]">
-          {{ props.timeStart }} - {{ props.timeEnd }}
+          Duration: {{ formattedDuration }}
         </p>
         <p class="text-primary text-[16px]">
+          {{ props.timeStart }} - {{ props.timeEnd }}
+        </p>
+        <p v-if="!props.isInf" class="text-primary text-[16px]">
           {{ props.dateStart }} - {{ props.dateEnd }}
         </p>
       </div>
@@ -89,7 +117,7 @@ const deleteItem = () => {
   <!-- Confirmation Dialog -->
   <div
     v-if="showConfirmDialog"
-    class="fixed inset-0 flex items-center justify-center"
+    class="fixed inset-0 flex items-center justify-center z-[102]"
   >
     <div
       class="flex gap-[20px] bg-white p-[25px] rounded-lg shadow-lg w-[346px]"
@@ -100,7 +128,7 @@ const deleteItem = () => {
       />
       <div class="flex flex-col gap-[20px]">
         <p class="text-[16px] text-titleActive">
-          Are you sure to delete this subpackage?
+          Are you sure you want to delete this subpackage?
         </p>
         <div class="flex justify-between">
           <button

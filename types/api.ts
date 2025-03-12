@@ -38,6 +38,7 @@ export interface Package {
   title: string;
   type: PackageType;
   photoUrls: string[];
+  subPackages: Subpackage[];
 }
 export interface PackageRequest {
   title?: string;
@@ -99,4 +100,45 @@ export interface UserResponse {
   instagram: string;
   showcasePackages: Package[];
   photographerPackages: Package[];
+}
+
+export interface Subpackage {
+  id: string;
+  packageId: string;
+  title: string;
+  description: string;
+  price: number;
+  duration: number;
+  isInf: boolean;
+  repeatedDay: string[];
+  avaliableStartTime: string;
+  avaliableEndTime: string;
+  avaliableStartDay: string;
+  avaliableEndDay: string;
+}
+
+export interface SubpackageRequest {
+  title?: string;
+  description?: string;
+  price?: number;
+  duration?: number;
+  isInf?: boolean;
+  repeatedDay?: string[];
+  avaliableStartTime?: string;
+  avaliableEndTime?: string;
+  avaliableStartDay?: string;
+  avaliableEndDay?: string;
+}
+
+export interface SubpackageStrictRequest {
+  title: string;
+  description: string;
+  price: number;
+  duration: number;
+  isInf: boolean;
+  repeatedDay: string[];
+  avaliableStartTime: string;
+  avaliableEndTime: string;
+  avaliableStartDay: string;
+  avaliableEndDay: string;
 }

@@ -1,9 +1,28 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
+import { type Subpackage } from "~/types/api";
+
+const props = defineProps<{
+  onSubmit: (
+    title: string,
+    description: string,
+    price: number,
+    duration: number,
+    isInf: boolean,
+    repeatedDay: string[],
+    avaliableStartTime: string,
+    avaliableEndTime: string,
+    avaliableStartDay: string,
+    avaliableEndDay: string
+  ) => void;
+  data?: Subpackage;
+  disabled?: boolean;
+}>();
 
 const title = ref("");
 const description = ref("");
 const price = ref("");
+const duration = ref("");
 const startTime = ref("");
 const endTime = ref("");
 const startDate = ref("");
@@ -12,9 +31,29 @@ const activeDays = ref<string[]>([]);
 const repeatForever = ref(false);
 const errors = ref<{ [key: string]: string }>({});
 
+watch(
+  () => props.data,
+  (newData) => {
+    if (newData) {
+      title.value = newData.title || "";
+      description.value = newData.description || "";
+      price.value = newData.price?.toString() || "";
+      duration.value = newData.duration?.toString() || "";
+      startTime.value = newData.avaliableStartTime || "";
+      endTime.value = newData.avaliableEndTime || "";
+      startDate.value = newData.avaliableStartDay || "";
+      endDate.value = newData.avaliableEndDay || "";
+      activeDays.value = newData.repeatedDay || [];
+      repeatForever.value = newData.isInf || false;
+    }
+  },
+  { immediate: true }
+);
+
 const days = computed(() =>
-  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => ({
+  ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => ({
     name: day,
+    displayName: day.charAt(0).toUpperCase() + day.slice(1).toLowerCase(),
     active: activeDays.value.includes(day),
   }))
 );
@@ -34,6 +73,12 @@ const validate = () => {
   if (!description.value) errors.value.description = "Description is required.";
   if (!price.value || isNaN(Number(price.value)) || Number(price.value) <= 0)
     errors.value.price = "Price must be a valid positive number.";
+  if (
+    !duration.value ||
+    isNaN(Number(duration.value)) ||
+    Number(duration.value) <= 0
+  )
+    errors.value.duration = "Duration must be a valid number.";
   if (!startTime.value) errors.value.startTime = "Start time is required.";
   if (!endTime.value) errors.value.endTime = "End time is required.";
   if (startTime.value && endTime.value && startTime.value >= endTime.value)
@@ -48,33 +93,47 @@ const validate = () => {
       errors.value.date = "Start date must be before end date.";
   }
 
+  if (
+    !duration.value ||
+    isNaN(Number(duration.value)) ||
+    Number(duration.value) <= 0 ||
+    !Number.isInteger(Number(duration.value))
+  ) {
+    errors.value.duration = "Duration must be a positive integer.";
+  }
+
+  if (startTime.value && endTime.value) {
+    const start = new Date(`1970-01-01T${startTime.value}:00`);
+    const end = new Date(`1970-01-01T${endTime.value}:00`);
+    const diffInMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+
+    if (Number(duration.value) > diffInMinutes) {
+      errors.value.duration =
+        "Duration must be less than the difference between start and end time.";
+    }
+  }
+
   return Object.keys(errors.value).length === 0;
 };
 
-const updating = ref(false);
-
 const handleSubmit = () => {
   if (!validate()) return;
-
-  console.log({
-    title: title.value,
-    description: description.value,
-    price: price.value,
-    startTime: startTime.value,
-    endTime: endTime.value,
-    startDate: repeatForever.value ? null : startDate.value,
-    endDate: repeatForever.value ? null : endDate.value,
-    activeDays: activeDays.value,
-    repeatForever: repeatForever.value,
-  });
+  props.onSubmit(
+    title.value,
+    description.value,
+    Number(price.value),
+    Number(duration.value),
+    repeatForever.value,
+    activeDays.value,
+    startTime.value,
+    endTime.value,
+    startDate.value,
+    endDate.value
+  );
 };
 </script>
 
 <template>
-  <div class="ml-6 mt-6 flex flex-row gap-3 text-xl">
-    <BackButton />
-    Create Subpackage
-  </div>
   <div class="w-full h-full p-6 flex flex-col">
     <div class="flex flex-row text-lg mt-6">
       Title<span class="text-primary">*</span>
@@ -140,13 +199,27 @@ const handleSubmit = () => {
         }"
         @click="toggleDay(day.name)"
       >
-        {{ day.name }}
+        {{ day.displayName }}
       </p>
     </div>
-    <div v-if="errors.startTime" class="text-red-500 text-sm mt-1">
+    <div v-if="errors.activeDays" class="text-red-500 text-sm mt-1">
       {{ errors.activeDays }}
     </div>
-
+    <div class="flex flex-row text-lg mt-6">
+      Duration<span class="text-primary">*</span>
+    </div>
+    <input
+      v-model="duration"
+      type="text"
+      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5"
+      :class="{
+        'border-red-500': errors.duration,
+        'border-stroke': !errors.duration,
+      }"
+    />
+    <div v-if="errors.duration" class="text-red-500 text-sm mt-1">
+      {{ errors.duration }}
+    </div>
     <div class="flex gap-[16px]">
       <div class="w-full">
         <div class="flex flex-row text-lg mt-6">
@@ -234,7 +307,6 @@ const handleSubmit = () => {
       {{ errors.date }}
     </div>
     <button
-      :disabled="updating"
       @click="handleSubmit"
       class="mt-6 ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50"
     >

@@ -1,26 +1,35 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import type { Package, PackageRequest, PackageStrictRequest, User, UserRequest, UserResponse } from "~/types/api";
+import type {
+  Package,
+  PackageStrictRequest,
+  User,
+  SubpackageStrictRequest,
+  Subpackage,
+  SubpackageRequest,
+} from "~/types/api";
 import { useAuthStore } from "./auth";
 
 export const useApiStore = defineStore("api", () => {
   const auth = useAuthStore();
   const config = useRuntimeConfig();
 
-  const fetchUserProfile = async (): Promise<UserResponse> => {
+  const fetchUserProfile = async (): Promise<User> => {
     const response = await axios.get(`${config.public.apiUrl}/user/profile`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
-    return response.data as UserResponse;
+    return response.data as User;
   };
 
   const createPackage = async (pkg: PackageStrictRequest) => {
-    const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
+    // TODO: remove trailing slash when backend fix the endpoint.
+    const response = await axios.post(`${config.public.apiUrl}/package/`, pkg, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
   };
 
-  const updatePackage = async (id: string, pkg: PackageRequest) => {
+  const updatePackage = async (id: string, pkg: PackageStrictRequest) => {
+    console.log("updating package");
     const response = await axios.patch(
       `${config.public.apiUrl}/package/${id}`,
       pkg,
@@ -28,11 +37,13 @@ export const useApiStore = defineStore("api", () => {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
+    console.log(pkg.photos[0], "update package");
     return response.data;
   };
 
   const fetchUserPackage = async (): Promise<Package[]> => {
-    const response = await axios.get(`${config.public.apiUrl}/package`, {
+    // TODO: remove trailing slash when backend fix the endpoint.
+    const response = await axios.get(`${config.public.apiUrl}/package/`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
     return response.data as Package[];
@@ -45,7 +56,7 @@ export const useApiStore = defineStore("api", () => {
     return response.data as Package;
   };
 
-  const updateUserInformation = async (payload: UserRequest) => {
+  const updateUserInformation = async (payload: any) => {
     const response = await axios.patch(
       `${config.public.apiUrl}/user/profile`,
       payload,
@@ -55,6 +66,51 @@ export const useApiStore = defineStore("api", () => {
     );
   };
 
+  const createSubpackage = async (
+    id: string,
+    spkg: SubpackageStrictRequest
+  ) => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      spkg,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const deleteSubpackage = async (id: string) => {
+    const response = await axios.delete(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const updateSubpackage = async (id: string, spkg: SubpackageRequest) => {
+    const response = await axios.patch(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      spkg,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const fetchSubpackage = async (id: string): Promise<Subpackage> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as Subpackage;
+  };
+
   return {
     fetchPackage,
     fetchUserPackage,
@@ -62,5 +118,9 @@ export const useApiStore = defineStore("api", () => {
     createPackage,
     updatePackage,
     updateUserInformation,
+    createSubpackage,
+    deleteSubpackage,
+    fetchSubpackage,
+    updateSubpackage,
   };
 });
