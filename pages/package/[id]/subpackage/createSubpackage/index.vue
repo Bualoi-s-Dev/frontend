@@ -8,6 +8,8 @@ const route = useRoute();
 // Extract packageId from the route
 const id = route.params.id as string;
 
+const loading = ref(false);
+
 const submit = async (
   title: string,
   description: string,
@@ -20,6 +22,8 @@ const submit = async (
   avaliableStartDay: string,
   avaliableEndDay: string
 ) => {
+  loading.value = true;
+
   try {
     const payload = {
       title,
@@ -41,9 +45,12 @@ const submit = async (
 
     await api.createSubpackage(id, payload);
     await router.push({ path: `/package/${id}` });
+    useToastify("Successfully created subpackage", { type: "success" });
   } catch (error: any) {
     console.error("Error creating subpackage:", error);
     useToastify(error.message, { type: "error" });
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -53,5 +60,5 @@ const submit = async (
     <BackButton />
     Create Subpackage
   </div>
-  <SubpackageForm :onSubmit="submit" />
+  <SubpackageForm :disabled="loading" :onSubmit="submit" />
 </template>
