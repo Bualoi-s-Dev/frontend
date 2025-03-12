@@ -138,15 +138,11 @@ const handleSubmit = () => {
     <div class="flex flex-row text-lg mt-6">
       Title<span class="text-primary">*</span>
     </div>
-    <input
-      v-model="title"
-      type="text"
-      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5"
-      :class="{
+    <input :disabled="disabled" v-model="title" type="text"
+      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5" :class="{
         'border-red-500': errors.title,
         'border-stroke': !errors.title,
-      }"
-    />
+      }" />
     <div v-if="errors.title" class="text-red-500 text-sm mt-1">
       {{ errors.title }}
     </div>
@@ -154,15 +150,11 @@ const handleSubmit = () => {
     <div class="flex flex-row text-lg mt-6">
       Description<span class="text-primary">*</span>
     </div>
-    <input
-      v-model="description"
-      type="text"
-      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5"
-      :class="{
+    <input :disabled="disabled" v-model="description" type="text"
+      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5" :class="{
         'border-red-500': errors.description,
         'border-stroke': !errors.description,
-      }"
-    />
+      }" />
     <div v-if="errors.description" class="text-red-500 text-sm mt-1">
       {{ errors.description }}
     </div>
@@ -170,15 +162,11 @@ const handleSubmit = () => {
     <div class="flex flex-row text-lg mt-6">
       Price<span class="text-primary">*</span>
     </div>
-    <input
-      v-model="price"
-      type="text"
-      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5"
-      :class="{
+    <input :disabled="disabled" v-model="price" type="text"
+      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5" :class="{
         'border-red-500': errors.price,
         'border-stroke': !errors.price,
-      }"
-    />
+      }" />
     <div v-if="errors.price" class="text-red-500 text-sm mt-1">
       {{ errors.price }}
     </div>
@@ -189,18 +177,14 @@ const handleSubmit = () => {
       Select Day<span class="text-primary">*</span>
     </div>
     <div class="flex justify-between mt-1.5">
-      <p
-        v-for="(day, index) in days"
-        :key="index"
+      <button :disabled="disabled" v-for="(day, index) in days" :key="index"
         class="flex justify-center w-[36px] py-[10px] px-[12px] border rounded-[5px] text-[12px] font-light cursor-pointer"
         :class="{
           'border-primary text-primary': day.active,
           'border-stroke text-placeHolder': !day.active,
-        }"
-        @click="toggleDay(day.name)"
-      >
+        }" @click="toggleDay(day.name)">
         {{ day.displayName }}
-      </p>
+      </button>
     </div>
     <div v-if="errors.activeDays" class="text-red-500 text-sm mt-1">
       {{ errors.activeDays }}
@@ -208,15 +192,11 @@ const handleSubmit = () => {
     <div class="flex flex-row text-lg mt-6">
       Duration<span class="text-primary">*</span>
     </div>
-    <input
-      v-model="duration"
-      type="text"
-      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5"
+    <input  :disabled="disabled" v-model="duration" type="text" class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5"
       :class="{
         'border-red-500': errors.duration,
         'border-stroke': !errors.duration,
-      }"
-    />
+      }" />
     <div v-if="errors.duration" class="text-red-500 text-sm mt-1">
       {{ errors.duration }}
     </div>
@@ -225,15 +205,11 @@ const handleSubmit = () => {
         <div class="flex flex-row text-lg mt-6">
           Start Time<span class="text-primary">*</span>
         </div>
-        <input
-          v-model="startTime"
-          type="time"
-          class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5"
-          :class="{
+        <input  :disabled="disabled" v-model="startTime" type="time"
+          class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5" :class="{
             'border-red-500': errors.startTime || errors.time,
             'border-stroke': !(errors.startTime || errors.time),
-          }"
-        />
+          }" />
         <div v-if="errors.startTime" class="text-red-500 text-sm mt-1">
           {{ errors.startTime }}
         </div>
@@ -243,15 +219,11 @@ const handleSubmit = () => {
         <div class="flex flex-row text-lg mt-6">
           End Time<span class="text-primary">*</span>
         </div>
-        <input
-          v-model="endTime"
-          type="time"
-          class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5"
-          :class="{
+        <input  :disabled="disabled" v-model="endTime" type="time"
+          class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5" :class="{
             'border-red-500': errors.endTime || errors.time,
             'border-stroke': !(errors.endTime || errors.time),
-          }"
-        />
+          }" />
         <div v-if="errors.endTime" class="text-red-500 text-sm mt-1">
           {{ errors.endTime }}
         </div>
@@ -261,12 +233,7 @@ const handleSubmit = () => {
       {{ errors.time }}
     </div>
     <div class="flex items-center mt-6 gap-[10px] px-[5px]">
-      <input
-        id="repeat-checkbox"
-        type="checkbox"
-        v-model="repeatForever"
-        class="w-[20px] h-[20px] rounded-[6px]"
-      />
+      <input  :disabled="disabled" id="repeat-checkbox" type="checkbox" v-model="repeatForever" class="w-[20px] h-[20px] rounded-[6px]" />
       <p class="text-[16px] font-light text-body">Repeat Forever</p>
     </div>
 
@@ -274,15 +241,11 @@ const handleSubmit = () => {
       <div class="flex flex-row text-lg mt-6">
         Start Date<span class="text-primary">*</span>
       </div>
-      <input
-        v-model="startDate"
-        type="date"
-        class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5"
-        :class="{
+      <input  :disabled="disabled" v-model="startDate" type="date"
+        class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5" :class="{
           'border-red-500': errors.startDate || errors.date,
           'border-stroke': !(errors.startDate || errors.date),
-        }"
-      />
+        }" />
       <div v-if="errors.startDate" class="text-red-500 text-sm mt-1">
         {{ errors.startDate }}
       </div>
@@ -290,15 +253,11 @@ const handleSubmit = () => {
       <div class="flex flex-row text-lg mt-6">
         End Date<span class="text-primary">*</span>
       </div>
-      <input
-        v-model="endDate"
-        type="date"
-        class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5"
+      <input  :disabled="disabled" v-model="endDate" type="date" class="border disabled:opacity-50 w-full rounded-md py-1 px-2 text-lg mt-1.5"
         :class="{
           'border-red-500': errors.endDate || errors.date,
           'border-stroke': !(errors.endDate || errors.date),
-        }"
-      />
+        }" />
       <div v-if="errors.endDate" class="text-red-500 text-sm mt-1">
         {{ errors.endDate }}
       </div>
@@ -306,10 +265,8 @@ const handleSubmit = () => {
     <div v-if="errors.date" class="text-red-500 text-sm mt-1">
       {{ errors.date }}
     </div>
-    <button
-      @click="handleSubmit"
-      class="mt-6 ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50"
-    >
+    <button  :disabled="disabled" @click="handleSubmit"
+      class="mt-6 ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50">
       Submit
     </button>
   </div>

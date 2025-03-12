@@ -11,6 +11,8 @@ const subpackageid = route.params.subpackageid as string;
 
 const oldData = ref<Subpackage | undefined>();
 
+const loading = ref(false);
+
 onMounted(async () => {
   try {
     const response = await api.fetchSubpackage(subpackageid);
@@ -38,6 +40,8 @@ const submit = async (
   avaliableStartDay: string,
   avaliableEndDay: string
 ) => {
+  loading.value = true;
+
   try {
     const payload = {
       title,
@@ -58,9 +62,12 @@ const submit = async (
 
     await api.updateSubpackage(subpackageid, payload);
     await router.push({ path: `/package/${id}` });
+    useToastify("Update subpackage completed", { type: "success" });
   } catch (error: any) {
     console.error("Error updating subpackage:", error);
     useToastify(error.message, { type: "error" });
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -70,5 +77,5 @@ const submit = async (
     <BackButton />
     Edit Subpackage
   </div>
-  <SubpackageForm :data="oldData" :onSubmit="submit" />
+  <SubpackageForm :disabled="loading" :data="oldData" :onSubmit="submit" />
 </template>
