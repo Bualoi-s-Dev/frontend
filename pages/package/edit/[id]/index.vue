@@ -9,6 +9,7 @@ const api = useApiStore();
 const config = useRuntimeConfig();
 
 const oldData = ref<Package | undefined>();
+
 onMounted(async () => {
     const id = route.params.id as string;
     const response = await api.fetchPackage(id);

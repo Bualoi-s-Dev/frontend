@@ -110,7 +110,6 @@ const handleLogout = async () => {
                 <ul class="divide-y-1 mx-3">
                     <li><a @click="onHome" class="my-4 inline-block text-red-300">Home</a></li>
                     <li><a @click="onAppointment" class="my-4 inline-block">Appointments</a></li>
-                    <li><a @click="toggleMenu" class="my-4 inline-block">Create new package</a></li>
                     <li><a @click="onProfile" class="my-4 inline-block">Profile</a></li>
                     <li>
                         <NuxtLink class="my-8 w-full text-center cta inline-block bg-black hover:bg-black px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
