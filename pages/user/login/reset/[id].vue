@@ -15,7 +15,7 @@ const route = useRoute();
 const email = ref("");
 const status = ref(0);
 const errorMessage = ref("");
-const pages = [1, 2];
+const pages = 2; // set number of page
 const currentPage = Number(route.params.id);
 
 const auth = useAuthStore();
@@ -24,7 +24,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const mode = urlParams.get("mode"); // Should be "resetPassword"
 const actionCode = urlParams.get("oobCode"); // The verification code
 
-if (mode === "resetPassword" && actionCode) {
+if(mode === "resetPassword" && actionCode) {
   console.log("Password reset successful!");
   // Redirect to login or dashboard
   window.location.href = "/user/login";
@@ -57,9 +57,9 @@ const handleForgotPassword = async() => {
 }
 
 // Handle form submission
-const handleSubmit = () => {
-    router.push(`/user/login/reset/success`);
-}
+// const handleSubmit = () => {
+//     router.push(`/user/login/reset/success`);
+// }
 </script>
 
 <template>
@@ -123,27 +123,7 @@ const handleSubmit = () => {
                 </div>
             </div>
         </template>
-        <div class="flex items-center justify-center">
-            <div
-            v-for="step in pages"
-            :key="step"
-            class="flex items-center"
-            >
-            <div
-                class="w-10 h-10 flex items-center justify-center rounded-full border-2"
-                :class="step === currentPage ? 'bg-black text-white border-black' : 'bg-white text-black border-black'"
-            v-if="step >= currentPage">
-                {{ step }}
-            </div>
-            <div
-                class="w-10 h-10 flex items-center justify-center rounded-full border-2"
-                :class="step === currentPage ? 'bg-black text-white border-black' : 'bg-white text-black border-black'"
-            v-else>
-                <Icon icon="tabler:check" style="color: black;" />
-            </div>
-            <div v-if="step !== pages.length" class="w-5 h-1 bg-black"></div>
-            </div>
-        </div>
+        <Pages :pages="pages" :currentPage="currentPage" />
     </LoginRegisterCard>
 </template>
 
