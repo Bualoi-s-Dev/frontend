@@ -59,7 +59,7 @@ const handleSubmit = async () => {
       path: "/user/register/createUser",
     });
   } catch (error: any) {
-    console.log("error", error.message);
+    console.error("error", error.message);
     errorMessage.value = error.message;
   } finally {
     registering.value = false;

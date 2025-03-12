@@ -29,10 +29,9 @@ const fetchUserProfile = async () => {
     try {
         const response = await api.fetchUserProfile();
         user.value.name = response.name
-        const base64 = await fetchImageAsBase64(config.public.s3URL + response.profile)
-
-        imageUrl.value = base64;
-        oldImage.value = base64;
+        
+        imageUrl.value = config.public.s3URL + response.profile;
+        oldImage.value = config.public.s3URL + response.profile;
 
         user.value.gender = response.gender
         user.value.location = response.location
