@@ -7,7 +7,7 @@ const route = useRoute()
 const api = useApiStore();
 const config = useRuntimeConfig();
 
-const updating = ref(false);
+const updating = ref(true);
 const packages = ref<PackageResponse[] | undefined>();
 const subpackageId = ref("");
 const packageInfo = ref<PackageResponse | undefined>();
@@ -77,7 +77,7 @@ watch(subpackageId, async (newSubPackageId) => {
         <div class="flex flex-col gap-5">
             <div class="flex flex-col gap-1">
                 <label class="text-[16px]"
-                    >Package<span class="text-primary">*</span></label
+                    >Package</label
                 >
                 <select
                     :disabled="updating"
@@ -95,7 +95,7 @@ watch(subpackageId, async (newSubPackageId) => {
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[16px]"
-                    >Sub Package<span class="text-primary">*</span></label
+                    >Sub Package</label
                 >
                 <select
                     :disabled="updating"
@@ -112,23 +112,25 @@ watch(subpackageId, async (newSubPackageId) => {
             </div>
             <div class="flex flex-row gap-5">
                 <div class="flex flex-col gap-1">
-                    <label class="text-[16px]">Start Time<span class="text-primary">*</span></label>
+                    <label class="text-[16px]">Start Time</label>
                     <!-- TODO -->
                     <input
                         type="time"
                         id="start-time"
                         v-model="startTime"
                         class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        readonly
                     />
                 </div>
                 <div class="flex flex-col gap-1">
-                    <label class="text-[16px]">End Time<span class="text-primary">*</span></label>
+                    <label class="text-[16px]">End Time</label>
                     <!-- TODO -->
                     <input
                         type="time"
                         id="end-time"
                         v-model="endTime"
                         class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        readonly
                     />
                 </div>
             </div>
