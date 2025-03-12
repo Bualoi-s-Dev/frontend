@@ -10,8 +10,7 @@
       <h2 class="text-lg mb-2">Time Schedule</h2>
       <h2 class="text-lg mb-2">Date</h2>
       <div class="mb-4">
-        <input type="date" v-model="selectedDate" class="p-2 border rounded-lg shadow-sm w-full
-        ">
+        <input type="date" v-model="selectedDate" class="p-2 border rounded-lg shadow-sm w-full">
       </div>
       <div class="border rounded-lg shadow-md p-4 bg-white">
         <TimeSchedule :input-date="selectedDate" :show-date="true"/>

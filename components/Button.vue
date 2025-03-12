@@ -4,6 +4,7 @@ import { Icon } from '@iconify/vue';
 
 const props = withDefaults(
   defineProps<{
+    disabled?: boolean;
     leftIcon?: string;
     rightIcon?: string;
     middleIcon?: string;
@@ -30,7 +31,7 @@ const props = withDefaults(
 
 const buttonClasses = computed(() =>
   `inline-flex items-center justify-center transition duration-200 
-  hover:brightness-90 ${props.bgColor} ${props.width} ${props.height} 
+  hover:brightness-90 disabled:opacity-50 ${props.bgColor} ${props.width} ${props.height} 
   ${props.textOptions} ${props.buttonOptions}`
 );
 
@@ -42,7 +43,7 @@ const slots = useSlots();
 </script>
 
 <template>
-  <button :class="buttonClasses" type="button">
+  <button :disabled="disabled" :class="buttonClasses" type="button">
     <!-- Left Icon -->
     <slot name="leftIcon">
       <Icon v-if="!slots.leftIcon && isIconifyName(props.leftIcon)"
@@ -60,7 +61,7 @@ const slots = useSlots();
     </slot>
 
     <!-- Button Text -->
-    <slot />
+    <slot></slot>
 
     <!-- Right Icon -->
     <slot name="rightIcon">

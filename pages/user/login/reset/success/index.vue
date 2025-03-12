@@ -14,6 +14,7 @@ const router = useRouter();
 const handleSubmit = () => {
   router.push("/user/login");
 };
+
 </script>
 
 <template>
