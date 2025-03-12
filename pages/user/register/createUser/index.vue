@@ -57,7 +57,7 @@ const handleSubmit = async () => {
 <template>
   <LoginRegisterCard>
     <template #backButton>
-      <BackButton />
+      <BackButton @click="() => router.push('/user/login')" />
     </template>
     <div class="flex flex-row items-end gap-3 font-extrabold text-xl">
       <img :src="logo" alt="logo" class="w-9" />

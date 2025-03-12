@@ -37,7 +37,6 @@ export const useAuthStore = defineStore('auth', () => {
         const userCredential = await signInWithPopup($auth, $facebookProvider);
     };
 
-
     const actionCodeSettings = {
         url: `${window.location.origin}/user/login/reset/success`,
         handleCodeInApp: false, // Ensures the action is handled in your app
@@ -50,6 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     const handleLogout = async (): Promise<void> => {
         await signOut($auth);
+        user.value = null;
     };
 
     /**
@@ -66,7 +66,6 @@ export const useAuthStore = defineStore('auth', () => {
             if ($auth.currentUser) {
                 user.value = $auth.currentUser;
             } else {
-                console.error('No user logged in.');
                 throw new Error('No user logged in.');
             }
         }
