@@ -4,6 +4,8 @@ import { UserRole, type PackageResponse, type UserResponse } from '~/types/api';
 const profile = ref<UserResponse | null>(null);
 const packages = ref<PackageResponse[] | null>(null);
 
+const router = useRouter();
+
 const api = useApiStore();
 
 const loading = computed(() => !profile.value ||
@@ -13,21 +15,26 @@ onMounted(async () => {
   profile.value = await api.fetchUserProfile();
   if (profile.value.role !== UserRole.Photographer)
     packages.value = await api.fetchAllPackage();
+  else
+    packages.value = profile.value.photographerPackages;
 })
 </script>
 
 <template>
-  <div class="w-full h-full px-3 flex flex-col">
+  <div class="w-full h-full px-3 pt-6 flex flex-col">
     <template v-if="loading">
       <div class="w-full h-32 rounded-xl mt-12 bg-gray-300 animate-pulse"></div>
       <div class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"></div>
       <div class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"></div>
       <div class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"></div>
     </template>
-    <h1 v-else-if="profile!.role === UserRole.Photographer"
-      class="text-3xl font-bold underline w-full h-screen flex items-center justify-center">
-      Hello Photographer!
-    </h1>
+    <template v-else-if="profile!.role === UserRole.Photographer">
+      <div class="px-6 mt-6 flex flex-row w-full justify-between items-center">
+        <h1 class="font-bold">Your Packages</h1>
+        <Button @click="router.push('/package/create')">Add Package</Button>
+      </div>
+      <WorkList owner-view :data="packages!" navigate />
+    </template>
     <template v-else>
       <WorkList :data="packages!" navigate />
     </template>
