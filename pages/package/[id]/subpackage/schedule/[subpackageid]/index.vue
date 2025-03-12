@@ -10,36 +10,32 @@
     <h2 class="text-lg mb-2">Time Schedule</h2>
     <h2 class="text-lg mb-2">Date</h2>
     <div class="mb-4">
-      <input
-        type="date"
-        v-model="selectedDate"
-        class="p-2 border rounded-lg shadow-sm w-full"
-      />
+      <input :min="new Date().toISOString().split('T')[0]" type="date" v-model="selectedDate" class="p-2 border rounded-lg shadow-sm w-full" />
     </div>
     <TimeSchedule :input-date="selectedDate" :show-date="true" />
     <p class="flex justify-center mt-5 text-xl">
       {{ formatDate(selectedDate) }}
     </p>
     <div>
-      <ul class="flex flex-col gap-5 my-5">
+      <ul v-if="includedDate" class="flex flex-col gap-5 my-5">
         <li v-for="(interval, index) in intersectedIntervals" :key="index">
-          <div
-            :class="[
-              'rounded-2xl drop-shadow-xl p-7 text-white',
-              interval.isIntersected ? 'bg-red-schedule' : 'bg-green-schedule',
-            ]"
-          >
+          <div :class="[
+            'rounded-2xl drop-shadow-xl p-7 text-white',
+            interval.isIntersected ? 'bg-red-schedule' : 'bg-green-schedule',
+          ]">
             {{ interval.start }} - {{ interval.end }}
           </div>
         </li>
       </ul>
+
+      <div class="font-bold text-xl w-full text-center mt-6">The selected date is not in subpackage.</div> 
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import type { Subpackage } from "~/types/api";
+import type {  DayName, SubpackageResponse } from "~/types/api";
 
 const route = useRoute();
 const api = useApiStore();
@@ -53,43 +49,39 @@ const imageUrl = ref("");
 const title = ref("");
 
 interface Event {
-  id: number;
   title: string;
   start: string;
-  time: string;
-  date: string;
-  color: string;
+  end: string;
 }
 const selectedDate = ref<string>(new Date().toISOString().split("T")[0]);
-const subpackageDetails = ref<Subpackage | undefined>();
+const subpackageDetails = ref<SubpackageResponse | undefined>();
+
+const includedDate = computed(() => subpackageDetails.value?.repeatedDay.map(x => dayNameToDayIndex(x as DayName)).includes(new Date(selectedDate.value).getDay()));
 
 onMounted(async () => {
-  console.log(intervals.value);
-  console.log(selectedDate.value);
-
-  const response1 = await api.fetchPackage(id);
+  const [response1, response2] = await Promise.all([api.fetchPackage(id), api.fetchSubpackage(subpackageid)]);
 
   if (response1.photoUrls && response1.photoUrls.length > 0) {
     const imgUrl = config.public.s3URL + response1.photoUrls[0];
-    const imgBlob = await fetch(imgUrl).then((res) => res.blob());
-    response1.photoUrls[0] = await readFileAsDataURL(imgBlob);
+    // const imgBlob = await fetch(imgUrl).then((res) => res.blob());
+    // response1.photoUrls[0] = await readFileAsDataURL(imgBlob);
+    response1.photoUrls[0] = imgUrl;
 
     imageUrl.value = response1.photoUrls[0];
   }
   title.value = response1.title;
 
-  const response2 = await api.fetchSubpackage(subpackageid);
   subpackageDetails.value = response2;
 });
 
-const formatDate = (dateString: string): string => {
+const formatDate = (dateString: string, separator = " "): string => {
   const date = new Date(dateString); // Convert the string to a Date object
 
   const day = date.getDate(); // Get the day (1-31)
   const month = date.toLocaleString("default", { month: "long" }); // Get the month in full name (January, February, etc.)
   const year = date.getFullYear(); // Get the year (e.g., 2025)
 
-  return `${day} ${month} ${year}`;
+  return `${day}${separator}${month}${separator}${year}`;
 };
 
 const formatTime = (date: Date) => {
@@ -120,20 +112,6 @@ const getTimeIntervals = (
 
   return intervals;
 };
-
-const hours: string[] = [
-  "9:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "1:00 PM",
-  "2:00 PM",
-  "3:00 PM",
-  "4:00 PM",
-  "5:00 PM",
-  "6:00 PM",
-  "7:00 PM",
-];
 
 const intervals = computed(() => {
   if (!subpackageDetails.value) return [];
@@ -190,12 +168,11 @@ const intersectedIntervals = computed(() => {
     // Find if any event intersects with the current interval
     const intersectingEvent = events.value.find(
       (event) =>
-        event.date === selectedDate.value &&
         timesIntersect(
           interval.start,
           interval.end,
           event.start,
-          event.time.split(" - ")[1]
+          event.end
         )
     );
 
@@ -203,50 +180,13 @@ const intersectedIntervals = computed(() => {
   });
 });
 
-const events = ref<Event[]>([
-  {
-    id: 1,
-    title: "Zürich design days",
-    start: "9:00 AM",
-    time: "9:00 AM - 10:00 AM",
-    date: "2025-03-12",
-    color: "border-green-500 bg-green-100",
-  },
-  {
-    id: 2,
-    title: "Prepare workshop",
-    start: "11:00 AM",
-    time: "11:00 AM - 12:00 PM",
-    date: "2025-03-12",
-    color: "border-blue-500 bg-blue-100",
-  },
-  {
-    id: 3,
-    title: "Marketing workshop",
-    start: "12:00 PM",
-    time: "12:00 PM - 1:00 PM",
-    date: "2025-02-17",
-    color: "border-indigo-500 bg-indigo-100",
-  },
-  {
-    id: 4,
-    title: "Update slide deck",
-    start: "2:00 PM",
-    time: "2:00 PM - 3:00 PM",
-    date: "2025-02-19",
-    color: "border-purple-500 bg-purple-100",
-  },
-  {
-    id: 5,
-    title: "Concert with Helen Plaza",
-    start: "6:00 PM",
-    time: "6:00 PM - 8:00 PM",
-    date: "2025-02-17",
-    color: "border-yellow-500 bg-yellow-100",
-  },
-]);
+const events = computed<Event[]>(() => {
+  if (!subpackageDetails.value?.busyTimeMap[selectedDate.value]) return [];
 
-const filteredEvents = computed<Event[]>(() => {
-  return events.value.filter((event) => event.date === selectedDate.value);
+  return subpackageDetails.value.busyTimeMap[selectedDate.value].map(m => ({
+    start: formatTime(new Date(m.startTime)),
+    end: formatTime(new Date(m.endTime)),
+    title: "Busy"
+  }));
 });
 </script>
