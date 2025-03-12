@@ -7,6 +7,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     const auth = useAuthStore();
     const api = useApiStore();
 
+
     // User has not logged in
     const isSignedIn = await auth.isSignedIn();
     if (!isSignedIn) {

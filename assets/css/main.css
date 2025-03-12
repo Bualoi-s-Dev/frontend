@@ -13,6 +13,10 @@ button {
   --color-stroke: #d7dfea;
   --color-label: #888;
 
+  --color-green-schedule: #63BC8B;
+  --color-red-schedule: #F44F70;
+  --color-scarlet-schedule: #FB5E64;
+
   --color-facebook: #1877f2;
   --color-google: #ecf0f5;
   --color-titleActive: #1e1e1e;
