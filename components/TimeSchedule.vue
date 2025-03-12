@@ -48,7 +48,7 @@ const isSelected = (date: Date) => {
       :key="day.toString()"
       class="p-1 border rounded-lg text-center cursor-pointer w-11"
       :class="{
-        'border-primary text-primary': isSelected(day),
+        'border-primary text-primary': day,
         'border-body text-body': !isSelected(day),
       }"
     >
@@ -57,3 +57,4 @@ const isSelected = (date: Date) => {
     </div>
   </div>
 </template>
+isSelected
