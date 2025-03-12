@@ -9,7 +9,7 @@ const errorMessage = ref('');
 const api = useApiStore();
 const config = useRuntimeConfig();
 
-const user = ref({ name: '', description: '', location: '', profile: '', id: '' });
+const user = ref({ name: '', description: '', location: '', profile: '', id: '', role: ''});
 
 const fetchUserProfile = async () => {
   try {
@@ -18,7 +18,8 @@ const fetchUserProfile = async () => {
     user.value.profile = config.public.s3URL + response.profile
     user.value.location = response.location
     user.value.id = response.id;
-  } catch (error: any) {
+    user.value.role = response.role;
+} catch (error: any) {
     errorMessage.value = error.message;
   }
 }
@@ -100,7 +101,8 @@ const handleLogout = async () => {
 
                 <div class="flex flex-col justify-center items-center">
                     <img :src=user.profile alt="Profile Image" class="w-30 h-30 rounded-full object-cover">
-                    <p class="pt-5">{{ user.name }}</p>
+                    <p class="pt-5 text-xl">{{ user.name }}</p>
+                    <p style="color: #666666">{{ user.role }}</p>
                     <!-- <img src="/assets/userpf.jpg" alt="Profile Image" class="w-30 h-30 rounded-full object-cover">
                     <p class="pt-5">Kang</p> -->
                 </div>
