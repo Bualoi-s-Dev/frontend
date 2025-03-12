@@ -1,6 +1,5 @@
 /* Do not change, this code is generated from Golang structs */
 
-
 export enum PackageType {
   WEDDING_BLISS = "WEDDING_BLISS",
   BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",

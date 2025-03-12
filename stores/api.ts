@@ -1,6 +1,13 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import type { Package, PackageRequest, PackageStrictRequest, User, UserRequest, UserResponse } from "~/types/api";
+import type {
+  PackageResponse,
+  PackageRequest,
+  UserResponse,
+  UserRequest,
+  Subpackage,
+  SubpackageRequest,
+} from "~/types/api";
 import { useAuthStore } from "./auth";
 
 export const useApiStore = defineStore("api", () => {
@@ -31,18 +38,19 @@ export const useApiStore = defineStore("api", () => {
     return response.data;
   };
 
-  const fetchUserPackage = async (): Promise<Package[]> => {
-    const response = await axios.get(`${config.public.apiUrl}/package`, {
+  const fetchUserPackage = async (): Promise<PackageResponse[]> => {
+    // TODO: remove trailing slash when backend fix the endpoint.
+    const response = await axios.get(`${config.public.apiUrl}/package/`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
-    return response.data as Package[];
+    return response.data as PackageResponse[];
   };
 
-  const fetchPackage = async (id: string): Promise<Package> => {
+  const fetchPackage = async (id: string): Promise<PackageResponse> => {
     const response = await axios.get(`${config.public.apiUrl}/package/${id}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
-    return response.data as Package;
+    return response.data as PackageResponse;
   };
 
   const updateUserInformation = async (payload: UserRequest) => {
@@ -55,6 +63,48 @@ export const useApiStore = defineStore("api", () => {
     );
   };
 
+  const createSubpackage = async (id: string, spkg: SubpackageRequest) => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      spkg,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const deleteSubpackage = async (id: string) => {
+    const response = await axios.delete(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const updateSubpackage = async (id: string, spkg: SubpackageRequest) => {
+    const response = await axios.patch(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      spkg,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const fetchSubpackage = async (id: string): Promise<Subpackage> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/subpackage/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as Subpackage;
+  };
+
   return {
     fetchPackage,
     fetchUserPackage,
@@ -62,5 +112,9 @@ export const useApiStore = defineStore("api", () => {
     createPackage,
     updatePackage,
     updateUserInformation,
+    createSubpackage,
+    deleteSubpackage,
+    fetchSubpackage,
+    updateSubpackage,
   };
 });
