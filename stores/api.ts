@@ -7,6 +7,8 @@ import type {
   UserRequest,
   Subpackage,
   SubpackageRequest,
+  BusyTime,
+  BusyTimeRequest,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 
@@ -104,6 +106,37 @@ export const useApiStore = defineStore("api", () => {
     return response.data as Subpackage;
   };
 
+  const fetchBusyTime = async (id: string): Promise<BusyTime> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/busytime/photographer/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as BusyTime;
+  };
+
+  const createBusyTime = async (busyTime: BusyTimeRequest) => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/user/busytime`,
+      busyTime,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+  };
+
+  const deleteBusyTime = async (id: string) => {
+    console.log(id);
+    const response = await axios.delete(
+      `${config.public.apiUrl}/user/busytime/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
   return {
     fetchPackage,
     fetchAllPackage,
@@ -115,5 +148,8 @@ export const useApiStore = defineStore("api", () => {
     deleteSubpackage,
     fetchSubpackage,
     updateSubpackage,
+    fetchBusyTime,
+    createBusyTime,
+    deleteBusyTime,
   };
 });
