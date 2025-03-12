@@ -166,12 +166,25 @@ export interface AppointmentUpdateStatusRequest {
 }
 export interface AppointmentResponse {
   id: string;
-  customer_id: string;
-  photographer_id: string;
-  package_id: string;
-  sub_package_id: string;
-  start_time: string;
-  end_time: string;
+  customerId: string;
+  photographerId: string;
+  packageId: string;
+  subpackageId: string;
+  startTime: string;
+  endTime: string;
   status: string;
   location: string;
+}
+
+export interface AppointmentDetailResponse {
+  id: string;
+  packageName: string;
+  subpackageName: string;
+  customerName: string;
+  photographerName: string;
+  price: number;
+  location: string;
+  startTime: string;
+  endTime: string;
+  status: AppointmentStatus;
 }
