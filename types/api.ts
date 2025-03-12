@@ -1,5 +1,6 @@
 /* Do not change, this code is generated from Golang structs */
 
+
 export enum PackageType {
   WEDDING_BLISS = "WEDDING_BLISS",
   BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",
@@ -32,40 +33,52 @@ export enum BankName {
   STANDARD_CHARTERED = "STANDARD_CHARTERED",
   ICBC_THAILAND = "ICBC_THAILAND",
 }
-export interface Package {
-  id: string;
-  ownerId: string;
-  title: string;
-  type: PackageType;
-  photoUrls: string[];
+export enum DayName {
+  SUN = "SUN",
+  MON = "MON",
+  TUE = "TUE",
+  WED = "WED",
+  THU = "THU",
+  FRI = "FRI",
+  SAT = "SAT",
+}
+export enum BusyTimeType {
+  Photographer = "Photographer",
+  Appointment = "Appointment",
+}
+export enum AppointmentStatus {
+  Pending = "Pending",
+  Accepted = "Accepted",
+  Rejected = "Rejected",
+  Canceled = "Canceled",
+  Completed = "Completed",
 }
 export interface PackageRequest {
   title?: string;
   type?: PackageType;
   photos?: string[];
 }
-export interface PackageStrictRequest {
+export interface Subpackage {
+  id: string;
+  packageId: string;
+  title: string;
+  description: string;
+  duration: number;
+  price: number;
+  isInf: boolean;
+  repeatedDay: DayName[];
+  avaliableStartTime: string;
+  avaliableEndTime: string;
+  avaliableStartDay: string;
+  avaliableEndDay: string;
+}
+export interface PackageResponse {
+  id: string;
+  ownerId: string;
   title: string;
   type: PackageType;
-  photos: string[];
-}
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  gender: string;
-  profile: string;
-  phone: string;
-  location: string;
-  role: UserRole;
-  description: string;
-  bankName: BankName;
-  bankAccount: string;
-  lineID: string;
-  facebook: string;
-  instagram: string;
-  showcasePackages: string[];
-  photographerPackages: string[];
+  photoUrls: string[];
+  subPackages: Subpackage[];
 }
 export interface UserRequest {
   name?: string;
@@ -97,6 +110,56 @@ export interface UserResponse {
   lineID: string;
   facebook: string;
   instagram: string;
-  showcasePackages: Package[];
-  photographerPackages: Package[];
+  showcasePackages: PackageResponse[];
+  photographerPackages: PackageResponse[];
+}
+
+export interface SubpackageRequest {
+  title?: string;
+  description?: string;
+  price?: number;
+  duration?: number;
+  isInf?: boolean;
+  repeatedDay?: string[];
+  avaliableStartTime?: string;
+  avaliableEndTime?: string;
+  avaliableStartDay?: string;
+  avaliableEndDay?: string;
+}
+export interface BusyTime {
+  id: string;
+  photographerId: string;
+  type: BusyTimeType;
+  startTime: string;
+  endTime: string;
+  isValid: boolean;
+}
+export interface BusyTimeRequest {
+  type?: BusyTimeType;
+  startTime?: string;
+  endTime?: string;
+  isValid?: boolean;
+}
+export interface AppointmentRequest {
+  start_time?: string;
+  location?: string;
+}
+export interface AppointmenStrictRequest {
+  start_time: string;
+  status: AppointmentStatus;
+  location: string;
+}
+export interface AppointmentUpdateStatusRequest {
+  status: AppointmentStatus;
+}
+export interface AppointmentResponse {
+  id: string;
+  customer_id: string;
+  photographer_id: string;
+  package_id: string;
+  sub_package_id: string;
+  start_time: string;
+  end_time: string;
+  status: string;
+  location: string;
 }

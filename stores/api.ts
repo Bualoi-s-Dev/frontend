@@ -14,7 +14,7 @@ export const useApiStore = defineStore("api", () => {
     return response.data as UserResponse;
   };
 
-  const createPackage = async (pkg: PackageStrictRequest) => {
+  const createPackage = async (pkg: PackageRequest) => {
     const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
