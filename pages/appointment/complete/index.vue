@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UserProfile } from 'firebase/auth';
-import type { AppointmentDetailResponse, AppointmentResponse, UserRequest, UserResponse } from '~/types/api';
+import type { AppointmentDetailResponse, AppointmentResponse, AppointmentStatus, UserRequest, UserResponse } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
@@ -10,13 +10,19 @@ const config = useRuntimeConfig();
 const appointmentList = ref<AppointmentDetailResponse[] | undefined>();
 const userData = ref<UserResponse>();
 
+// TODO: refactor function to not use index
+const manageStatus = (index: number, status: AppointmentStatus) => {
+    if(appointmentList.value == undefined) return ;
+    appointmentList.value[index].status = status;
+    return ;
+}
+
 onMounted(async () => {
     const response1 = await api.fetchAppointmentsDetail();
     appointmentList.value = response1;
     
     const response2 = await api.fetchUserProfile();
     userData.value = response2;
-    console.log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
 })
 
 </script>
@@ -28,11 +34,11 @@ onMounted(async () => {
             <h1 class="text-xl">Appointment List</h1>
         </div>
         <div
-            v-for="appointment in appointmentList"
+            v-for="appointment, index in appointmentList"
             :key="appointment.id"
             class="flex items-center"
         >
-            <AppointmentCard :role="userData?.role" :complete=true :appointmentData="appointment" />
+            <AppointmentCard v-if="appointment.status == 'Completed'" :role="userData?.role" :complete=true :appointmentData="appointment"  :index="index" :manageStatus="manageStatus" />
         </div>
     </div>
 </template>

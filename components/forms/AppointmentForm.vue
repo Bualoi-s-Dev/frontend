@@ -47,9 +47,7 @@ const onSubmit = async() => {
             start_time: startTime.value, 
             location: location.value
         };
-        console.log(payload);
         const subid = subpackageId.value;
-        console.log(subid);
         await api.createAppointment(subid, payload);
         await router.push({ path: "/home" });
     } catch (error: any) {
@@ -63,7 +61,6 @@ const onSubmit = async() => {
 watch(subpackageId, async (newSubPackageId) => {
     const response = await api.fetchSubpackage(newSubPackageId);
     duration.value = response.duration;
-    console.log(response.duration);
 });
 
 </script>
@@ -109,6 +106,14 @@ watch(subpackageId, async (newSubPackageId) => {
                 <p v-if="errors.subpackageId" class="text-red-500 text-xs">
                     {{ errors.subpackageId }}
                 </p>
+                <label class="text-[16px]">Date</label>
+                    <!-- TODO -->
+                    <input
+                        type="text"
+                        value="?"
+                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        readonly
+                    />
             </div>
             <div class="flex flex-row gap-5">
                 <div class="flex flex-col gap-1">
@@ -146,8 +151,9 @@ watch(subpackageId, async (newSubPackageId) => {
                 />
             </div>
             <button @click="onSubmit" class="mt-auto ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50">
-                Submit
+                Confirm
             </button>
+            <!-- TODO -->
         </div>
     </div>
 </template>
