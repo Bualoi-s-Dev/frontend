@@ -38,14 +38,6 @@ export const useApiStore = defineStore("api", () => {
     return response.data;
   };
 
-  const fetchUserPackage = async (): Promise<PackageResponse[]> => {
-    // TODO: remove trailing slash when backend fix the endpoint.
-    const response = await axios.get(`${config.public.apiUrl}/package/`, {
-      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-    });
-    return response.data as PackageResponse[];
-  };
-
   const fetchPackage = async (id: string): Promise<PackageResponse> => {
     const response = await axios.get(`${config.public.apiUrl}/package/${id}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
@@ -115,7 +107,6 @@ export const useApiStore = defineStore("api", () => {
   return {
     fetchPackage,
     fetchAllPackage,
-    fetchUserPackage,
     fetchUserProfile,
     createPackage,
     updatePackage,

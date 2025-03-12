@@ -48,13 +48,8 @@ onMounted(async () => {
           text-options="text-white text-right text-sm">Edit Profile</Button>
         <Button width="w-80 h-10" text-options="mt-2 text-white text-right text-sm">View All Packages</Button>
       </div>
-      <div class="px-6 mt-6 flex flex-row w-full justify-between items-center">
-        <h2>Work showcase</h2>
-        <Button @click="router.push('/package/create')">Add Package</Button>
-      </div>
 
-      <WorkList v-if="packages" :data="packages" navigate />
-      <div>
+      <div class="mt-4">
         <div class="flex items-center ml-5 mb-3">
           <Button middle-icon="material-symbols:mail-outline-sharp" icon-color="black" height="h-10"
             bg-color="bg-button-profile"></Button>
