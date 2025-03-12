@@ -4,6 +4,7 @@ import { Icon } from "@iconify/vue";
 
 // Props
 const props = defineProps<{
+  navigate?: boolean;
   editable?: boolean;
   addable?: boolean;
   toAdd?: boolean;
@@ -55,6 +56,10 @@ const endDrag = () => {
   }
 };
 
+const handleClick = () => {
+  if(props.navigate) router.push(`/package/${props.id}`);
+}
+
 // Navigation Functions
 const prevImage = () => {
   if (currentIndex.value > 0) {
@@ -76,7 +81,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-gray-100 relative flex flex-col items-center w-full rounded-2xl shadow-md">
+  <button @click="handleClick" class="bg-gray-100 relative flex flex-col items-center w-full rounded-2xl shadow-md">
     <div>
       <div v-if="!toAdd" class="border border-gray-300 rounded-lg mt-3 w-77 aspect-[334/200] overflow-hidden shadow-md">
         <div ref="carousel" class="flex transition-transform duration-300 ease-in-out w-full h-full"
@@ -102,7 +107,7 @@ onMounted(() => {
         <div class="flex flex-row justify-between">
           <Button bg-color="bg-primary">{{ type }}</Button>
           <div v-if="editable">
-            <button @click="router.push(`/package/edit/${id}`)">
+            <button @click.stop="router.push(`/package/edit/${id}`)">
               <Icon icon="iconoir:edit" width="30px" />
             </button>
           </div>
@@ -121,5 +126,5 @@ onMounted(() => {
     </div>
 
     <button v-if="toAdd" @click="router.push(`/package/create`)" class="absolute w-full h-full top-0 left-0"></button>
-  </div>
+  </button>
 </template>

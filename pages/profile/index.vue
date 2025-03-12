@@ -53,7 +53,7 @@ onMounted(async () => {
         <Button @click="router.push('/package/create')">Add Package</Button>
       </div>
 
-      <WorkList v-if="packages" :data="packages" />
+      <WorkList v-if="packages" :data="packages" navigate />
       <div>
         <div class="flex items-center ml-5 mb-3">
           <Button middle-icon="material-symbols:mail-outline-sharp" icon-color="black" height="h-10"
