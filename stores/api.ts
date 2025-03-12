@@ -1,125 +1,62 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import type { Package, User } from '~/types/api';
+import type { Package, PackageStrictRequest, User } from '~/types/api';
 import { useAuthStore } from './auth';
 
-export const useApiStore = defineStore('api', () => {
-    const auth = useAuthStore();
-    const config = useRuntimeConfig();
+export const useApiStore = defineStore("api", () => {
+  const auth = useAuthStore();
+  const config = useRuntimeConfig();
 
-    const fetchUserProfile = async (): Promise<User> => {
-        const response = await axios.get(`${config.public.apiUrl}/user/profile`, {
+  const fetchUserProfile = async (): Promise<User> => {
+    const response = await axios.get(`${config.public.apiUrl}/user/profile`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as User;
+  };
+
+    const createPackage = async (pkg: PackageStrictRequest) => {
+        // TODO: remove trailing slash when backend fix the endpoint.
+        const response = await axios.post(`${config.public.apiUrl}/package/`, pkg, {
             headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
-        });
-        return response.data as User;
-    };
+        })
+    }
 
-    const fetchUserPackage = async(): Promise<Package> => {
+    const updatePackage = async (id: string, pkg: PackageStrictRequest) => {
+        console.log('updating package')
+        const response = await axios.patch(`${config.public.apiUrl}/package/${id}`, pkg, {
+            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
+        })
+        console.log(pkg.photos[0], 'update package')
+        return response.data;
+    }
+
+    const fetchUserPackage = async (): Promise<Package[]> => {
         // TODO: remove trailing slash when backend fix the endpoint.
         const response = await axios.get(`${config.public.apiUrl}/package/`, {
             headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
         });
-        console.log(response.data)
+        return response.data as Package[];
+    }
+
+    const fetchPackage = async (id: string): Promise<Package> => {
+        const response = await axios.get(`${config.public.apiUrl}/package/${id}`, {
+            headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
+        });
         return response.data as Package;
     }
 
-    // const fetchUserPackage = async() => {
-    //     axios.get('http://localhost:8080/package/', {
-    //         headers: {
-    //           Authorization: 'Bearer ' + varToken
-    //         }
-    //       })
-    //       .then(response => {
-    //         packages.value = response.data;
-    //         console.log(response.data)
-    //       })
-    //       .catch(error => {
-    //         error = error.response ? error.response.data : error.message;  // Storing error in data
-    //       });
-    // }
-
-    // const fetchUserProfile = async() => {
-    //     axios.get('http://localhost:8080/user/profile', {
-    //         headers: {
-    //           Authorization: 'Bearer ' + varToken
-    //         }
-    //       })
-    //       .then(response => {
-    //         console.log(response.data)
-    //         imageUrl.value = 'https://pub-58a5559d12b34ac5999431d8764da7fa.r2.dev' + response.data.profile
-    //         user.value.name = response.data.name
-    //         user.value.gender = response.data.gender
-    //         user.value.email = response.data.email
-    //         user.value.location = response.data.location
-    //         allData.value = response.data;  // Storing response in data
-    //       })
-    //       .catch(error => {
-    //         error = error.response ? error.response.data : error.message;  // Storing error in data
-    //       });
-    // }
-    // const fetchUserPackage = async() => {
-    //     axios.get('http://localhost:8080/package/', {
-    //         headers: {
-    //           Authorization: 'Bearer ' + varToken
-    //         }
-    //       })
-    //       .then(response => {
-    //         packages.value = response.data;
-    //         console.log(response.data)
-    //       })
-    //       .catch(error => {
-    //         error = error.response ? error.response.data : error.message;  // Storing error in data
-    //       });
-    // }
-
-    const updateUserInformation = async ( payload: any ) => {
-        console.log(payload)
-        const response = await axios.put(`${config.public.apiUrl}/user/profile`, 
-            payload,
-            {
+    const updateUserInformation = async (payload: any) => {
+        const response = await axios.put(`${config.public.apiUrl}/user/profile`, payload, {
             headers: { Authorization: `Bearer ${await auth.fetchToken()}` }
         });
     }
 
-    // const updateUserInformation = async () => {
-    //     try{
-    //         const payload = {
-    //             email: allData.value.email,
-    //             name: user.value.name,
-    //             gender: user.value.gender,
-    //             profile: imageUrl.value,
-    //             phone: allData.value.phone,
-    //             location: user.value.location,
-    //             isPhotographer: true,
-    //             bankName: allData.value.bankName,
-    //             bankAccount: allData.value.bankAccount,
-    //             lineID: allData.value.lineID,
-    //             facebook: allData.value.facebook,
-    //             instagram: allData.value.instagram,
-    //             showcasePackages: null,
-    //             packages: null,
-    //         }
-    //         console.log(payload.profile)
-    //         const response = await axios.put(
-    //             "http://localhost:8080/user/profile",
-    //             payload,
-    //             {
-    //                 headers: {
-    //                     Authorization: 'Bearer ' + varToken,
-    //                     "Content-Type": "application/json",
-    //                 },
-    //             }
-    //         );
-    //         responesMessage.value = "Username updated successfully!";
-    //     } catch (error) {
-    //         responesMessage.value = "Failed to update username.";
-    //         console.log(error)
-    //     }
-    // }
-
     return {
-        fetchUserProfile,
+        fetchPackage,
         fetchUserPackage,
+        fetchUserProfile,
+        createPackage,
+        updatePackage,
         updateUserInformation
     };
 });

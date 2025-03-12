@@ -8,13 +8,10 @@ import {
     getIdToken,
     sendPasswordResetEmail,
     type User,
-    type Auth
 } from 'firebase/auth';
-import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', () => {
     const user = ref<User | null>(null);
-    const config = useRuntimeConfig();
     
     const { $auth, $facebookProvider, $googleProvider } = useNuxtApp();
     // const config = useRuntimeConfig();

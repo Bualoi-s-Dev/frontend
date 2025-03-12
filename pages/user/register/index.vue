@@ -17,6 +17,7 @@ const confirmPassword = ref("");
 const errorMessage = ref("");
 
 const auth = useAuthStore();
+const user = useUserStore();
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
@@ -37,6 +38,8 @@ const isFormValid = computed(
     isEmailValid.value && isPasswordValid.value && isConfirmPasswordValid.value
 );
 
+const registering = ref(false);
+
 // Handle form submission
 const handleSubmit = async () => {
   if (!isFormValid.value) {
@@ -45,21 +48,22 @@ const handleSubmit = async () => {
   }
 
   try {
+    registering.value = true;
+
     await auth.handleRegister(email.value, password.value);
+    await user.updateProfile();
     // Clear errors if successful
     errorMessage.value = "";
 
-    router.push("/user/register/selectRole");
+    router.push({
+      path: "/user/register/createUser"
+    });
   } catch (error: any) {
-    console.log('error', error.message)
+    console.log("error", error.message);
     errorMessage.value = error.message;
+  } finally {
+    registering.value = false;
   }
-
-  // Navigate to the next page with email as a query parameter
-  router.push({
-    path: "/user/register/createUser",
-    query: { email: email.value },
-  });
 };
 </script>
 
@@ -73,11 +77,8 @@ const handleSubmit = async () => {
       <div class="flex flex-col gap-[16px]">
         <div>
           <label>Email</label>
-          <input
-            v-model="email"
-            type="email"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-          />
+          <input :disabled="registering" v-model="email" type="email"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
           <p v-if="email && !isEmailValid" class="text-red-500 text-xs">
             Invalid email format
           </p>
@@ -85,11 +86,8 @@ const handleSubmit = async () => {
 
         <div>
           <label>Password</label>
-          <input
-            v-model="password"
-            type="password"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-          />
+          <input :disabled="registering" v-model="password" type="password"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
           <p v-if="password && !isPasswordValid" class="text-red-500 text-xs">
             Password must be at least 6 characters
           </p>
@@ -97,26 +95,19 @@ const handleSubmit = async () => {
 
         <div>
           <label>Confirm Password</label>
-          <input
-            v-model="confirmPassword"
-            type="password"
-            class="border w-full rounded-md py-[6px] px-2 text-[14px] border-stroke"
-          />
-          <p
-            v-if="confirmPassword && !isConfirmPasswordValid"
-            class="text-red-500 text-xs"
-          >
+          <input :disabled="registering" v-model="confirmPassword" type="password"
+            class="border disabled:opacity-50 w-full rounded-md py-[6px] px-2 text-[14px] border-stroke" />
+          <p v-if="confirmPassword && !isConfirmPasswordValid" class="text-red-500 text-xs">
             Passwords do not match
           </p>
         </div>
       </div>
 
+      <span class="text-xs text-red-500">{{ errorMessage }}</span>
       <!-- Register Button -->
-      <Button
-        class="flex items-center justify-center py-[18px]"
-        textOptions="text-white text-[14px] font-poppins"
-        @click="handleSubmit"
-      >
+      <Button :disabled="!isFormValid || registering"
+        class="flex disabled:opacity-50 items-center justify-center py-[18px]"
+        textOptions="text-white text-[14px] font-poppins" @click="handleSubmit">
         Register
       </Button>
     </div>
@@ -130,10 +121,7 @@ const handleSubmit = async () => {
     <div class="pl-[8px] pt-[20px]">
       <label class="text-label text-[14px]">
         Back to
-        <span
-          class="ml-[6px] cursor-pointer underline"
-          @click="router.push('/user/login')"
-        >
+        <span class="ml-[6px] cursor-pointer underline" @click="router.push('/user/login')">
           Sign in
         </span>
       </label>

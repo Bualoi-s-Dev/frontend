@@ -3,36 +3,18 @@ import { ref, computed, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
 
 // Props
-const props = defineProps({
-  editable: {
-    type: Boolean,
-    required: false
-  },
-  addable:{
-    type: Boolean,
-    required: false
-  },
-  toAdd:{
-    type: Boolean,
-    required: false
-  },
-  images: {
-    type: Array as () => string[],
-    required: false,
-  },
-  title: {
-    type: String,
-    required: false,
-  },
-  owner: {
-    type: String,
-    required: false,
-  },
-  type: {
-    type: String,
-    required: false,
-  },
-});
+const props = defineProps<{
+  editable?: boolean;
+  addable?: boolean;
+  toAdd?: boolean;
+  images: string[];
+  title?: string;
+  owner?: string;
+  type?: string;
+  id?: string;
+}>();
+
+const router = useRouter();
 
 // Reactive State
 const currentIndex = ref(0);
@@ -94,64 +76,52 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="bg-gray-100 flex flex-col items-center w-full rounded-2xl shadow-md">
-      <div>
-        <div v-if="!toAdd" class="border border-gray-300 rounded-lg mt-3 w-77 aspect-[334/200] overflow-hidden shadow-md">
-          <div
-            ref="carousel"
-            class="flex transition-transform duration-300 ease-in-out w-full h-full"
-            :style="{ transform: `translateX(${offset}px)` }"
-            @mousedown="startDrag"
-            @touchstart="startDrag"
-            @mousemove="onDrag"
-            @touchmove="onDrag"
-            @mouseup="endDrag"
-            @touchend="endDrag"
-            @mouseleave="endDrag"
-          >
-            <!-- Images -->
-            <div
-              v-for="(image, index) in images"
-              :key="index"
-              class="w-full h-full flex-shrink-0"
-            >
-              <img class="w-full h-full object-cover object-center" :src="image" alt="Carousel Image" />
-            </div>
+  <div class="bg-gray-100 relative flex flex-col items-center w-full rounded-2xl shadow-md">
+    <div>
+      <div v-if="!toAdd" class="border border-gray-300 rounded-lg mt-3 w-77 aspect-[334/200] overflow-hidden shadow-md">
+        <div ref="carousel" class="flex transition-transform duration-300 ease-in-out w-full h-full"
+          :style="{ transform: `translateX(${offset}px)` }" @mousedown="startDrag" @touchstart="startDrag"
+          @mousemove="onDrag" @touchmove="onDrag" @mouseup="endDrag" @touchend="endDrag" @mouseleave="endDrag">
+          <!-- Images -->
+          <div v-for="(image, index) in images" :key="index" class="w-full h-full flex-shrink-0">
+            <!-- Append timestamp to make browser not cache image, so that the image updates would change immediately -->
+            <!-- TODO: when backend return new image url every time the image is updated, we can remove the suffix and we can safely cache the images -->
+            <img class="w-full h-full object-cover object-center" :src="`${image}?${Date.now()}`" alt="Carousel Image" />
           </div>
         </div>
-        <div v-else class="bg-gray-400 rounded-lg overflow-hidden w-77 h-40 shadow-md">
-          <Button bg-color="bg-gray-400" button-options="w-full h-full" text-options="text-4xl text-white">+</Button>
+      </div>
+      <div v-else class="bg-gray-400 rounded-lg overflow-hidden w-77 h-40 shadow-md">
+        <Button bg-color="bg-gray-400" button-options="w-full h-full" text-options="text-4xl text-white">+</Button>
+      </div>
+      <div class="flex justify-center mt-2">
+        <span v-for="(image, index) in images" :key="index"
+          :class="{ 'bg-gray-800': index === currentIndex, 'bg-gray-400 bg-': index !== currentIndex }"
+          class="w-1 h-1 mx-1 rounded-full transition-colors">
+        </span>
+      </div>
+
+      <div v-if="type" class="my-4 text-left">
+        <div class="flex flex-row justify-between">
+          <Button bg-color="bg-primary">{{ type }}</Button>
+          <div v-if="editable">
+            <button @click="router.push(`/package/edit/${id}`)">
+              <Icon icon="iconoir:edit" width="30px" />
+            </button>
+          </div>
+          <div v-else-if="addable">
+            <Button>Add</Button>
+          </div>
         </div>
-        <div class="flex justify-center mt-2">
-            <span 
-                v-for="(image, index) in images" 
-                :key="index" 
-                :class="{ 'bg-gray-800': index === currentIndex, 'bg-gray-400 bg-': index !== currentIndex }"
-                class="w-1 h-1 mx-1 rounded-full transition-colors">
-            </span>
-        </div>
-        
-        <div v-if="type" class="my-4 text-left">
-            <div class="flex flex-row justify-between">
-              <Button bg-color="bg-primary">{{ type }}</Button>
-              <div v-if="editable">
-                <button>
-                  <Icon icon="iconoir:edit" width="30px"/>
-                </button>
-              </div>
-              <div v-else-if="addable">
-                <Button>Add</Button>
-              </div>
-            </div>
-            <div class="mt-4">
-              <h2 class="text-lg font-medium">{{ title }}</h2>
-              <div class="flex flex-row justify-between">
-                <p class="text-gray-600 font-light">{{ owner }}</p>
-                <p class="text-primary font-light"> $2,500-5,600 </p>
-              </div>
-            </div>
+        <div class="mt-4">
+          <h2 class="text-lg font-medium">{{ title }}</h2>
+          <div class="flex flex-row justify-between">
+            <p class="text-gray-600 font-light">{{ owner }}</p>
+            <p class="text-primary font-light"> $2,500-5,600 </p>
+          </div>
         </div>
       </div>
     </div>
-  </template>
-  
+
+    <button v-if="toAdd" @click="router.push(`/package/create`)" class="absolute w-full h-full top-0 left-0"></button>
+  </div>
+</template>

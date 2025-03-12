@@ -4,8 +4,6 @@ definePageMeta({
 });
 
 import logo from "assets/logo.png";
-import facebook_icon from "assets/icons/facebook.svg";
-import google_icon from "assets/icons/google.svg";
 import { useAuthStore } from "~/stores/auth";
 
 const router = useRouter();
@@ -14,6 +12,7 @@ const password = ref("");
 const errorMessage = ref("");
 
 const auth = useAuthStore();
+const user = useUserStore();
 
 // Email validation (simple regex)
 const isEmailValid = computed(() =>
@@ -29,8 +28,13 @@ const isFormValid = computed(
     isEmailValid.value && isPasswordValid.value
 );
 
-const onLoginSuccess = () => {
-  router.push("/");
+const onLoginSuccess = async () => {
+  try {
+    await user.updateProfile();
+  } catch (error: any) {
+    console.log(error.message)
+  }
+  await router.push("/");
 }
 
 const handleGoogleLogin = async () => {
@@ -54,8 +58,7 @@ const handleFacebookLogin = async () => {
 // Handle form submission
 const handleSubmit = async () => {
   try {
-    const temp = await auth.handleLogin(email.value, password.value);
-    console.log("handleSubmit", 1)
+    await auth.handleLogin(email.value, password.value);
     onLoginSuccess();
   } catch (error: any) {
     console.log("error", error.message)
@@ -101,15 +104,11 @@ const handleSubmit = async () => {
         <Button :disabled="!isFormValid" class="flex items-center justify-center py-[12px]"
           textOptions="text-white text-[14px] font-poppins" @click="handleSubmit">Login
         </Button>
-        <Button
-        bgColor="bg-gray-200"
-        class="flex items-center justify-center py-[18px]"
-        textOptions="text-black text-[14px] font-poppins"
-        leftIcon = "flat-color-icons:google"
-        @click="handleGoogleLogin"
-      >
-        Login with Google
-      </Button>
+        <Button bgColor="bg-gray-200" class="flex items-center justify-center py-[18px]"
+          textOptions="text-black text-[14px] font-poppins" leftIcon="flat-color-icons:google"
+          @click="handleGoogleLogin">
+          Login with Google
+        </Button>
         <Button class="flex items-center justify-center py-[12px] bg-facebook"
           textOptions="text-white text-[14px] font-poppins" leftIcon="logos:facebook" @click="handleFacebookLogin">
           Login With Facebook

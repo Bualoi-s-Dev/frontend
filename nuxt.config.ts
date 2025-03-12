@@ -32,7 +32,12 @@ export default defineNuxtConfig({
       autoSubfolderIndex: false
     }
   },
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt', 'nuxt-toastify'],
+  toastify: {
+    position: 'top-right',
+    theme: 'light',
+    clearOnUrlChange: false
+  },
   vite: {
     plugins: [
       tailwindcss(),
