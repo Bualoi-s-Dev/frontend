@@ -10,7 +10,8 @@
     <h2 class="text-lg mb-2">Time Schedule</h2>
     <h2 class="text-lg mb-2">Date</h2>
     <div class="mb-4">
-      <input :min="new Date().toISOString().split('T')[0]" type="date" v-model="selectedDate" class="p-2 border rounded-lg shadow-sm w-full" />
+      <input :min="new Date().toISOString().split('T')[0]" type="date" v-model="selectedDate"
+        class="p-2 border rounded-lg shadow-sm w-full" />
     </div>
     <TimeSchedule :input-date="selectedDate" :show-date="true" />
     <p class="flex justify-center mt-5 text-xl">
@@ -19,25 +20,26 @@
     <div>
       <ul v-if="includedDate" class="flex flex-col gap-5 my-5">
         <li v-for="(interval, index) in intersectedIntervals" :key="index">
-          <div :class="[
-            'rounded-2xl drop-shadow-xl p-7 text-white',
+          <button @click="() => handleClick(index)" :class="[
+            'rounded-2xl drop-shadow-xl p-7 text-white w-full',
             interval.isIntersected ? 'bg-red-schedule' : 'bg-green-schedule',
           ]">
             {{ interval.start }} - {{ interval.end }}
-          </div>
+          </button>
         </li>
       </ul>
 
-      <div class="font-bold text-xl w-full text-center mt-6">The selected date is not in subpackage.</div> 
+      <div class="font-bold text-xl w-full text-center mt-6">The selected date is not in subpackage.</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import type {  DayName, SubpackageResponse } from "~/types/api";
+import type { DayName, SubpackageResponse } from "~/types/api";
 
 const route = useRoute();
+const router = useRouter();
 const api = useApiStore();
 
 const id = route.params.id as string;
@@ -58,9 +60,19 @@ const subpackageDetails = ref<SubpackageResponse | undefined>();
 
 const includedDate = computed(() => subpackageDetails.value?.repeatedDay.map(x => dayNameToDayIndex(x as DayName)).includes(new Date(selectedDate.value).getDay()));
 
+const handleClick = (idx: number) => {
+  if (intersectedIntervals.value[idx].isIntersected) return;
+  const params = new URLSearchParams({
+    date: selectedDate.value,
+    start: intersectedIntervals.value[idx].start,
+    end: intersectedIntervals.value[idx].end
+  });
+  router.push(`/package/${id}/subpackage/appointment/create/${subpackageid}?${params.toString()}`)
+}
+
 onMounted(async () => {
   const [response1, response2] = await Promise.all([api.fetchPackage(id), api.fetchSubpackage(subpackageid)]);
-
+console.log(response1,response2)
   if (response1.photoUrls && response1.photoUrls.length > 0) {
     const imgUrl = config.public.s3URL + response1.photoUrls[0];
     // const imgBlob = await fetch(imgUrl).then((res) => res.blob());
