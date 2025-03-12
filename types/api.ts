@@ -141,7 +141,7 @@ export interface BusyTimeRequest {
   isValid?: boolean;
 }
 export interface AppointmentRequest {
-  startTime?: string;
+  start_time?: string;
   location?: string;
 }
 export interface AppointmenStrictRequest {

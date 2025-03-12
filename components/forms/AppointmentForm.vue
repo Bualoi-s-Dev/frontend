@@ -9,15 +9,13 @@ const config = useRuntimeConfig();
 
 const updating = ref(false);
 const packages = ref<PackageResponse[] | undefined>();
-const subPackages = ref("");
+const subpackageId = ref("");
 const packageInfo = ref<PackageResponse | undefined>();
-const subPackageId = ref("");
 const errors = ref<Record<string, string>>({});
 const startTime = ref("");
 const endTime = ref("");
 const location = ref("");
 const duration = ref(0);
-
 
 const adjustTime = (currentTime: string, sign: number) => {
   if (!currentTime) return "";
@@ -46,10 +44,12 @@ onMounted(async () => {
 const onSubmit = async() => {
     try {
         const payload: AppointmentRequest = {
-            startTime: startTime.value, 
+            start_time: startTime.value, 
             location: location.value
         };
-        const subid = subPackageId.value;
+        console.log(payload);
+        const subid = subpackageId.value;
+        console.log(subid);
         await api.createAppointment(subid, payload);
         await router.push({ path: "/home" });
     } catch (error: any) {
@@ -59,6 +59,12 @@ const onSubmit = async() => {
         updating.value = false;
     }
 }
+
+watch(subpackageId, async (newSubPackageId) => {
+    const response = await api.fetchSubpackage(newSubPackageId);
+    duration.value = response.duration;
+    console.log(response.duration);
+});
 
 </script>
 
@@ -80,7 +86,7 @@ const onSubmit = async() => {
                     :class="{ 'border-red-500': errors.packages }"
                 >
                 
-                    <option disabled value="">"Select on package"</option>
+                    <option disabled value="">Select on package</option>
                     <option v-for="packageData in packages" :value="packageData" :key="packageData.id">{{ packageData.title }}</option>
                 </select>
                 <p v-if="errors.packages" class="text-red-500 text-xs">
@@ -94,14 +100,14 @@ const onSubmit = async() => {
                 <select
                     :disabled="updating"
                     class="border w-full disabled:opacity-50 rounded-md py-2 px-2 text-[14px] border-stroke"
-                    v-model="subPackages"
-                    :class="{ 'border-red-500': errors.subPackages }"
+                    v-model="subpackageId"
+                    :class="{ 'border-red-500': errors.subpackageId }"
                 >
-                    <option disabled value="">"Select on sub package"</option>
+                    <option disabled value="">Select on sub package</option>
                     <option v-for="subpackageData in packageInfo?.subPackages" :value="subpackageData.id" :key="subpackageData.id">{{ subpackageData.title }}</option>
                 </select>
-                <p v-if="errors.subPackages" class="text-red-500 text-xs">
-                    {{ errors.subPackages }}
+                <p v-if="errors.subpackageId" class="text-red-500 text-xs">
+                    {{ errors.subpackageId }}
                 </p>
             </div>
             <div class="flex flex-row gap-5">
@@ -137,7 +143,7 @@ const onSubmit = async() => {
                     class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
             </div>
-            <button @onclick="onSubmit" class="mt-auto ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50">
+            <button @click="onSubmit" class="mt-auto ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50">
                 Submit
             </button>
         </div>

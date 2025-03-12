@@ -49,11 +49,11 @@ const onCancel = async () => {
             </div>
             <div v-else class="flex flex-row gap-2">
                 <div v-if="role == 'photographer'" class="flex flex-row gap-2">
-                    <Button v-if="appointmentData.status == 'Pending'" @onclick="onAccept" height="h-9" button-options="border border-stroke rounded-md px-4">Accept</Button>
-                    <Button v-if="appointmentData.status == 'Pending'" @onclick="onReject" height="h-9" button-options="border border-stroke rounded-md px-4">Reject</Button>
+                    <Button v-if="appointmentData.status == 'Pending'" @click="onAccept" height="h-9" button-options="border border-stroke rounded-md px-4">Accept</Button>
+                    <Button v-if="appointmentData.status == 'Pending'" @click="onReject" height="h-9" button-options="border border-stroke rounded-md px-4">Reject</Button>
                 </div>
                 <div v-else class="flex flex-row gap-2">
-                    <Button v-if="appointmentData.status == 'Pending'" @onclick="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
+                    <Button v-if="appointmentData.status == 'Pending'" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
                 </div>
             </div>
         </div>
