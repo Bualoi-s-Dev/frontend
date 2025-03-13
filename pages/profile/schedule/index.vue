@@ -121,18 +121,20 @@ onMounted(async () => {
     const profile = await api.fetchUserProfile();
     console.log(profile);
 
-    // Fetch busy time data
-    const response = await api.fetchBusyTime(profile.id);
+    // Fetch busy time data and remove invalid entries
+    const response = (await api.fetchBusyTime(profile.id)).filter(item => item.isValid);
 
-    // Fetch appointments and assign 'Appointment' type
+    // Fetch appointments and assign 'Appointment' type, removing canceled ones
     const response2 = await api.fetchAppointmentsDetail();
-    const updatedAppointments = response2.map((item) => ({
-      ...item,
-      type: "Appointment", // Ensure type is assigned
-    }));
+    const updatedAppointments = response2
+      .filter(item => item.status !== "Canceled") // Remove canceled appointments
+      .map(item => ({
+        ...item,
+        type: "Appointment",
+      }));
 
     // Combine both data arrays
-    packageData.value = updatedAppointments.concat(response);
+    packageData.value = response;
     console.log(packageData.value);
   } catch (error) {
     console.error("Failed to fetch busy time data:", error);
