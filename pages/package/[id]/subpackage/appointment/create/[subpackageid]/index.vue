@@ -15,7 +15,6 @@ const packageName = ref("");
 const subpackageName = ref("");
 
 onMounted(async () => {
-    console.log({id, subpackageid, date, start, end});
     const response1 = await api.fetchPackage(id);
     packageName.value = response1.title;
     

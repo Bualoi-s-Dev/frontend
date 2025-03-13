@@ -7,7 +7,7 @@ const route = useRoute()
 const api = useApiStore();
 const config = useRuntimeConfig();
 
-const updating = ref(true);
+const updating = ref(false);
 const packages = ref<PackageResponse[] | undefined>();
 const packageInfo = ref<PackageResponse | undefined>();
 const errors = ref<Record<string, string>>({});
@@ -16,13 +16,16 @@ const duration = ref(0);
 const shitt = ref(""); // TODO: delete this
 
 const prop = defineProps<{
-        packageName: string;
-        subpackageName: string;
-        date: string;
-        startTime: string;
-        endTime: string;
-        subpackageId: string;
-    }>();
+    packageName: string;
+    subpackageName: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    subpackageId: string;
+}>();
+
+
+const valid = computed(() => location.value.trim() !== '');
 
 // watchEffect(() => console.log(prop))
 // console.log(prop)
@@ -46,9 +49,6 @@ const prop = defineProps<{
 //   if (newEnd) startTime.value = adjustTime(newEnd, -1);
 // });
 
-onMounted(() => {
-    console.log({"HEYYYYYYYYYYYYYYYY": prop})
-});
 
 const parseTime = (time: string) => {
     const [hour, minuteAndAmPm] = time.split(":");
@@ -79,6 +79,7 @@ const parseDate = (time: string) => {
 
 // TODO: try catch
 const onSubmit = async () => {
+    updating.value = true;
     try {
         const { hours, minutes } = parseTime(prop.startTime)
         const { years, months, days } = parseDate(prop.date)
@@ -88,11 +89,10 @@ const onSubmit = async () => {
             start_time: time_parse,
             location: location.value
         };
-        console.log(payload);
         const subid = prop.subpackageId;
-        console.log(prop.subpackageId);
         await api.createAppointment(subid, payload);
         await router.push({ path: "/" });
+        useToastify("Successfully requested appointment", { type: "success" });
     } catch (error: any) {
         console.error("Error submiting appointment:", error);
         useToastify(error.message, { type: "error" });
@@ -118,7 +118,8 @@ const onSubmit = async () => {
             <div class="flex flex-col gap-1">
                 <label class="text-[16px]">Package</label>
                 <!-- TODO: fix this v-model shit -->
-                <select :disabled="updating"
+                <!-- <select :disabled="updating" -->
+                <select disabled
                     class="border w-full disabled:opacity-50 rounded-md py-2 px-2 text-[14px] border-stroke"
                     v-model="shitt" :class="{ 'border-red-500': errors.packages }">
 
@@ -131,7 +132,8 @@ const onSubmit = async () => {
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[16px]">Sub Package</label>
-                <select :disabled="updating"
+                <!-- <select :disabled="updating" -->
+                <select disabled
                     class="border w-full disabled:opacity-50 rounded-md py-2 px-2 text-[14px] border-stroke"
                     v-model="shitt" :class="{ 'border-red-500': errors.subpackageId }">
                     <option disabled value="">{{ prop.subpackageName }}</option>
@@ -143,32 +145,32 @@ const onSubmit = async () => {
                 </p>
                 <label class="text-[16px]">Date</label>
                 <!-- TODO -->
-                <input type="text" :value="date"
-                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                <input disabled type="text" :value="date"
+                    class="block disabled:opacity-50 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     readonly />
             </div>
             <div class="flex flex-row gap-5">
                 <div class="flex flex-col gap-1">
                     <label class="text-[16px]">Start Time</label>
                     <!-- TODO -->
-                    <input type="text" :value="startTime"
-                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    <input disabled type="text" :value="startTime"
+                        class="block disabled:opacity-50 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         readonly />
                 </div>
                 <div class="flex flex-col gap-1">
                     <label class="text-[16px]">End Time</label>
                     <!-- TODO -->
-                    <input type="text" :value="endTime"
-                        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    <input disabled type="text" :value="endTime"
+                        class="block disabled:opacity-50 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         readonly />
                 </div>
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-[16px]">Location<span class="text-primary">*</span></label>
                 <input type="text" id="location" v-model="location"
-                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm disabled:opacity-50 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             </div>
-            <button @click="onSubmit"
+            <button :disabled="!valid || updating" @click="onSubmit"
                 class="mt-auto ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white disabled:opacity-50">
                 Confirm
             </button>

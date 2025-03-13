@@ -16,8 +16,6 @@ const props = defineProps<{
   navigate?: boolean;
 }>();
 
-console.log(props)
-
 const config = useRuntimeConfig();
 </script>
 
