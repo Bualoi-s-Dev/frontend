@@ -5,10 +5,14 @@ import type {
   PackageRequest,
   UserResponse,
   UserRequest,
-  Subpackage,
   SubpackageRequest,
   BusyTime,
   BusyTimeRequest,
+  AppointmentResponse,
+  AppointmentUpdateStatusRequest,
+  AppointmentRequest,
+  AppointmentDetailResponse,
+  SubpackageResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 
@@ -38,6 +42,13 @@ export const useApiStore = defineStore("api", () => {
       }
     );
     return response.data;
+  };
+
+  const fetchUserPackage = async (): Promise<PackageResponse[]> => {
+    const response = await axios.get(`${config.public.apiUrl}/package`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as PackageResponse[];
   };
 
   const fetchPackage = async (id: string): Promise<PackageResponse> => {
@@ -96,14 +107,14 @@ export const useApiStore = defineStore("api", () => {
     return response.data;
   };
 
-  const fetchSubpackage = async (id: string): Promise<Subpackage> => {
+  const fetchSubpackage = async (id: string): Promise<SubpackageResponse> => {
     const response = await axios.get(
       `${config.public.apiUrl}/subpackage/${id}`,
       {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
-    return response.data as Subpackage;
+    return response.data as SubpackageResponse;
   };
 
   const fetchBusyTime = async (id: string): Promise<BusyTime> => {
@@ -136,14 +147,101 @@ export const useApiStore = defineStore("api", () => {
     );
     return response.data;
   };
+  const fetchAllAppointment = async (): Promise<AppointmentResponse[]> => {
+    const response = await axios.get(`${config.public.apiUrl}/appointment`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as AppointmentResponse[];
+  };
+
+  const fetchAppointmentsDetail = async (): Promise<
+    AppointmentDetailResponse[]
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/appointment/detail`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as AppointmentDetailResponse[];
+  };
+
+  const updateAppointmentStatus = async (
+    id: string,
+    payload: AppointmentUpdateStatusRequest
+  ): Promise<AppointmentResponse> => {
+    const response = await axios.patch(
+      `${config.public.apiUrl}/appointment/status/${id}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as AppointmentResponse;
+  };
+
+  const fetchAppointment = async (id: string): Promise<AppointmentResponse> => {
+    const response = await axios.delete(
+      `${config.public.apiUrl}/appointment/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as AppointmentResponse;
+  };
+
+  const deleteAppointment = async (id: string) => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/appointment/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+  };
+
+  const updateAppointment = async (
+    id: string,
+    payload: AppointmentRequest
+  ): Promise<AppointmentResponse> => {
+    const response = await axios.patch(
+      `${config.public.apiUrl}/appointment/${id}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as AppointmentResponse;
+  };
+
+  const createAppointment = async (
+    subid: string,
+    payload: AppointmentRequest
+  ): Promise<AppointmentResponse> => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/appointment/${subid}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as AppointmentResponse;
+  };
 
   return {
     fetchPackage,
     fetchAllPackage,
+    fetchUserPackage,
     fetchUserProfile,
     createPackage,
     updatePackage,
     updateUserInformation,
+    fetchAllAppointment,
+    fetchAppointmentsDetail,
+    updateAppointmentStatus,
+    fetchAppointment,
+    deleteAppointment,
+    updateAppointment,
+    createAppointment,
     createSubpackage,
     deleteSubpackage,
     fetchSubpackage,

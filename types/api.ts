@@ -1,5 +1,3 @@
-/* Do not change, this code is generated from Golang structs */
-
 export enum PackageType {
   WEDDING_BLISS = "WEDDING_BLISS",
   BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",
@@ -112,7 +110,6 @@ export interface UserResponse {
   showcasePackages: PackageResponse[];
   photographerPackages: PackageResponse[];
 }
-
 export interface SubpackageRequest {
   title?: string;
   description?: string;
@@ -133,6 +130,23 @@ export interface BusyTime {
   endTime: string;
   isValid: boolean;
 }
+export interface SubpackageResponse {
+  id: string;
+  packageId: string;
+  title: string;
+  description: string;
+  price: number;
+  duration: number;
+  isInf: boolean;
+  repeatedDay: string[];
+  avaliableStartTime: string;
+  avaliableEndTime: string;
+  avaliableStartDay: string;
+  avaliableEndDay: string;
+  busyTimes: BusyTime[];
+  busyTimeMap: {[key: string]: BusyTime[]};
+}
+
 export interface BusyTimeRequest {
   type?: BusyTimeType;
   startTime?: string;
@@ -145,7 +159,6 @@ export interface AppointmentRequest {
 }
 export interface AppointmenStrictRequest {
   start_time: string;
-  status: AppointmentStatus;
   location: string;
 }
 export interface AppointmentUpdateStatusRequest {
@@ -153,12 +166,25 @@ export interface AppointmentUpdateStatusRequest {
 }
 export interface AppointmentResponse {
   id: string;
-  customer_id: string;
-  photographer_id: string;
-  package_id: string;
-  sub_package_id: string;
-  start_time: string;
-  end_time: string;
+  customerId: string;
+  photographerId: string;
+  packageId: string;
+  subpackageId: string;
+  startTime: string;
+  endTime: string;
   status: string;
   location: string;
+}
+
+export interface AppointmentDetailResponse {
+  id: string;
+  packageName: string;
+  subpackageName: string;
+  customerName: string;
+  photographerName: string;
+  price: number;
+  location: string;
+  startTime: string;
+  endTime: string;
+  status: AppointmentStatus;
 }
