@@ -47,6 +47,7 @@ const onCancel = async () => {
             <p class="text-gray-600 mt-1">เวลา : <span class="font-medium">{{ appointmentData?.startTime }} - {{ appointmentData?.endTime }}</span></p>
             <p v-if="role == 'Photographer'" class="text-gray-600">ลูกค้า : <span class="font-medium">{{ appointmentData?.customerName }}</span></p>
             <p v-else class="text-gray-600">เจ้าของ : <span class="font-medium">{{ appointmentData?.photographerName }}</span></p>
+            <p class="text-gray-600">สถานที่: {{ appointmentData.location }}</p>
             <p class="text-red-500 text-lg font-semibold">฿ {{ appointmentData?.price }}</p>
             <p class="text-gray-600">status : <span class="font-medium">{{ appointmentData?.status }}</span></p>
            
