@@ -31,7 +31,7 @@ onMounted(async () => {
     <div class="mt-6 flex flex-col">
         <SearchBar />
         <div class="items-center mx-7 my-2">
-            <h1 class="text-xl">Appointment List</h1>
+            <h1 class="text-xl">Completed Appointment List</h1>
         </div>
         <div
             v-for="appointment, index in appointmentList"
