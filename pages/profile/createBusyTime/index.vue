@@ -54,7 +54,7 @@ const handleSubmit = async () => {
 <template>
   <div class="ml-6 mt-6 flex flex-row gap-3 text-xl">
     <BackButton />
-    Create Subpackage
+    Create Busy Time
   </div>
   <div class="w-full h-full p-6 flex flex-col">
     <div class="flex flex-row text-lg mt-6">
