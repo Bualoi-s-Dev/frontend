@@ -39,7 +39,7 @@ onMounted(async () => {
             :key="appointment.id"
             class="flex items-center"
         >
-            <AppointmentCard :role="userData?.role" :appointmentData="appointment" :index="index" :manageStatus="manageStatus" />
+            <AppointmentCard v-if="appointment.status != AppointmentStatus.Completed" :role="userData?.role" :appointmentData="appointment" :index="index" :manageStatus="manageStatus" />
         </div>
     </div>
 </template>
