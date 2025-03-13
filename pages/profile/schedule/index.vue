@@ -6,11 +6,12 @@
     </div>
   </div>
 
-  <div class="py-3 px-5 flex flex-row items-center">
+  <div class="py-3 px-5 flex flex-row items-center justify-between gap-5">
     <input
-      v-model="name"
-      type="text"
-      class="mr-2 border border-stroke w-full rounded-md text-lg"
+      :min="new Date().toISOString().split('T')[0]"
+      type="date"
+      v-model="selectedDate"
+      class="p-2 border rounded-lg shadow-sm w-full"
     />
     <button
       class="flex justify-center items-center gap-[8px] text-[14px] p-[9px] pr-[13px] rounded-[6px] bg-black text-white"
@@ -53,7 +54,50 @@ const currentPackageToDeleteID = ref<String>("");
 
 const name = ref("");
 
-const packageData = ref<BusyTime[]>([]);
+// const packageData = ref<BusyTime[]>([]);
+
+const packageData = ref<BusyTime[]>([
+  {
+    endTime: "2025-03-23T12:00:00Z",
+    id: "12345678abcd",
+    isValid: true,
+    photographerId: "12345678abcd",
+    startTime: "2025-03-23T10:00:00Z",
+    type: "Photographer",
+  },
+  {
+    endTime: "2025-03-23T16:00:00Z",
+    id: "12345678abcd",
+    isValid: true,
+    photographerId: "12345678abcd",
+    startTime: "2025-03-23T14:00:00Z",
+    type: "Appointment",
+  },
+  {
+    endTime: "2025-03-25T12:00:00Z",
+    id: "12345678abcd",
+    isValid: true,
+    photographerId: "12345678abcd",
+    startTime: "2025-03-25T10:00:00Z",
+    type: "Photographer",
+  },
+  {
+    endTime: "2025-03-25T16:00:00Z",
+    id: "12345678abcd",
+    isValid: true,
+    photographerId: "12345678abcd",
+    startTime: "2025-03-25T14:00:00Z",
+    type: "Appointment",
+  },
+]);
+
+const filteredPackageData = computed(() => {
+  return packageData.value.filter((item) => {
+    const itemDate = new Date(item.startTime).toISOString().split("T")[0]; // Extract YYYY-MM-DD
+    console.log(itemDate, selectedDate.value);
+    return itemDate === selectedDate.value;
+  });
+});
 
 const deleteItem = async (busytimeId: string) => {
   try {
@@ -71,12 +115,25 @@ const deleteItem = async (busytimeId: string) => {
 const goToCreateBusyTime = () => {
   router.push(`/profile/createBusyTime`);
 };
-
+//todo ; fix the code bro
 onMounted(async () => {
   try {
     const profile = await api.fetchUserProfile();
+    console.log(profile);
+
+    // Fetch busy time data
     const response = await api.fetchBusyTime(profile.id);
-    packageData.value = response;
+
+    // Fetch appointments and assign 'Appointment' type
+    const response2 = await api.fetchAppointmentsDetail();
+    const updatedAppointments = response2.map((item) => ({
+      ...item,
+      type: "Appointment", // Ensure type is assigned
+    }));
+
+    // Combine both data arrays
+    packageData.value = updatedAppointments.concat(response);
+    console.log(packageData.value);
   } catch (error) {
     console.error("Failed to fetch busy time data:", error);
   }
@@ -99,7 +156,7 @@ const formatWithAMPM = (date: Date): string => {
 };
 
 const updatedPackageData = computed(() =>
-  packageData.value.map((item: BusyTime) => {
+  filteredPackageData.value.map((item: BusyTime) => {
     const startDate = new Date(item.startTime);
     const endDate = new Date(item.endTime);
 
