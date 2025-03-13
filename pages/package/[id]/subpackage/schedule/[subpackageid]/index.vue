@@ -28,8 +28,7 @@
           </button>
         </li>
       </ul>
-
-      <div class="font-bold text-xl w-full text-center mt-6">The selected date is not in subpackage.</div>
+      <div v-else class="font-bold text-xl w-full text-center mt-6">The selected date is not in subpackage.</div>
     </div>
   </div>
 </template>

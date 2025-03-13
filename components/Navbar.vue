@@ -55,6 +55,11 @@ const onBusy = async () => {
     router.push("/profile/schedule");
 }
 
+const onCompleted = async () => {
+    await toggleMenu();
+    router.push("/appointment/complete");
+}
+
 const handleLogout = async () => {
     try {
       await auth.handleLogout();
@@ -116,6 +121,7 @@ const handleLogout = async () => {
                     <li><a @click="onHome" class="my-4 inline-block text-red-300">Home</a></li>
                     <li><a @click="onAppointment" class="my-4 inline-block">Appointments</a></li>
                     <li v-if="user.role == 'Photographer'"><a @click="onBusy" class="my-4 inline-block">My busy time</a></li>
+                    <li v-if="user.role == 'Photographer'"><a @click="onCompleted" class="my-4 inline-block">History</a></li>
                     <li><a @click="onProfile" class="my-4 inline-block">Profile</a></li>
                     <li>
                         <NuxtLink class="my-8 w-full text-center cta inline-block bg-black hover:bg-black px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>

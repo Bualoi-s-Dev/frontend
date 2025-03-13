@@ -47,6 +47,7 @@ const onCancel = async () => {
             <p class="text-gray-600 mt-1">เวลา : <span class="font-medium">{{ appointmentData?.startTime }} - {{ appointmentData?.endTime }}</span></p>
             <p v-if="role == 'Photographer'" class="text-gray-600">ลูกค้า : <span class="font-medium">{{ appointmentData?.customerName }}</span></p>
             <p v-else class="text-gray-600">เจ้าของ : <span class="font-medium">{{ appointmentData?.photographerName }}</span></p>
+            <p class="text-gray-600">สถานที่: {{ appointmentData.location }}</p>
             <p class="text-red-500 text-lg font-semibold">฿ {{ appointmentData?.price }}</p>
             <p class="text-gray-600">status : <span class="font-medium">{{ appointmentData?.status }}</span></p>
            
@@ -54,9 +55,10 @@ const onCancel = async () => {
                 <div v-if="role == 'Photographer'" class="flex flex-row gap-2">
                     <Button v-if="appointmentData.status == AppointmentStatus.Pending" @click="onAccept" height="h-9" button-options="border border-stroke rounded-md px-4">Accept</Button>
                     <Button v-if="appointmentData.status == AppointmentStatus.Pending" @click="onReject" height="h-9" button-options="border border-stroke rounded-md px-4">Reject</Button>
+                    <Button v-if="appointmentData.status == AppointmentStatus.Accepted" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
                 </div>
                 <div v-else class="flex flex-row gap-2">
-                    <Button v-if="appointmentData.status == AppointmentStatus.Pending" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
+                    <Button v-if="appointmentData.status == AppointmentStatus.Pending || appointmentData.status == AppointmentStatus.Accepted" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
                 </div>
             </div>
         </div>
