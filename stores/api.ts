@@ -5,12 +5,13 @@ import type {
   PackageRequest,
   UserResponse,
   UserRequest,
-  Subpackage,
   SubpackageRequest,
-  AppointmentResponse, 
-  AppointmentUpdateStatusRequest, 
+  BusyTime,
+  BusyTimeRequest,
+  AppointmentResponse,
+  AppointmentUpdateStatusRequest,
   AppointmentRequest,
-  AppointmentDetailResponse, 
+  AppointmentDetailResponse,
   SubpackageResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
@@ -116,72 +117,137 @@ export const useApiStore = defineStore("api", () => {
     return response.data as SubpackageResponse;
   };
 
+  const fetchBusyTime = async (id: string): Promise<BusyTime> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/busytime/photographer/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as BusyTime;
+  };
+
+  const createBusyTime = async (busyTime: BusyTimeRequest) => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/user/busytime`,
+      busyTime,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+  };
+
+  const deleteBusyTime = async (id: string) => {
+    console.log(id);
+    const response = await axios.delete(
+      `${config.public.apiUrl}/user/busytime/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
   const fetchAllAppointment = async (): Promise<AppointmentResponse[]> => {
     const response = await axios.get(`${config.public.apiUrl}/appointment`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
     return response.data as AppointmentResponse[];
-  }
+  };
 
-  const fetchAppointmentsDetail = async (): Promise<AppointmentDetailResponse[]> => {
-    const response = await axios.get(`${config.public.apiUrl}/appointment/detail`, {
-      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-    });
+  const fetchAppointmentsDetail = async (): Promise<
+    AppointmentDetailResponse[]
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/appointment/detail`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
     return response.data as AppointmentDetailResponse[];
-  }
+  };
 
-  const updateAppointmentStatus = async (id: string, payload: AppointmentUpdateStatusRequest): Promise<AppointmentResponse> => {
-    const response = await axios.patch(`${config.public.apiUrl}/appointment/status/${id}`, payload, {
-      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-    });
+  const updateAppointmentStatus = async (
+    id: string,
+    payload: AppointmentUpdateStatusRequest
+  ): Promise<AppointmentResponse> => {
+    const response = await axios.patch(
+      `${config.public.apiUrl}/appointment/status/${id}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
     return response.data as AppointmentResponse;
-  }
+  };
 
   const fetchAppointment = async (id: string): Promise<AppointmentResponse> => {
-    const response = await axios.delete(`${config.public.apiUrl}/appointment/${id}`, {
-      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-    });
+    const response = await axios.delete(
+      `${config.public.apiUrl}/appointment/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
     return response.data as AppointmentResponse;
-  }
+  };
 
   const deleteAppointment = async (id: string) => {
-    const response = await axios.get(`${config.public.apiUrl}/appointment/${id}`, {
-      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-    });
-  }
+    const response = await axios.get(
+      `${config.public.apiUrl}/appointment/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+  };
 
-  const updateAppointment = async (id: string, payload: AppointmentRequest): Promise<AppointmentResponse> => {
-    const response = await axios.patch(`${config.public.apiUrl}/appointment/${id}`, payload, {
-      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-    });
+  const updateAppointment = async (
+    id: string,
+    payload: AppointmentRequest
+  ): Promise<AppointmentResponse> => {
+    const response = await axios.patch(
+      `${config.public.apiUrl}/appointment/${id}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
     return response.data as AppointmentResponse;
-  }
+  };
 
-  const createAppointment = async (subid: string, payload: AppointmentRequest): Promise<AppointmentResponse> => {
-    const response = await axios.post(`${config.public.apiUrl}/appointment/${subid}`, payload, {
-      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-    });
+  const createAppointment = async (
+    subid: string,
+    payload: AppointmentRequest
+  ): Promise<AppointmentResponse> => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/appointment/${subid}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
     return response.data as AppointmentResponse;
-  }
+  };
 
   return {
     fetchPackage,
-    fetchAllPackage, 
+    fetchAllPackage,
     fetchUserPackage,
     fetchUserProfile,
     createPackage,
     updatePackage,
     updateUserInformation,
-    fetchAllAppointment, 
-    fetchAppointmentsDetail, 
-    updateAppointmentStatus, 
+    fetchAllAppointment,
+    fetchAppointmentsDetail,
+    updateAppointmentStatus,
     fetchAppointment,
-    deleteAppointment, 
-    updateAppointment, 
-    createAppointment, 
+    deleteAppointment,
+    updateAppointment,
+    createAppointment,
     createSubpackage,
     deleteSubpackage,
     fetchSubpackage,
     updateSubpackage,
+    fetchBusyTime,
+    createBusyTime,
+    deleteBusyTime,
   };
 });
