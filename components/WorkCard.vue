@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
+import type { SubpackageResponse } from "~/types/api";
 
 // Props
 const props = defineProps<{
+  subpackages: SubpackageResponse[];
   navigate?: boolean;
   editable?: boolean;
   addable?: boolean;
@@ -14,6 +16,16 @@ const props = defineProps<{
   type?: string;
   id?: string;
 }>();
+
+const priceRange = computed(() => {
+  if (props.subpackages.length === 0) return "No Subpackage";
+
+  const prices = props.subpackages.map(x => x.price);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  if (min === max) return `$${min}`;
+  else return `$${min}-${max}`
+})
 
 const router = useRouter();
 
@@ -57,7 +69,7 @@ const endDrag = () => {
 };
 
 const handleClick = () => {
-  if(props.navigate) router.push(`/package/${props.id}`);
+  if (props.navigate) router.push(`/package/${props.id}`);
 }
 
 // Navigation Functions
@@ -119,7 +131,7 @@ onMounted(() => {
           <h2 class="text-lg font-medium">{{ title }}</h2>
           <div class="flex flex-row justify-between">
             <p class="text-gray-600 font-light">{{ owner }}</p>
-            <p class="text-primary font-light"> $2,500-5,600 </p>
+            <p class="text-primary font-light"> {{ priceRange }} </p>
           </div>
         </div>
       </div>
