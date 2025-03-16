@@ -1,34 +1,57 @@
 <template>
-  <div class="mx-6 mt-6 text-xl">
-    <div class="flex flex-row gap-4 mb-3">
-      <BackButton />
-      <p>{{ title }}</p>
-    </div>
-    <img class="w-full rounded-2xl" :src="imageUrl" />
+  <div class="ml-6 mt-6 flex flex-row gap-3 text-xl">
+    <BackButton />
+    {{ title }}
   </div>
-  <div class="p-4">
-    <h2 class="text-lg mb-2">Time Schedule</h2>
-    <h2 class="text-lg mb-2">Date</h2>
-    <div class="mb-4">
-      <input :min="new Date().toISOString().split('T')[0]" type="date" v-model="selectedDate"
-        class="p-2 border rounded-lg shadow-sm w-full" />
+  <div class="w-full h-full p-6 flex flex-col">
+    <div class="flex gap-[16px] items-center">
+      <img
+        class="h-[50px] w-[50px] object-cover rounded-full cursor-pointer"
+        :src="profileUrl"
+        alt="Profile Image"
+        @click="router.push(`/profile/${ownerId}`)"
+      />
+      <p class="text-xl">{{ name }}</p>
     </div>
-    <TimeSchedule :input-date="selectedDate" :show-date="true" />
-    <p class="flex justify-center mt-5 text-xl">
-      {{ formatDate(selectedDate) }}
-    </p>
-    <div>
-      <ul v-if="includedDate" class="flex flex-col gap-5 my-5">
-        <li v-for="(interval, index) in intersectedIntervals" :key="index">
-          <button @click="() => handleClick(index)" :class="[
-            'rounded-2xl drop-shadow-xl p-7 text-white w-full',
-            interval.isIntersected ? 'bg-red-schedule' : 'bg-green-schedule',
-          ]">
-            {{ interval.start }} - {{ interval.end }}
-          </button>
-        </li>
-      </ul>
-      <div v-else class="font-bold text-xl w-full text-center mt-6">The selected date is not in subpackage.</div>
+    <img
+      class="h-[253px] w-full object-cover rounded-[20px] mt-6"
+      :src="imageUrl"
+    />
+    <div class="p-4">
+      <h2 class="text-lg mb-2">Time Schedule</h2>
+      <h2 class="text-lg mb-2">Date</h2>
+      <div class="mb-4">
+        <input
+          :min="new Date().toISOString().split('T')[0]"
+          type="date"
+          v-model="selectedDate"
+          class="p-2 border rounded-lg shadow-sm w-full"
+        />
+      </div>
+      <TimeSchedule :input-date="selectedDate" :show-date="true" />
+      <p class="flex justify-center mt-5 text-xl">
+        {{ formatDate(selectedDate) }}
+      </p>
+      <div>
+        <ul v-if="includedDate" class="flex flex-col gap-5 my-5">
+          <li v-for="(interval, index) in intersectedIntervals" :key="index">
+            <button
+              @click="() => handleClick(index)"
+              :class="[
+                'rounded-2xl drop-shadow-xl p-7 text-white w-full',
+                interval.isIntersected
+                  ? 'bg-red-schedule'
+                  : 'bg-green-schedule',
+              ]"
+            >
+              {{ interval.start }} - {{ interval.end }}
+            </button>
+          </li>
+        </ul>
+        <div v-else class="font-bold text-xl w-full text-center mt-6">
+          The selected date is not in subpackage.
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -49,6 +72,10 @@ const config = useRuntimeConfig();
 const imageUrl = ref("");
 const title = ref("");
 
+const name = ref("");
+const profileUrl = ref("");
+const ownerId = ref("");
+
 interface Event {
   title: string;
   start: string;
@@ -57,21 +84,41 @@ interface Event {
 const selectedDate = ref<string>(new Date().toISOString().split("T")[0]);
 const subpackageDetails = ref<SubpackageResponse | undefined>();
 
-const includedDate = computed(() => subpackageDetails.value?.repeatedDay.map(x => dayNameToDayIndex(x as DayName)).includes(new Date(selectedDate.value).getDay()));
+const includedDate = computed(() =>
+  subpackageDetails.value?.repeatedDay
+    .map((x) => dayNameToDayIndex(x as DayName))
+    .includes(new Date(selectedDate.value).getDay())
+);
 
 const handleClick = (idx: number) => {
   if (intersectedIntervals.value[idx].isIntersected) return;
   const params = new URLSearchParams({
     date: selectedDate.value,
     start: intersectedIntervals.value[idx].start,
-    end: intersectedIntervals.value[idx].end
+    end: intersectedIntervals.value[idx].end,
   });
-  router.push(`/package/${id}/subpackage/appointment/create/${subpackageid}?${params.toString()}`)
-}
+  router.push(
+    `/package/${id}/subpackage/appointment/create/${subpackageid}?${params.toString()}`
+  );
+};
+
+const fetchUserProfileById = async (id: string) => {
+  try {
+    const response = await api.fetchUserProfileById(id);
+
+    name.value = response.name;
+    profileUrl.value = config.public.s3URL + response.profile;
+  } catch (error) {
+    console.error("Failed to fetch profile:", error);
+  }
+};
 
 onMounted(async () => {
-  const [response1, response2] = await Promise.all([api.fetchPackage(id), api.fetchSubpackage(subpackageid)]);
-console.log(response1,response2)
+  const [response1, response2] = await Promise.all([
+    api.fetchPackage(id),
+    api.fetchSubpackage(subpackageid),
+  ]);
+  console.log(response1, response2);
   if (response1.photoUrls && response1.photoUrls.length > 0) {
     const imgUrl = config.public.s3URL + response1.photoUrls[0];
     // const imgBlob = await fetch(imgUrl).then((res) => res.blob());
@@ -81,8 +128,10 @@ console.log(response1,response2)
     imageUrl.value = response1.photoUrls[0];
   }
   title.value = response1.title;
-
+  ownerId.value = response1.ownerId;
   subpackageDetails.value = response2;
+
+  await fetchUserProfileById(response1.ownerId);
 });
 
 const formatDate = (dateString: string, separator = " "): string => {
@@ -177,14 +226,8 @@ const intersectedIntervals = computed(() => {
 
   return intervals.value.map((interval) => {
     // Find if any event intersects with the current interval
-    const intersectingEvent = events.value.find(
-      (event) =>
-        timesIntersect(
-          interval.start,
-          interval.end,
-          event.start,
-          event.end
-        )
+    const intersectingEvent = events.value.find((event) =>
+      timesIntersect(interval.start, interval.end, event.start, event.end)
     );
 
     return { ...interval, isIntersected: !!intersectingEvent };
@@ -194,10 +237,10 @@ const intersectedIntervals = computed(() => {
 const events = computed<Event[]>(() => {
   if (!subpackageDetails.value?.busyTimeMap[selectedDate.value]) return [];
 
-  return subpackageDetails.value.busyTimeMap[selectedDate.value].map(m => ({
+  return subpackageDetails.value.busyTimeMap[selectedDate.value].map((m) => ({
     start: formatTime(new Date(m.startTime)),
     end: formatTime(new Date(m.endTime)),
-    title: "Busy"
+    title: "Busy",
   }));
 });
 </script>

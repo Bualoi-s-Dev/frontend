@@ -101,7 +101,6 @@ const goToCreateSubpackage = () => {
         New
       </button>
     </div>
-    <!-- Clickable Profile Image -->
     <div class="flex gap-[16px] mt-6 items-center">
       <img
         class="h-[50px] w-[50px] object-cover rounded-full cursor-pointer"
