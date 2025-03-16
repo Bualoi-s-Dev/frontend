@@ -27,6 +27,16 @@ export const useApiStore = defineStore("api", () => {
     return response.data as UserResponse;
   };
 
+  const fetchUserProfileById = async (id: string): Promise<UserResponse> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/user/profile/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as UserResponse;
+  };
+
   const createPackage = async (pkg: PackageRequest) => {
     const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
@@ -232,6 +242,7 @@ export const useApiStore = defineStore("api", () => {
     fetchAllPackage,
     fetchUserPackage,
     fetchUserProfile,
+    fetchUserProfileById,
     createPackage,
     updatePackage,
     updateUserInformation,
