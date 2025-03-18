@@ -133,22 +133,33 @@ const rating = computed<number>(() => {
   </div>
   <div class="mt-[16px]">
     <div class="flex flex-col gap-[25px]">
-      <div class="flex flex-col gap-[12px] items-center">
-        <ProfileImage :src="profileInformation.profile" />
-        <div class="flex flex-col gap-[5px] items-center">
-          <h2 class="text-[20px]">
-            {{ profileInformation.name }}
-          </h2>
-          <RatingStars :rating="rating" />
-          <p class="text-[14px] text-body">{{ rating }} stars</p>
+      <div class="flex flex-col gap-[10px]">
+        <div class="flex justify-end">
+          <p
+            v-if="userId === profileInformation.id"
+            class="text-[16px] text-body cursor-pointer underline w-fit"
+            @click="router.push('/profile/edit')"
+          >
+            Edit profile
+          </p>
         </div>
-        <Button
-          v-if="userId === profileInformation.id"
-          @click="router.push('/profile/edit')"
-          width="w-80 h-10"
-          text-options="text-white text-right text-sm"
-          >Edit Profile</Button
-        >
+        <div class="flex flex-col gap-[12px] items-center">
+          <ProfileImage :src="profileInformation.profile" />
+          <div class="flex flex-col gap-[5px] items-center">
+            <h2 class="text-[20px]">
+              {{ profileInformation.name }}
+            </h2>
+            <RatingStars :rating="rating" />
+            <p class="text-[14px] text-body">{{ rating }} stars</p>
+          </div>
+          <Button
+            v-if="userId === profileInformation.id"
+            @click="router.push('/profile/edit')"
+            width="w-80 h-10"
+            text-options="text-white text-right text-sm"
+            >Edit Profile</Button
+          >
+        </div>
       </div>
 
       <div class="flex flex-col gap-[25px]">
