@@ -5,9 +5,12 @@ import { Icon } from '@iconify/vue';
 const auth = useAuthStore();
 const menuOpen = ref(false);
 const router = useRouter();
+const route = useRoute();
 const errorMessage = ref('');
 const api = useApiStore();
 const config = useRuntimeConfig();
+const firstSegment = ref('');
+const secondSegment = ref('');
 
 const user = ref({ name: '', description: '', location: '', profile: '', id: '', role: ''});
 
@@ -28,7 +31,11 @@ console.log(fetchUserProfile());
 
 const toggleMenu = async () => {
     menuOpen.value = !menuOpen.value;
-    if(menuOpen.value) await fetchUserProfile();
+    if(menuOpen.value) {
+        firstSegment.value = route.path.split('/')[1];
+        secondSegment.value = route.path.split('/')[2];
+        await fetchUserProfile();
+    }
 };
 
 const onLogoutSuccess = () => {
@@ -118,11 +125,11 @@ const handleLogout = async () => {
                 </div>
 
                 <ul class="divide-y-1 mx-3">
-                    <li><a @click="onHome" class="my-4 inline-block text-red-300">Home</a></li>
-                    <li><a @click="onAppointment" class="my-4 inline-block">Appointments</a></li>
-                    <li v-if="user.role == 'Photographer'"><a @click="onBusy" class="my-4 inline-block">My busy time</a></li>
-                    <li v-if="user.role == 'Photographer'"><a @click="onCompleted" class="my-4 inline-block">History</a></li>
-                    <li><a @click="onProfile" class="my-4 inline-block">Profile</a></li>
+                    <li><a @click="onHome" class="my-4 inline-block" :class="firstSegment == '' ? 'text-red-300' : 'text-black'">Home</a></li>
+                    <li><a @click="onAppointment" class="my-4 inline-block" :class="firstSegment == 'appointment' && secondSegment != 'complete' ? 'text-red-300' : 'text-black'">Appointments</a></li>
+                    <li v-if="user.role == 'Photographer'"><a @click="onBusy" class="my-4 inline-block" :class="firstSegment == 'busytime' ? 'text-red-300' : 'text-black'">My busy time</a></li>
+                    <li v-if="user.role == 'Photographer'"><a @click="onCompleted" class="my-4 inline-block" :class="firstSegment == 'appointment' && secondSegment == 'complete' ? 'text-red-300' : 'text-black'">History</a></li>
+                    <li><a @click="onProfile" class="my-4 inline-block" :class="firstSegment == 'profile' ? 'text-red-300' : 'text-black'">Profile</a></li>
                     <li>
                         <NuxtLink class="my-8 w-full text-center cta inline-block bg-black hover:bg-black px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
                     </li>
