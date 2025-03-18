@@ -14,7 +14,8 @@ const reviews = ref([
     name: "Mark Smith",
     image: "https://randomuser.me/api/portraits/men/2.jpg",
     rating_score: 4,
-    review: "Great experience, but could improve in editing speed.",
+    review:
+      "Great experience, but could improve in editing speed. Great experience, but could improve in editing speed.Great experience, but could improve in editing speed.Great experience, but could improve in editing speed.",
     date: "2025-03-15",
     owner: false,
   },

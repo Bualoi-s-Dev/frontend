@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import ReviewCard from "@/components/ReviewCard.vue";
 
 const props = defineProps<{
@@ -33,7 +34,7 @@ const visibleReviews = computed(() => {
       Your comment
     </div>
     <div class="flex flex-col gap-[20px]">
-      <p v-if="reviews.length === 0" class="text-gray-500 text-center">
+      <p v-if="props.reviews.length === 0" class="text-gray-500 text-center">
         No reviews yet
       </p>
       <ReviewCard
@@ -45,6 +46,7 @@ const visibleReviews = computed(() => {
         :review="review.review"
         :date="review.date"
         :owner="review.owner"
+        :showReview="props.showAll"
       />
     </div>
   </div>

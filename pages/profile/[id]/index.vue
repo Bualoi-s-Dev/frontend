@@ -71,7 +71,8 @@ const reviews = ref([
     name: "Mark Smith",
     image: "https://randomuser.me/api/portraits/men/2.jpg",
     rating_score: 4,
-    review: "Great experience, but could improve in editing speed.",
+    review:
+      "Great experience, but could improve in editing speed. Great experience, but could improve in editing speed.Great experience, but could improve in editing speed.Great experience, but could improve in editing speed.",
     date: "2025-03-15",
     owner: false,
   },
@@ -81,7 +82,7 @@ const reviews = ref([
     rating_score: 5,
     review: "Fantastic work! Will book again for future events.",
     date: "2025-03-10",
-    owner: true,
+    owner: false,
   },
   {
     name: "James Brown",
@@ -93,9 +94,12 @@ const reviews = ref([
   },
 ]);
 
-// Redirect to the all reviews page
 const goToAllReviews = () => {
-  router.push({ path: `/profile/${id}/allreview` }); // Adjust the route based on your project
+  router.push({ path: `/profile/${id}/allreview` });
+};
+
+const goToCreateReview = () => {
+  router.push({ path: `/profile/${id}/createreview` });
 };
 
 const hasReviewed = computed(() => {
@@ -186,24 +190,17 @@ const rating = computed<number>(() => {
                 </p>
               </div>
             </div>
-            <div v-if="!hasReviewed" class="flex flex-col gap-[5px] pl-[15px]">
+            <div v-if="!hasReviewed" class="flex flex-col gap-[5px] px-[15px]">
               <p class="text-[18px] text-body font-medium">
                 Review this photographer
               </p>
-              <div class="flex justify-between">
+              <div
+                class="flex justify-between cursor-pointer"
+                @click="goToCreateReview"
+              >
                 <Icon
-                  icon="ic:round-star-border"
-                  class="text-empty-star w-[30px] h-[30px]"
-                /><Icon
-                  icon="ic:round-star-border"
-                  class="text-empty-star w-[30px] h-[30px]"
-                /><Icon
-                  icon="ic:round-star-border"
-                  class="text-empty-star w-[30px] h-[30px]"
-                /><Icon
-                  icon="ic:round-star-border"
-                  class="text-empty-star w-[30px] h-[30px]"
-                /><Icon
+                  v-for="index in 5"
+                  :key="index"
                   icon="ic:round-star-border"
                   class="text-empty-star w-[30px] h-[30px]"
                 />

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue/dist/iconify.js";
+import { ref, computed } from "vue";
 
 const props = defineProps<{
   name: string;
@@ -8,6 +9,7 @@ const props = defineProps<{
   review?: string;
   date: string;
   owner: boolean;
+  showReview: boolean;
 }>();
 
 const starIcons = computed(() => {
@@ -21,6 +23,22 @@ const borderClass = computed(() =>
     ? "border-primary border-2 py-[15px] px-[20px] rounded-[16px]"
     : "px-[20px]"
 );
+
+// State to toggle the visibility of the full review
+const isExpanded = ref(false);
+
+// Truncate the review text if it's too long
+const truncatedReview = computed(() => {
+  if (props.review && props.review.length > 100 && !props.showReview) {
+    return isExpanded.value ? props.review : props.review.slice(0, 100) + "...";
+  }
+  return props.review; // No truncation if showReview is true
+});
+
+// Toggle the review visibility between expanded and collapsed
+const toggleReview = () => {
+  isExpanded.value = !isExpanded.value;
+};
 </script>
 
 <template>
@@ -49,8 +67,33 @@ const borderClass = computed(() =>
         />
       </div>
 
-      <p class="text-[16px] text-body">
-        {{ review }}
+      <!-- Review text -->
+      <p class="text-[16px] text-body" @click="toggleReview">
+        {{ truncatedReview }}
+        <!-- "View more" text is visible only if the review is truncated and showReview is false -->
+        <span
+          v-if="
+            props.review &&
+            props.review.length > 100 &&
+            !isExpanded &&
+            !props.showReview
+          "
+          class="text-primary cursor-pointer underline ml-1"
+        >
+          View more
+        </span>
+        <!-- "View less" text is visible only if the review is expanded and showReview is false -->
+        <span
+          v-if="
+            isExpanded &&
+            props.review &&
+            props.review.length > 100 &&
+            !props.showReview
+          "
+          class="text-primary cursor-pointer underline ml-1"
+        >
+          View less
+        </span>
       </p>
       <p class="text-[12px] text-body">{{ date }}</p>
     </div>
