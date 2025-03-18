@@ -12,12 +12,18 @@ const api = useApiStore();
 const config = useRuntimeConfig();
 
 const profileInformation = ref({
+  id: "",
   name: "",
   description: "",
-  location: "",
   profile: "",
-  id: "",
+  location: "",
+  phone: "",
+  lineID: "",
+  instagram: "",
+  facebook: "",
 });
+
+const isContactInfoVisible = ref(false);
 
 const userId = ref("");
 const packages = ref<PackageResponse[] | null>(null);
@@ -44,6 +50,10 @@ const fetchUserProfileById = async () => {
     profileInformation.value.name = response.name;
     profileInformation.value.profile = config.public.s3URL + response.profile;
     profileInformation.value.location = response.location;
+    profileInformation.value.phone = response.phone;
+    profileInformation.value.lineID = response.lineID;
+    profileInformation.value.instagram = response.instagram;
+    profileInformation.value.facebook = response.facebook;
     profileInformation.value.id = response.id;
 
     packages.value = response.photographerPackages;
@@ -132,18 +142,13 @@ const rating = computed<number>(() => {
           <RatingStars :rating="rating" />
           <p class="text-[14px] text-body">{{ rating }} stars</p>
         </div>
-        <!-- <Button
+        <Button
           v-if="userId === profileInformation.id"
           @click="router.push('/profile/edit')"
           width="w-80 h-10"
           text-options="text-white text-right text-sm"
           >Edit Profile</Button
         >
-        <Button
-          width="w-80 h-10"
-          text-options="mt-2 text-white text-right text-sm"
-          >View All Packages</Button
-        > -->
       </div>
 
       <div class="flex flex-col gap-[25px]">
@@ -216,29 +221,56 @@ const rating = computed<number>(() => {
             See all reviews
           </p>
         </div>
-
-        <!-- <div class="flex items-center ml-5 mb-3">
-          <Button
-            middle-icon="material-symbols:mail-outline-sharp"
-            icon-color="black"
-            height="h-10"
-            bg-color="bg-button-profile"
-          ></Button>
-          <div class="flex-col ml-4">
-            <p>Contact Information</p>
-            <p class="text-sm text-primary">Find their contact details!</p>
-          </div> -->
       </div>
-      <div class="flex items-center ml-5">
-        <Button
-          middleIcon="icon-park-twotone:thumbs-up"
-          icon-color="black"
-          height="h-10"
-          bg-color="bg-button-profile"
-        ></Button>
-        <div class="flex-col ml-4">
-          <p>Review</p>
-          <p class="text-sm text-primary">Check their reviews now</p>
+      <div class="mx-5">
+        <div
+          class="flex justify-between items-center cursor-pointer"
+          @click="isContactInfoVisible = !isContactInfoVisible"
+        >
+          <div class="flex">
+            <Button
+              middle-icon="material-symbols:mail-outline-sharp"
+              icon-color="black"
+              height="h-10"
+              bg-color="bg-button-profile"
+            ></Button>
+            <div class="flex-col ml-4">
+              <p>Contact Information</p>
+              <p class="text-[14px] text-label">Find their contact details!</p>
+            </div>
+          </div>
+          <Icon
+            :icon="
+              isContactInfoVisible ? 'weui:arrow-down' : 'weui:arrow-outlined'
+            "
+            class="w-[30px] h-[30px]"
+          />
+        </div>
+
+        <div
+          v-if="isContactInfoVisible"
+          class="flex flex-col ml-[5px] mt-[5px]"
+        >
+          <div class="flex gap-[30px] items-center p-[10px]">
+            <Icon icon="tdesign:location-filled" class="w-[30px] h-[30px]" />
+            <p class="text-[18px]">{{ profileInformation.location }}</p>
+          </div>
+          <div class="flex gap-[30px] items-center p-[10px]">
+            <Icon icon="solar:phone-bold" class="w-[30px] h-[30px]" />
+            <p class="text-[18px]">{{ profileInformation.phone }}</p>
+          </div>
+          <div class="flex gap-[30px] items-center p-[10px]">
+            <Icon icon="simple-icons:line" class="w-[30px] h-[30px]" />
+            <p class="text-[18px]">{{ profileInformation.lineID }}</p>
+          </div>
+          <div class="flex gap-[30px] items-center p-[10px]">
+            <Icon icon="ri:instagram-fill" class="w-[30px] h-[30px]" />
+            <p class="text-[18px]">{{ profileInformation.instagram }}</p>
+          </div>
+          <div class="flex gap-[30px] items-center p-[10px]">
+            <Icon icon="akar-icons:facebook-fill" class="w-[30px] h-[30px]" />
+            <p class="text-[18px]">{{ profileInformation.facebook }}</p>
+          </div>
         </div>
       </div>
     </div>
