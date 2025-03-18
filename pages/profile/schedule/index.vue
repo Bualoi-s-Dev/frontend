@@ -49,48 +49,9 @@ const route = useRoute();
 const api = useApiStore();
 
 const selectedDate = ref<string>(new Date().toISOString().split("T")[0]);
-
 const currentPackageToDeleteID = ref<String>("");
-
 const name = ref("");
-
-// const packageData = ref<BusyTime[]>([]);
-
-const packageData = ref<BusyTime[]>([
-  {
-    endTime: "2025-03-23T12:00:00Z",
-    id: "12345678abcd",
-    isValid: true,
-    photographerId: "12345678abcd",
-    startTime: "2025-03-23T10:00:00Z",
-    type: "Photographer",
-  },
-  {
-    endTime: "2025-03-23T16:00:00Z",
-    id: "12345678abcd",
-    isValid: true,
-    photographerId: "12345678abcd",
-    startTime: "2025-03-23T14:00:00Z",
-    type: "Appointment",
-  },
-  {
-    endTime: "2025-03-25T12:00:00Z",
-    id: "12345678abcd",
-    isValid: true,
-    photographerId: "12345678abcd",
-    startTime: "2025-03-25T10:00:00Z",
-    type: "Photographer",
-  },
-  {
-    endTime: "2025-03-25T16:00:00Z",
-    id: "12345678abcd",
-    isValid: true,
-    photographerId: "12345678abcd",
-    startTime: "2025-03-25T14:00:00Z",
-    type: "Appointment",
-  },
-]);
-
+const packageData = ref<BusyTime[]>([]);
 const filteredPackageData = computed(() => {
   return packageData.value.filter((item) => {
     const itemDate = new Date(item.startTime).toISOString().split("T")[0]; // Extract YYYY-MM-DD
