@@ -6,8 +6,10 @@ import type { PackageResponse } from "~/types/api";
 // TODO: can refactor from fetching user profile from backend to using user store instead.
 // but we will have to call updateProfile everywhere that modify the profile first.
 
-const router = useRouter();
 const route = useRoute();
+const router = useRouter();
+const api = useApiStore();
+const config = useRuntimeConfig();
 
 const profileInformation = ref({
   name: "",
@@ -18,18 +20,16 @@ const profileInformation = ref({
 });
 
 const userId = ref("");
-
 const packages = ref<PackageResponse[] | null>(null);
 const errorMessage = ref("");
+const activeTab = ref<"WORK" | "REVIEW">("WORK"); // Default active tab
 
-const api = useApiStore();
+const id = route.params.id as string;
 
 const fetchUserProfile = async () => {
   try {
     const response = await api.fetchUserProfile();
-
     userId.value = response.id;
-
     packages.value = response.photographerPackages;
   } catch (error: any) {
     errorMessage.value = error.message;
@@ -51,11 +51,64 @@ const fetchUserProfileById = async () => {
     errorMessage.value = error.message;
   }
 };
-const config = useRuntimeConfig();
 
 onMounted(async () => {
   await fetchUserProfile();
   await fetchUserProfileById();
+});
+
+// Review data
+const reviews = ref([
+  {
+    name: "Alice Johnson",
+    image: "https://randomuser.me/api/portraits/women/1.jpg",
+    rating_score: 5,
+    review: "Absolutely loved the photography session! Highly recommended.",
+    date: "2025-03-18",
+    owner: false,
+  },
+  {
+    name: "Mark Smith",
+    image: "https://randomuser.me/api/portraits/men/2.jpg",
+    rating_score: 4,
+    review: "Great experience, but could improve in editing speed.",
+    date: "2025-03-15",
+    owner: false,
+  },
+  {
+    name: "Sophia Lee",
+    image: "https://randomuser.me/api/portraits/women/3.jpg",
+    rating_score: 5,
+    review: "Fantastic work! Will book again for future events.",
+    date: "2025-03-10",
+    owner: true,
+  },
+  {
+    name: "James Brown",
+    image: "https://randomuser.me/api/portraits/men/4.jpg",
+    rating_score: 3,
+    review: "Good work, but I expected better lighting.",
+    date: "2025-03-05",
+    owner: false,
+  },
+]);
+
+// Redirect to the all reviews page
+const goToAllReviews = () => {
+  router.push({ path: `/profile/${id}/allreview` }); // Adjust the route based on your project
+};
+
+const hasReviewed = computed(() => {
+  return reviews.value.some((review) => review.owner);
+});
+
+const rating = computed<number>(() => {
+  if (reviews.value.length === 0) return 0;
+  const totalScore = reviews.value.reduce(
+    (sum, review) => sum + review.rating_score,
+    0
+  );
+  return parseFloat((totalScore / reviews.value.length).toFixed(1));
 });
 </script>
 
@@ -64,18 +117,18 @@ onMounted(async () => {
     <BackButton />
     Photographer Profile
   </div>
-  <div class="mt-10">
-    <div class="flex flex-col">
-      <div class="flex flex-col items-center">
+  <div class="mt-[16px]">
+    <div class="flex flex-col gap-[25px]">
+      <div class="flex flex-col gap-[12px] items-center">
         <ProfileImage :src="profileInformation.profile" />
-        <h2 class="text-xl font-semibold mt-4">
-          {{ profileInformation.name }}
-        </h2>
-        <p class="text-sm text-red-900">{{ profileInformation.description }}</p>
-        <p class="text-sm text-red-900 mb-2">
-          {{ profileInformation.location }}
-        </p>
-        <Button
+        <div class="flex flex-col gap-[5px] items-center">
+          <h2 class="text-[20px]">
+            {{ profileInformation.name }}
+          </h2>
+          <RatingStars :rating="rating" />
+          <p class="text-[14px] text-body">{{ rating }} stars</p>
+        </div>
+        <!-- <Button
           v-if="userId === profileInformation.id"
           @click="router.push('/profile/edit')"
           width="w-80 h-10"
@@ -86,11 +139,88 @@ onMounted(async () => {
           width="w-80 h-10"
           text-options="mt-2 text-white text-right text-sm"
           >View All Packages</Button
-        >
+        > -->
       </div>
 
-      <div class="mt-4">
-        <div class="flex items-center ml-5 mb-3">
+      <div class="flex flex-col gap-[25px]">
+        <div class="flex justify-evenly cursor-pointer">
+          <div
+            class="flex flex-col gap-[5px] items-center"
+            @click="activeTab = 'WORK'"
+          >
+            <p class="text-[18px] px-[5px] text-body">WORK</p>
+            <hr
+              v-if="activeTab === 'WORK'"
+              class="text-primary w-full border-b-2 border-primary"
+            />
+          </div>
+          <div
+            class="flex flex-col gap-[5px] items-center"
+            @click="activeTab = 'REVIEW'"
+          >
+            <p class="text-[18px] px-[5px] text-body">REVIEW</p>
+            <hr
+              v-if="activeTab === 'REVIEW'"
+              class="text-primary w-full border-b-2 border-primary"
+            />
+          </div>
+        </div>
+        <!-- Display Content Based on Active Tab -->
+        <div v-if="activeTab === 'WORK'" class="flex flex-col gap-[20px]">
+          <WorkList v-if="packages" :data="packages" />
+          <p class="text-[16px] text-center text-body cursor-pointer underline">
+            See all packages
+          </p>
+        </div>
+        <div
+          v-if="activeTab === 'REVIEW'"
+          class="flex flex-col gap-[20px] items-center"
+        >
+          <div class="flex flex-col gap-[25px]">
+            <div class="flex items-center justify-center gap-[25px]">
+              <p class="text-[48px] text-titleActive">{{ rating }}</p>
+              <div class="flex flex-col gap-[5px]">
+                <RatingStars :rating="rating" />
+                <p class="text-[14px] px-[5px] text-body">
+                  from {{ reviews.length }} reviews
+                </p>
+              </div>
+            </div>
+            <div v-if="!hasReviewed" class="flex flex-col gap-[5px] pl-[15px]">
+              <p class="text-[18px] text-body font-medium">
+                Review this photographer
+              </p>
+              <div class="flex justify-between">
+                <Icon
+                  icon="ic:round-star-border"
+                  class="text-empty-star w-[30px] h-[30px]"
+                /><Icon
+                  icon="ic:round-star-border"
+                  class="text-empty-star w-[30px] h-[30px]"
+                /><Icon
+                  icon="ic:round-star-border"
+                  class="text-empty-star w-[30px] h-[30px]"
+                /><Icon
+                  icon="ic:round-star-border"
+                  class="text-empty-star w-[30px] h-[30px]"
+                /><Icon
+                  icon="ic:round-star-border"
+                  class="text-empty-star w-[30px] h-[30px]"
+                />
+              </div>
+            </div>
+            <ReviewList :reviews="reviews" :showAll="false" />
+          </div>
+          <p
+            v-if="reviews.length > 3"
+            class="text-[16px] text-center text-body cursor-pointer underline w-fit"
+            @click="goToAllReviews"
+          >
+            See all reviews
+          </p>
+        </div>
+
+        <!-- <div class="flex items-center ml-5 mb-3">
           <Button
             middle-icon="material-symbols:mail-outline-sharp"
             icon-color="black"
@@ -100,35 +230,34 @@ onMounted(async () => {
           <div class="flex-col ml-4">
             <p>Contact Information</p>
             <p class="text-sm text-primary">Find their contact details!</p>
-          </div>
-        </div>
-        <div class="flex items-center ml-5">
-          <Button
-            middleIcon="icon-park-twotone:thumbs-up"
-            icon-color="black"
-            height="h-10"
-            bg-color="bg-button-profile"
-          ></Button>
-          <div class="flex-col ml-4">
-            <p>Review</p>
-            <p class="text-sm text-primary">Check their reviews now</p>
-          </div>
+          </div> -->
+      </div>
+      <div class="flex items-center ml-5">
+        <Button
+          middleIcon="icon-park-twotone:thumbs-up"
+          icon-color="black"
+          height="h-10"
+          bg-color="bg-button-profile"
+        ></Button>
+        <div class="flex-col ml-4">
+          <p>Review</p>
+          <p class="text-sm text-primary">Check their reviews now</p>
         </div>
       </div>
-      <div class="flex flex-col m-6 gap-5">
-        <h1 class="font-semibold">Other accessories</h1>
-        <div class="flex flex-row justify-between">
-          <p>More Information</p>
-          <Icon icon="mingcute:right-line" />
-        </div>
-        <div class="flex flex-row justify-between">
-          <p>History</p>
-          <Icon icon="mingcute:right-line" />
-        </div>
-        <div class="flex flex-row justify-between">
-          <p>Support</p>
-          <Icon icon="mingcute:right-line" />
-        </div>
+    </div>
+    <div class="flex flex-col m-6 gap-5">
+      <h1 class="font-semibold">Other accessories</h1>
+      <div class="flex flex-row justify-between">
+        <p>More Information</p>
+        <Icon icon="mingcute:right-line" />
+      </div>
+      <div class="flex flex-row justify-between">
+        <p>History</p>
+        <Icon icon="mingcute:right-line" />
+      </div>
+      <div class="flex flex-row justify-between">
+        <p>Support</p>
+        <Icon icon="mingcute:right-line" />
       </div>
     </div>
   </div>
