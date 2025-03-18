@@ -124,15 +124,6 @@ onMounted(async () => {
     // Fetch busy time data and remove invalid entries
     const response = (await api.fetchBusyTime(profile.id)).filter(item => item.isValid);
 
-    // Fetch appointments and assign 'Appointment' type, removing canceled ones
-    const response2 = await api.fetchAppointmentsDetail();
-    const updatedAppointments = response2
-      .filter(item => item.status !== "Canceled") // Remove canceled appointments
-      .map(item => ({
-        ...item,
-        type: "Appointment",
-      }));
-
     // Combine both data arrays
     packageData.value = response;
     console.log(packageData.value);
