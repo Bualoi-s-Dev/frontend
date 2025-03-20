@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Package, PackageRequest, PackageStrictRequest, PackageType } from '~/types/api';
+import type { PackageRequest, PackageResponse, PackageType } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
@@ -8,15 +8,16 @@ const api = useApiStore();
 
 const config = useRuntimeConfig();
 
-const oldData = ref<Package | undefined>();
+const oldData = ref<PackageResponse | undefined>();
 
 onMounted(async () => {
     const id = route.params.id as string;
     const response = await api.fetchPackage(id);
 
     const imgUrl = config.public.s3URL + response.photoUrls[0];
-    const imgBlob = await fetch(imgUrl).then(res => res.blob());
-    response.photoUrls[0] = await readFileAsDataURL(imgBlob);
+    // const imgBlob = await fetch(imgUrl).then(res => res.blob());
+    // response.photoUrls[0] = await readFileAsDataURL(imgBlob);
+    response.photoUrls[0] = imgUrl;
 
     oldData.value = response;
 })
@@ -32,7 +33,7 @@ const submit = async (image: string, name: string, type: string) => {
             title: name,
             type: type as PackageType
         };
-        if(image !== oldData.value.photoUrls[0]) payload.photos = [image];
+        if (image !== oldData.value.photoUrls[0]) payload.photos = [image];
         await api.updatePackage(oldData.value.id!, payload);
         useToastify('Successfully updated package.', { type: 'success', });
 

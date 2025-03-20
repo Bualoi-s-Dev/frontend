@@ -3,7 +3,6 @@ import { ref } from "vue";
 import type { AppointmentRequest, PackageResponse } from "~/types/api";
 
 const router = useRouter();
-const route = useRoute()
 const api = useApiStore();
 const config = useRuntimeConfig();
 
@@ -86,7 +85,7 @@ const onSubmit = async () => {
         const start_time_date = new Date(Date.UTC(years, months - 1, days, hours, minutes))
         const time_parse = start_time_date.toISOString()
         const payload: AppointmentRequest = {
-            start_time: time_parse,
+            startTime: time_parse,
             location: location.value
         };
         const subid = prop.subpackageId;

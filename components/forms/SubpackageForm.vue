@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { type Subpackage } from "~/types/api";
+import { type Subpackage, type SubpackageResponse } from "~/types/api";
 
 const props = defineProps<{
   onSubmit: (
@@ -15,7 +15,7 @@ const props = defineProps<{
     avaliableStartDay: string,
     avaliableEndDay: string
   ) => void;
-  data?: Subpackage;
+  data?: SubpackageResponse;
   disabled?: boolean;
 }>();
 

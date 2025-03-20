@@ -32,9 +32,16 @@ watch(props, (newProps) => {
 });
 
 const weekDays = computed(() => {
-  const weekStart = startOfWeek(selectedDate.value, { weekStartsOn: 0 });
-  return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  // Get the middle index of the week (3rd index in a 7-day array)
+  const middleIndex = Math.floor(7 / 2);
+
+  // Set the start of the "week" so that selectedDate is in the middle
+  const customStart = addDays(selectedDate.value, -middleIndex);
+
+  // Generate the 7-day array
+  return Array.from({ length: 7 }, (_, i) => addDays(customStart, i));
 });
+
 
 const isSelected = (date: Date) => {
   return isSameDay(date, selectedDate.value);

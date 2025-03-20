@@ -5,9 +5,12 @@ import { Icon } from "@iconify/vue";
 const auth = useAuthStore();
 const menuOpen = ref(false);
 const router = useRouter();
+const route = useRoute();
 const errorMessage = ref("");
 const api = useApiStore();
 const config = useRuntimeConfig();
+const firstSegment = ref("");
+const secondSegment = ref("");
 
 const user = ref({
   name: "",
@@ -35,7 +38,11 @@ console.log(fetchUserProfile());
 
 const toggleMenu = async () => {
   menuOpen.value = !menuOpen.value;
-  if (menuOpen.value) await fetchUserProfile();
+  if (menuOpen.value) {
+    firstSegment.value = route.path.split("/")[1];
+    secondSegment.value = route.path.split("/")[2];
+    await fetchUserProfile();
+  }
 };
 
 const onLogoutSuccess = () => {
