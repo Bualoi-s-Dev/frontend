@@ -39,6 +39,30 @@ const truncatedReview = computed(() => {
 const toggleReview = () => {
   isExpanded.value = !isExpanded.value;
 };
+
+// State for the popup menu
+const isMenuOpen = ref(false);
+const menuRef = ref<HTMLElement | null>(null);
+
+// Toggle menu visibility
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
+
+// Close the menu when clicking outside
+const handleClickOutside = (event: MouseEvent) => {
+  if (menuRef.value && !menuRef.value.contains(event.target as Node)) {
+    isMenuOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <template>
@@ -49,8 +73,35 @@ const toggleReview = () => {
       alt="Reviewer image"
     />
     <div class="flex flex-col gap-[5px] w-full">
-      <p class="text-[16px] text-titleActive">{{ name }}</p>
+      <div class="flex justify-between items-center relative">
+        <p class="text-[16px] text-titleActive">{{ name }}</p>
+        <Icon
+          v-if="props.owner"
+          icon="humbleicons:dots-vertical"
+          class="text-body w-[20px] h-[20px] cursor-pointer"
+          @click.stop="toggleMenu"
+        />
 
+        <!-- Popup menu -->
+        <div
+          v-if="isMenuOpen"
+          ref="menuRef"
+          class="absolute right-0 top-6 bg-white border border-gray-300 shadow-md rounded-md py-2 w-[120px] z-50"
+        >
+          <p
+            class="px-4 py-2 text-[14px] text-titleActive cursor-pointer"
+            @click=""
+          >
+            Edit
+          </p>
+          <p
+            class="px-4 py-2 text-[14px] text-titleActive cursor-pointer"
+            @click=""
+          >
+            Delete
+          </p>
+        </div>
+      </div>
       <!-- Rating stars -->
       <div class="flex">
         <Icon

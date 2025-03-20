@@ -92,7 +92,7 @@ const reviews = ref([
     rating_score: 5,
     review: "Fantastic work! Will book again for future events.",
     date: "2025-03-10",
-    owner: false,
+    owner: true,
   },
   {
     name: "James Brown",
