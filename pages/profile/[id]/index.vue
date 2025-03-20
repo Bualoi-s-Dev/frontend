@@ -152,13 +152,6 @@ const rating = computed<number>(() => {
             <RatingStars :rating="rating" />
             <p class="text-[14px] text-body">{{ rating }} stars</p>
           </div>
-          <Button
-            v-if="userId === profileInformation.id"
-            @click="router.push('/profile/edit')"
-            width="w-80 h-10"
-            text-options="text-white text-right text-sm"
-            >Edit Profile</Button
-          >
         </div>
       </div>
 

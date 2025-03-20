@@ -22,7 +22,7 @@ const onSubmit = () => {
     return;
   }
 
-  router.push({ path: `/profile/${id}` });
+  router.back();
 };
 </script>
 
