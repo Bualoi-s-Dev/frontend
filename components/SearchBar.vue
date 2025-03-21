@@ -11,15 +11,17 @@ const filters = ref(['Category A', 'Category B', 'Category C']);
 
 const prop = withDefaults(
   defineProps<{
-    role?: string
+    role?: string;
+    but?: boolean;
   }>(),
   {
-    role: "guest"
+    role: "guest", 
+    but: true
   }
 );
 
 const onCreate = async () => {
-    router.push("/appointment/confirm"); // TODO: move to subpackage page
+    router.push("/"); // TODO: move to subpackage page
 }
 
 </script>
@@ -30,6 +32,6 @@ const onCreate = async () => {
             class="px-4 py-2 border rounded-md w-full focus:ring-2 focus:ring-blue-500 outline-none"
         />
         <Button height="h-9" icon-color="gray" bg-color="bg-white" middle-icon="basil:filter-outline" button-options="border border-stroke rounded-md"></Button>
-        <Button v-if="role == 'Customer'" @click="onCreate" height="h-9" left-icon="ic:sharp-plus" button-options="border border-stroke rounded-md px-4">New</Button>
+        <Button v-if="role == 'Customer' && but == true" @click="onCreate" height="h-9" left-icon="ic:sharp-plus" button-options="border border-stroke rounded-md px-4">New</Button>
     </div>
 </template>

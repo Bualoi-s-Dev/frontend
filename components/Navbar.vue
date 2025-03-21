@@ -52,6 +52,16 @@ const onAppointment = async () => {
     router.push("/appointment/list");
 }
 
+const onToPay = async () => {
+    await toggleMenu();
+    router.push("/payment/topay");
+}
+
+const onTransaction = async () => {
+    await toggleMenu();
+    router.push("/payment/transaction");
+}
+
 const onProfile = async () => {
     await toggleMenu();
     router.push("/profile");
@@ -129,6 +139,8 @@ const handleLogout = async () => {
                     <li><a @click="onAppointment" class="my-4 inline-block" :class="firstSegment == 'appointment' && secondSegment != 'complete' ? 'text-red-300' : 'text-black'">Appointments</a></li>
                     <li v-if="user.role == 'Photographer'"><a @click="onBusy" class="my-4 inline-block" :class="firstSegment == 'profile' && secondSegment == 'schedule' ? 'text-red-300' : 'text-black'">My busy time</a></li>
                     <li v-if="user.role == 'Photographer'"><a @click="onCompleted" class="my-4 inline-block" :class="firstSegment == 'appointment' && secondSegment == 'complete' ? 'text-red-300' : 'text-black'">History</a></li>
+                    <li v-if="user.role == 'Customer'"><a @click="onToPay" class="my-4 inline-block" :class="firstSegment == 'payment' && secondSegment != 'transaction' ? 'text-red-300' : 'text-black'">To Pay</a></li>
+                    <li v-if="user.role == 'Customer'"><a @click="onTransaction" class="my-4 inline-block" :class="firstSegment == 'payment' && secondSegment == 'transaction' ? 'text-red-300' : 'text-black'">Transactions</a></li>
                     <li><a @click="onProfile" class="my-4 inline-block" :class="firstSegment == 'profile' && secondSegment != 'schedule' ? 'text-red-300' : 'text-black'">Profile</a></li>
                     <li>
                         <NuxtLink class="my-8 w-full text-center cta inline-block bg-black hover:bg-black px-3 py-2 rounded text-white" @click="handleLogout">Logout</NuxtLink>
