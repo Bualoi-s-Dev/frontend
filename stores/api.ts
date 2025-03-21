@@ -13,6 +13,8 @@ import type {
   AppointmentRequest,
   AppointmentDetailResponse,
   SubpackageResponse,
+  RatingRequest,
+  RatingResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 
@@ -237,6 +239,65 @@ export const useApiStore = defineStore("api", () => {
     return response.data as AppointmentResponse;
   };
 
+  const fetchRating = async (id: string): Promise<RatingResponse> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/user/${id}/rating`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as RatingResponse;
+  };
+
+  const fetchRatingById = async (
+    photographerId: string,
+    ratingId: string
+  ): Promise<RatingResponse> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/user/${photographerId}/rating/${ratingId}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as RatingResponse;
+  };
+
+  const createRating = async (id: string, payload: RatingRequest) => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/user/${id}/rating`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const deleteRating = async (photographerId: string, ratingId: string) => {
+    const response = await axios.delete(
+      `${config.public.apiUrl}/user/${photographerId}/rating/${ratingId}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  };
+
+  const updateRating = async (
+    photographerId: string,
+    ratingId: string,
+    payload: RatingRequest
+  ): Promise<RatingResponse> => {
+    const response = await axios.put(
+      `${config.public.apiUrl}/user/${photographerId}/rating/${ratingId}`,
+      payload,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as RatingResponse;
+  };
+
   return {
     fetchPackage,
     fetchAllPackage,
@@ -260,5 +321,10 @@ export const useApiStore = defineStore("api", () => {
     fetchBusyTime,
     createBusyTime,
     deleteBusyTime,
+    fetchRating,
+    fetchRatingById,
+    createRating,
+    deleteRating,
+    updateRating,
   };
 });

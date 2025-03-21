@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue/dist/iconify.js";
-import { ref, computed } from "vue";
+import {
+  ref,
+  computed,
+  defineProps,
+  defineEmits,
+  onMounted,
+  onUnmounted,
+} from "vue";
 
+const emit = defineEmits(); // Define the emit method
 const props = defineProps<{
+  ratingId: string;
   name: string;
   image: string;
   rating_score: number;
@@ -23,6 +32,13 @@ const borderClass = computed(() =>
     ? "border-primary border-2 py-[15px] px-[20px] rounded-[16px]"
     : "px-[20px]"
 );
+
+const api = useApiStore();
+const route = useRoute();
+const router = useRouter();
+const id = route.params.id as string;
+
+const showConfirmDialog = ref(false);
 
 // State to toggle the visibility of the full review
 const isExpanded = ref(false);
@@ -56,6 +72,28 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
+const confirmDelete = () => {
+  showConfirmDialog.value = true;
+};
+
+const deleteItem = async () => {
+  try {
+    await api.deleteRating(id, props.ratingId); // Delete the review from the backend
+
+    // Emit an event to remove the review from the frontend (parent component will handle it)
+    emit("deleteReview", props.ratingId);
+    useToastify("Successfully deleted rating", { type: "success" });
+  } catch (error: any) {
+    console.error("Failed to delete subpackage:", error);
+    useToastify(error.message, { type: "error" });
+  }
+  showConfirmDialog.value = false;
+};
+
+const editItem = () => {
+  router.push({ path: `/profile/${id}/editreview/${props.ratingId}` });
+};
+
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
 });
@@ -68,10 +106,11 @@ onUnmounted(() => {
 <template>
   <div :class="['flex gap-[20px]', borderClass]">
     <img
-      class="h-[35px] w-[35px] object-cover rounded-full"
+      class="h-[35px] w-[35px] object-cover aspect-square rounded-full"
       :src="image"
       alt="Reviewer image"
     />
+
     <div class="flex flex-col gap-[5px] w-full">
       <div class="flex justify-between items-center relative">
         <p class="text-[16px] text-titleActive">{{ name }}</p>
@@ -90,13 +129,13 @@ onUnmounted(() => {
         >
           <p
             class="px-4 py-2 text-[14px] text-titleActive cursor-pointer"
-            @click=""
+            @click="editItem"
           >
             Edit
           </p>
           <p
             class="px-4 py-2 text-[14px] text-titleActive cursor-pointer"
-            @click=""
+            @click="confirmDelete"
           >
             Delete
           </p>
@@ -119,7 +158,10 @@ onUnmounted(() => {
       </div>
 
       <!-- Review text -->
-      <p class="text-[16px] text-body" @click="toggleReview">
+      <p
+        class="text-[16px] text-body max-w-full break-all"
+        @click="toggleReview"
+      >
         {{ truncatedReview }}
         <!-- "View more" text is visible only if the review is truncated and showReview is false -->
         <span
@@ -149,4 +191,9 @@ onUnmounted(() => {
       <p class="text-[12px] text-body">{{ date }}</p>
     </div>
   </div>
+  <DeleteConfirmPopup
+    :show="showConfirmDialog"
+    @close="showConfirmDialog = false"
+    @confirm="deleteItem"
+  />
 </template>

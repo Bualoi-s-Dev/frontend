@@ -22,6 +22,17 @@ const profileInformation = ref({
   instagram: "",
   facebook: "",
 });
+const reviews = ref<
+  Array<{
+    ratingId: string;
+    name: string;
+    image: string;
+    rating_score: number;
+    review?: string;
+    date: string;
+    owner: boolean;
+  }>
+>([]);
 
 const isContactInfoVisible = ref(false);
 
@@ -62,47 +73,67 @@ const fetchUserProfileById = async () => {
   }
 };
 
+const fetchCustomer = async (
+  rating_id: string,
+  customer_id: string,
+  rating: number,
+  review: string | undefined,
+  date: string
+) => {
+  try {
+    const response = await api.fetchUserProfileById(customer_id);
+    if (response) {
+      reviews.value.push({
+        ratingId: rating_id,
+        name: response.name || "Unknown",
+        image: response.profile ? config.public.s3URL + response.profile : "",
+        rating_score: rating,
+        review: review || "",
+        date: date,
+        owner: customer_id === userId.value,
+      });
+    }
+  } catch (error: any) {
+    console.error("Error fetching customer:", error);
+    errorMessage.value = error.message;
+  }
+};
+
+const fetchRating = async () => {
+  try {
+    const response = await api.fetchRating(id);
+    if (Array.isArray(response)) {
+      for (const rating of response) {
+        let formattedDate = "";
+        // Ensure createdTime is a valid date object
+        const createdDate = new Date(rating.createdTime);
+
+        if (!isNaN(createdDate.getTime())) {
+          // Check if it's a valid date
+          formattedDate = createdDate.toISOString().split("T")[0]; // Convert to YYYY-MM-DD format
+        } else {
+          formattedDate = "Invalid Date"; // Handle invalid date
+        }
+
+        await fetchCustomer(
+          rating.id,
+          rating.customerId,
+          Number(rating.rating),
+          rating.review,
+          formattedDate
+        );
+      }
+    }
+  } catch (error: any) {
+    errorMessage.value = error.message;
+  }
+};
+
 onMounted(async () => {
   await fetchUserProfile();
   await fetchUserProfileById();
+  await fetchRating();
 });
-
-// Review data
-const reviews = ref([
-  {
-    name: "Alice Johnson",
-    image: "https://randomuser.me/api/portraits/women/1.jpg",
-    rating_score: 5,
-    review: "Absolutely loved the photography session! Highly recommended.",
-    date: "2025-03-18",
-    owner: false,
-  },
-  {
-    name: "Mark Smith",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
-    rating_score: 4,
-    review:
-      "Great experience, but could improve in editing speed. Great experience, but could improve in editing speed.Great experience, but could improve in editing speed.Great experience, but could improve in editing speed.",
-    date: "2025-03-15",
-    owner: false,
-  },
-  {
-    name: "Sophia Lee",
-    image: "https://randomuser.me/api/portraits/women/3.jpg",
-    rating_score: 5,
-    review: "Fantastic work! Will book again for future events.",
-    date: "2025-03-10",
-    owner: true,
-  },
-  {
-    name: "James Brown",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
-    rating_score: 3,
-    review: "Good work, but I expected better lighting.",
-    date: "2025-03-05",
-    owner: false,
-  },
-]);
 
 const goToAllReviews = () => {
   router.push({ path: `/profile/${id}/allreview` });
@@ -118,11 +149,13 @@ const hasReviewed = computed(() => {
 
 const rating = computed<number>(() => {
   if (reviews.value.length === 0) return 0;
+
   const totalScore = reviews.value.reduce(
     (sum, review) => sum + review.rating_score,
     0
   );
-  return parseFloat((totalScore / reviews.value.length).toFixed(1));
+
+  return parseFloat((totalScore / reviews.value.length).toFixed(1)) || 0;
 });
 </script>
 
@@ -131,8 +164,8 @@ const rating = computed<number>(() => {
     <BackButton />
     Photographer Profile
   </div>
-  <div class="mt-[16px]">
-    <div class="flex flex-col gap-[25px]">
+  <div class="mt-[16px] w-full">
+    <div class="flex flex-col gap-[25px] w-full">
       <div class="flex flex-col gap-[10px]">
         <div class="flex justify-end">
           <p
@@ -155,7 +188,7 @@ const rating = computed<number>(() => {
         </div>
       </div>
 
-      <div class="flex flex-col gap-[25px]">
+      <div class="flex flex-col gap-[25px] w-full">
         <div class="flex justify-evenly cursor-pointer">
           <div
             class="flex flex-col gap-[5px] items-center"
@@ -187,9 +220,9 @@ const rating = computed<number>(() => {
         </div>
         <div
           v-if="activeTab === 'REVIEW'"
-          class="flex flex-col gap-[20px] items-center"
+          class="flex flex-col gap-[20px] items-center w-full"
         >
-          <div class="flex flex-col gap-[25px]">
+          <div class="flex flex-col gap-[25px] w-full">
             <div class="flex items-center justify-center gap-[25px]">
               <p class="text-[48px] text-titleActive">{{ rating }}</p>
               <div class="flex flex-col gap-[5px]">
