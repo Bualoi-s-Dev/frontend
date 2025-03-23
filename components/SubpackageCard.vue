@@ -90,7 +90,7 @@ const editItem = () => {
         />
       </div>
     </div>
-    <p class="text-body text-[14px]">
+    <p class="text-body text-[14px] text-start">
       {{ props.description }}
     </p>
     <div class="flex py-[5px] gap-[10px]">

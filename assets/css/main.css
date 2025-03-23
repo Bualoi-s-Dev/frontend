@@ -13,9 +13,9 @@ button {
   --color-stroke: #d7dfea;
   --color-label: #888;
 
-  --color-green-schedule: #63BC8B;
-  --color-red-schedule: #F44F70;
-  --color-scarlet-schedule: #FB5E64;
+  --color-green-schedule: #63bc8b;
+  --color-red-schedule: #f44f70;
+  --color-scarlet-schedule: #fb5e64;
 
   --color-facebook: #1877f2;
   --color-google: #ecf0f5;
@@ -23,4 +23,7 @@ button {
   --color-innerBackground: #f9f9f9;
   --color-body: #666666;
   --color-placeHolder: #94a3b8;
+
+  --color-star: #fbbc05;
+  --color-empty-star: #d3d3d3;
 }

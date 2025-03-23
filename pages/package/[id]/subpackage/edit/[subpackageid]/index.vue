@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from "vue-router";
-import type { Subpackage } from "~/types/api";
+import type { Subpackage, SubpackageResponse } from "~/types/api";
 const api = useApiStore();
 const router = useRouter();
 const route = useRoute();
@@ -9,7 +9,7 @@ const route = useRoute();
 const id = route.params.id as string;
 const subpackageid = route.params.subpackageid as string;
 
-const oldData = ref<Subpackage | undefined>();
+const oldData = ref<SubpackageResponse | undefined>();
 
 const loading = ref(false);
 
