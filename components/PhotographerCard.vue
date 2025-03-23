@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StarRating from 'vue-star-rating'
+import type { UserResponse } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
@@ -7,13 +8,10 @@ const api = useApiStore();
 const config = useRuntimeConfig();
 
 const props = defineProps<{
-    data: {
-        rating: number;
-        name: string;
-        profile: string;
-        id: string;
-    }
+    data: UserResponse
 }>();
+
+const rating = computed(() => props.data.photographerRatings.reduce((a, b) => a + b.rating, 0) / props.data.photographerRatings.length);
 </script>
 
 <template>
@@ -23,7 +21,7 @@ const props = defineProps<{
         <div class="flex flex-col h-20 items-start justify-center gap-1 ml-4">
             <h2 class="text-xl text-gray-900">{{ data.name }}</h2>
 
-            <star-rating :star-size="20" :rating="data.rating" :show-rating="false"></star-rating>
+            <star-rating :star-size="20" :rating="rating" :show-rating="false"></star-rating>
         </div>
     </button>
 </template>
