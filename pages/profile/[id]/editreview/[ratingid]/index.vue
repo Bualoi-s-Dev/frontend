@@ -9,6 +9,8 @@ const id = route.params.id as string;
 const ratingid = route.params.ratingid as string;
 const oldData = ref<RatingResponse | undefined>();
 
+const loading = ref(false);
+
 onMounted(async () => {
   try {
     const response = await api.fetchRatingById(id, ratingid);
@@ -29,6 +31,7 @@ const submit = async (rating: number, review: string) => {
     review,
   };
 
+  loading.value = true;
   try {
     await api.updateRating(id, ratingid, payload);
     await router.back();
@@ -36,6 +39,8 @@ const submit = async (rating: number, review: string) => {
   } catch (error: any) {
     console.error("Error updating rating:", error);
     useToastify(error.message, { type: "error" });
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -46,5 +51,5 @@ const submit = async (rating: number, review: string) => {
     Edit Your Review
   </div>
   <!-- Correct the prop binding here -->
-  <RatingForm :data="oldData" :onSubmit="submit" />
+  <RatingForm :disabled="loading" :data="oldData" :onSubmit="submit" />
 </template>

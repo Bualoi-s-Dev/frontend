@@ -6,6 +6,7 @@ const route = useRoute();
 const router = useRouter();
 
 const id = route.params.id as string;
+const loading = ref(false);
 
 const submit = async (rating: number, review: string) => {
   const payload = {
@@ -13,6 +14,7 @@ const submit = async (rating: number, review: string) => {
     review,
   };
 
+  loading.value = true;
   try {
     await api.createRating(id, payload);
     await router.back();
@@ -20,6 +22,8 @@ const submit = async (rating: number, review: string) => {
   } catch (error: any) {
     console.error("Error creating rating:", error);
     useToastify(error.message, { type: "error" });
+  } finally {
+    loading.value = false;
   }
 };
 </script>
@@ -30,5 +34,5 @@ const submit = async (rating: number, review: string) => {
     Share Your Review
   </div>
   <!-- Correct the prop binding here -->
-  <RatingForm :onSubmit="submit" />
+  <RatingForm :disabled="loading" :onSubmit="submit" />
 </template>

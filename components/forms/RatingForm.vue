@@ -4,6 +4,7 @@ import { type RatingResponse } from "~/types/api";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 const props = defineProps<{
   onSubmit: (rating: number, review: string) => void;
+  disabled?: boolean;
   data?: RatingResponse;
 }>();
 
@@ -44,38 +45,26 @@ const handleSubmit = () => {
 <template>
   <div class="w-full h-full p-6 flex flex-col">
     <div class="flex justify-between cursor-pointer">
-      <Icon
-        v-for="index in 5"
-        :key="index"
-        :icon="
-          selectedRating >= index ? 'ic:round-star' : 'ic:round-star-border'
-        "
-        class="w-[30px] h-[30px] cursor-pointer"
-        :class="{
-          'text-star': selectedRating >= index,
-          'text-empty-star': selectedRating < index,
-          'text-red-500': errorMessage,
-        }"
-        @click="setRating(index)"
-      />
+      <button v-for="index in 5" :key="index" :class="{
+        'text-star': selectedRating >= index,
+        'text-empty-star': selectedRating < index,
+        'text-red-500': errorMessage
+      }" class="disabled:opacity-50" :disabled="disabled" @click="setRating(index)">
+        <Icon :icon="selectedRating >= index ? 'ic:round-star' : 'ic:round-star-border'
+          " class="w-[30px] h-[30px]" />
+      </button>
     </div>
 
     <p v-if="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</p>
 
     <div class="flex flex-col gap-[5px] mt-6">
       <p class="text-lg text-titleActive">Your Review</p>
-      <textarea
-        v-model="reviewText"
-        rows="6"
-        class="border border-stroke w-full rounded-md py-1 pl-2 text-lg mt-1.5 resize-none"
-        placeholder="Write your review here..."
-      ></textarea>
+      <textarea :disabled="disabled" v-model="reviewText" rows="6"
+        class="border disabled:opacity-50 border-stroke w-full rounded-md py-1 pl-2 text-lg mt-1.5 resize-none"
+        placeholder="Write your review here..."></textarea>
     </div>
 
-    <button
-      class="mt-6 ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white"
-      @click="handleSubmit"
-    >
+    <button :disabled="disabled" class="mt-6 disabled:opacity-50 ml-auto text-lg px-6 py-2 rounded-lg bg-black text-white" @click="handleSubmit">
       Submit
     </button>
   </div>
