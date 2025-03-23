@@ -5,27 +5,13 @@ import { type UserResponse } from '~/types/api';
 const router = useRouter();
 const route = useRoute();
 const api = useApiStore();
-const config = useRuntimeConfig();
 
-const photographers = ref<UserResponse[]>([{
-    name: "Dev",
-    profile: "https://media.discordapp.net/attachments/842737146321174558/1352316979901366303/sam-altman.png?ex=67dd92d4&is=67dc4154&hm=34363f8891c692404d048ae13774be411ecf5678ead02cd7573a37475acdaa65&=&format=webp&quality=lossless&width=1022&height=1020",
-    rating: 5,
-    id: "1"
-}, {
-    name: "Dev",
-    profile: "https://media.discordapp.net/attachments/842737146321174558/1352316979901366303/sam-altman.png?ex=67dd92d4&is=67dc4154&hm=34363f8891c692404d048ae13774be411ecf5678ead02cd7573a37475acdaa65&=&format=webp&quality=lossless&width=1022&height=1020",
-    rating: 5,
-    id: "2"
-}, {
-    name: "Dev",
-    profile: "https://media.discordapp.net/attachments/842737146321174558/1352316979901366303/sam-altman.png?ex=67dd92d4&is=67dc4154&hm=34363f8891c692404d048ae13774be411ecf5678ead02cd7573a37475acdaa65&=&format=webp&quality=lossless&width=1022&height=1020",
-    rating: 5,
-    id: "3"
-}]);
+const photographers = ref<UserResponse[]>([]);
 
 
 onMounted(async () => {
+    photographers.value = await api.searchPhotographer({});
+    console.log(photographers.value);
 })
 </script>
 
@@ -39,6 +25,11 @@ onMounted(async () => {
         </div>
 
         <SearchBar role="guest" />
+
+        <div v-if="photographers.length === 0" class="w-full p-4">
+            <div v-for="i in 5" :key="i" class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"></div>
+        </div>
+
         <div v-for="photographer, index in photographers" :key="photographer.id" class="flex items-center">
             <PhotographerCard :data="photographer" />
         </div>
