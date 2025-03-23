@@ -102,6 +102,7 @@ const fetchCustomer = async (
 const fetchRating = async () => {
   try {
     const response = await api.fetchRating(id);
+    console.log('rating resp', response);
     if (Array.isArray(response)) {
       for (const rating of response) {
         let formattedDate = "";
@@ -170,7 +171,7 @@ const rating = computed<number>(() => {
         <div class="flex justify-end">
           <p
             v-if="userId === profileInformation.id"
-            class="text-[16px] text-body cursor-pointer underline w-fit"
+            class="text-[16px] mr-4 text-body cursor-pointer underline w-fit"
             @click="router.push('/profile/edit')"
           >
             Edit profile
@@ -232,7 +233,7 @@ const rating = computed<number>(() => {
                 </p>
               </div>
             </div>
-            <div v-if="!hasReviewed" class="flex flex-col gap-[5px] px-[15px]">
+            <div v-if="!hasReviewed && userId !== profileInformation.id" class="flex flex-col gap-[5px] px-[15px]">
               <p class="text-[18px] text-body font-medium">
                 Review this photographer
               </p>
