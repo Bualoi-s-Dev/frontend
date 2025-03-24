@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from "@/components/Button.vue";
 import { Icon } from "@iconify/vue";
-import type { Package, UserRequest } from "~/types/api";
+import type { PackageResponse, UserRequest } from "~/types/api";
 
 type EditData = { name: string; gender: string; location: string };
 
@@ -10,7 +10,7 @@ const config = useRuntimeConfig();
 const user = ref<EditData>({ name: "", gender: "", location: "" });
 const imageUrl = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
-const packages = ref<Package[] | null>(null);
+const packages = ref<PackageResponse[] | null>(null);
 const oldImage = ref("");
 const onFileChange = async (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -37,7 +37,6 @@ const fetchUserProfile = async () => {
     user.value.location = response.location;
 
     packages.value = response.photographerPackages;
-
     allData.value = response; // Storing response in data
   } catch (error: any) {
     console.error(error.message);
@@ -159,13 +158,12 @@ const handleChooseImage = () => fileInput.value?.click();
           </div>
         </div>
       </div>
+      <h2 class="ml-6 mt-6">Work showcase</h2>
 
-      <div v-if="allData?.role === 'Photographer'">
-        <h2 class="ml-6 mt-6">Work showcase</h2>
-        <WorkList v-if="packages" :data="packages" />
-        <div class="m-">
-          <WorkCard :to-add="true" />
-        </div>
+      <WorkList v-if="packages" :data="packages" />
+
+      <div class="m-5">
+        <WorkCard :to-add="true" />
       </div>
 
       <div
