@@ -15,16 +15,18 @@ const loading = computed(
       !packages.value)
 );
 
-const filterUrl = ref<string>("");
-const handleFilterApply = (data: any) => {
-  filterUrl.value = data.url;
-  console.log("Filter applied:", data.url);
-};
+const filterUrl = ref("");
+const searchQuery = ref("");
 
-watchEffect(async () => {
-  if (!filterUrl.value) return;
-  // Apply the filters
-  packages.value = await api.fetchAllPackageWithFilter(filterUrl.value);
+watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
+  const queryParams = [];
+
+  if (newSearch) queryParams.push(newSearch);
+  if (newFilter) queryParams.push(newFilter);
+  const query = queryParams.length ? `?${queryParams.join("&")}` : "";
+
+  packages.value = await api.fetchAllPackageWithFilter(query);
+  console.log(packages.value);
 });
 
 onMounted(async () => {
@@ -54,11 +56,7 @@ onMounted(async () => {
     </template>
     <template v-else>
       <div class="flex items-center justify-between gap-[10px] w-full">
-        <input
-          type="text"
-          class="border border-stroke w-full rounded-md py-1 pl-2 text-lg"
-        />
-        <FilterButton @applyFilter="handleFilterApply" />
+        <SearchBar @update:search="searchQuery = $event" @update:filter="filterUrl = $event" :filter-options="{isCategorizing:true}"/>
       </div>
       <WorkList :data="packages!" navigate />
     </template>

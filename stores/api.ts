@@ -76,8 +76,8 @@ export const useApiStore = defineStore("api", () => {
   };
 
   const fetchAllPackageWithFilter = async (filter: string): Promise<PackageResponse[]> => {
-    console.log(`${config.public.apiUrl}/package/?search=${filter}`)
-    const response = await axios.get(`${config.public.apiUrl}/package?search=${filter}`, {
+    console.log('This -> ' + filter);
+    const response = await axios.get(`${config.public.apiUrl}/package${filter}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
     return response.data as PackageResponse[];

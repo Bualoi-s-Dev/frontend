@@ -52,16 +52,25 @@ const selectCategory = (category: string) => {
   dropdownOpen.value = false; // Close dropdown after selection
 };
 
-// Filter
-const filterUrl = ref<string>("");
 const applyFilter = () => {
-  filterUrl.value = "";
-  if (selectedCategory.value)
-    filterUrl.value = `&type=${selectedCategory.value}`;
+  const params = new URLSearchParams();
 
-  emit("applyFilter", {
-    url: filterUrl.value,
-  });
+  if (props.filterOptions?.isCategorizing && selectedCategory.value) {
+    params.append("type", selectedCategory.value);
+  }
+  if (props.filterOptions?.isSelectingDateRange && startDate.value) {
+    params.append("start_date", startDate.value);
+  }
+  if (props.filterOptions?.isSelectingDateRange && endDate.value) {
+    params.append("end_date", endDate.value);
+  }
+  if (props.filterOptions?.isSelectingActiveDays) {
+    const activeDays = days.value.filter(day => day.active).map(day => day.name.toUpperCase());
+    if (activeDays.length) {
+      params.append("active_days", activeDays.join(","));
+    }
+  }
+  emit("applyFilter",{ url: `${params.toString()}`})
   showConfirmDialog.value = false;
 };
 
@@ -172,7 +181,7 @@ const closeFilter = () => {
         <h2 class="text-gray-500 mt-4">Date Range</h2>
         <div class="flex py-[5px] gap-[10px]">
           <p
-            v-for="(day, index) in days"
+            v-for="(day, ind0ex) in days"
             :key="index"
             class="flex justify-center w-[36px] py-[5px] border rounded-[5px] text-[12px]"
             :class="{
