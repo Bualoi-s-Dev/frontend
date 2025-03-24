@@ -9,6 +9,14 @@ const api = useApiStore();
 
 const config = useRuntimeConfig();
 
+const filterData = ref<{
+  category?: string;
+  startDate?: string;
+  endDate?: string;
+  sortBy: string;
+  activeDays?: string[];
+} | null>(null);
+
 const imageUrl = ref("");
 const title = ref("");
 const type = ref("");
@@ -78,6 +86,12 @@ const formatPackageType = (type: string): string => {
 const goToCreateSubpackage = () => {
   router.push(`/package/${id}/subpackage/create`);
 };
+
+const handleFilterApply = (data: any) => {
+  filterData.value = data;
+  console.log("Filter applied:", data);
+};
+
 </script>
 
 <template>
@@ -91,7 +105,7 @@ const goToCreateSubpackage = () => {
         type="text"
         class="border border-stroke w-full rounded-md py-1 pl-2 text-lg"
       />
-      <FilterButton />
+      <FilterButton @applyFilter="handleFilterApply"/>
       <button
         v-if="isOwner"
         class="flex justify-center items-center gap-[8px] text-[14px] p-[9px] pr-[13px] rounded-[6px] bg-black text-white"

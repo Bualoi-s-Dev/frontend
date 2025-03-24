@@ -75,6 +75,14 @@ export const useApiStore = defineStore("api", () => {
     return response.data as PackageResponse[];
   };
 
+  const fetchAllPackageWithFilter = async (filter: string): Promise<PackageResponse[]> => {
+    console.log(`${config.public.apiUrl}/package/?search=${filter}`)
+    const response = await axios.get(`${config.public.apiUrl}/package?search=${filter}`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as PackageResponse[];
+  };
+
   const updateUserInformation = async (payload: UserRequest) => {
     const response = await axios.patch(
       `${config.public.apiUrl}/user/profile`,
@@ -240,6 +248,7 @@ export const useApiStore = defineStore("api", () => {
   return {
     fetchPackage,
     fetchAllPackage,
+    fetchAllPackageWithFilter,
     fetchUserPackage,
     fetchUserProfile,
     fetchUserProfileById,
