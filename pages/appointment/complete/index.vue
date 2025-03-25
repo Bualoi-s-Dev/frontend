@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { UserProfile } from 'firebase/auth';
-import type { AppointmentDetailResponse, AppointmentResponse, AppointmentStatus, UserRequest, UserResponse } from '~/types/api';
+import type { AppointmentDetail, AppointmentResponse, AppointmentStatus, UserRequest, UserResponse } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
 const api = useApiStore();
 const config = useRuntimeConfig();
 
-const appointmentList = ref<AppointmentDetailResponse[] | undefined>();
+const appointmentList = ref<AppointmentDetail[] | undefined>();
 const userData = ref<UserResponse>();
 
 // TODO: refactor function to not use index

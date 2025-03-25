@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Icon } from "@iconify/vue";
-import type { AppointmentDetailResponse, AppointmentStatus, PackageResponse } from "~/types/api";
+import type { AppointmentDetail, AppointmentStatus, PackageResponse } from "~/types/api";
 
 const router = useRouter();
 const api = useApiStore();
@@ -20,7 +20,7 @@ const prop = defineProps<{
     // startTime: string;
     // endTime: string;
     // subpackageId: string;
-    appointmentData: AppointmentDetailResponse;
+    appointmentData: AppointmentDetail;
     index: number;
     manageStatus: (index: number, status: AppointmentStatus) => void;
 }>();
