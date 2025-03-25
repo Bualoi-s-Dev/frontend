@@ -1,5 +1,6 @@
 /* Do not change, this code is generated from Golang structs */
 
+
 export enum PackageType {
   WEDDING_BLISS = "WEDDING_BLISS",
   BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",
@@ -66,10 +67,10 @@ export interface Subpackage {
   price: number;
   isInf: boolean;
   repeatedDay: DayName[];
-  avaliableStartTime: string;
-  avaliableEndTime: string;
-  avaliableStartDay: string;
-  avaliableEndDay: string;
+  availableStartTime: string;
+  availableEndTime: string;
+  availableStartDay: string;
+  availableEndDay: string;
 }
 export interface PackageResponse {
   id: string;
@@ -111,6 +112,7 @@ export interface UserResponse {
   instagram: string;
   showcasePackages: PackageResponse[];
   photographerPackages: PackageResponse[];
+  photographerRatings: RatingResponse[];
 }
 export interface SubpackageRequest {
   title?: string;
@@ -119,10 +121,10 @@ export interface SubpackageRequest {
   duration?: number;
   isInf?: boolean;
   repeatedDay?: string[];
-  avaliableStartTime?: string;
-  avaliableEndTime?: string;
-  avaliableStartDay?: string;
-  avaliableEndDay?: string;
+  availableStartTime?: string;
+  availableEndTime?: string;
+  availableStartDay?: string;
+  availableEndDay?: string;
 }
 export interface BusyTime {
   id: string;
@@ -141,20 +143,14 @@ export interface SubpackageResponse {
   duration: number;
   isInf: boolean;
   repeatedDay: string[];
-  avaliableStartTime: string;
-  avaliableEndTime: string;
-  avaliableStartDay: string;
-  avaliableEndDay: string;
+  availableStartTime: string;
+  availableEndTime: string;
+  availableStartDay: string;
+  availableEndDay: string;
   busyTimes: BusyTime[];
-  busyTimeMap: { [key: string]: BusyTime[] };
+  busyTimeMap: {[key: string]: BusyTime[]};
 }
 
-export interface BusyTimeRequest {
-  type?: BusyTimeType;
-  startTime?: string;
-  endTime?: string;
-  isValid?: boolean;
-}
 export interface BusyTimeStrictRequest {
   type: BusyTimeType;
   startTime: string;
@@ -183,17 +179,55 @@ export interface AppointmentResponse {
   location: string;
   price: number;
 }
-
+export interface AppointmentDetail {
+  id: string;
+  packageId: string;
+  subpackageId: string;
+  customerId: string;
+  photographerId: string;
+  packageName: string;
+  subpackageName: string;
+  customerName: string;
+  photographerName: string;
+  price: number;
+  startTime: string;
+  endTime: string;
+  status: AppointmentStatus;
+  location: string;
+}
+export interface CreateAppointmentResponse {
+  appointment: AppointmentResponse;
+  busyTime: BusyTime;
+}
 export interface RatingRequest {
   rating: number;
   review?: string;
 }
-
 export interface RatingResponse {
   id: string;
   customerId: string;
   photographerId: string;
   rating: number;
-  review?: string;
-  createdTime: string;
+  review: string;
+  createdTime: Date;
+}
+export interface PhotographerPayment {
+  status: string;
+  balanceTransactionId?: string;
+}
+export interface CustomerPayment {
+  status: string;
+  checkoutId?: string;
+  paymentIntentId?: string;
+}
+export interface Payment {
+  id: string;
+  appointmentId: string;
+  customer: CustomerPayment;
+  photographer: PhotographerPayment;
+}
+export interface PaymentResponse {
+  payment: Payment;
+  appointment: AppointmentDetail;
+  package: PackageResponse;
 }

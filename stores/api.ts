@@ -7,16 +7,17 @@ import type {
   UserRequest,
   SubpackageRequest,
   BusyTime,
-  BusyTimeRequest,
   AppointmentResponse,
   AppointmentUpdateStatusRequest,
   AppointmentRequest,
-  AppointmentDetailResponse,
   SubpackageResponse,
+  BusyTimeStrictRequest,
+  AppointmentDetail,
   RatingRequest,
   RatingResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
+import type { SearchPhotographerParams } from "~/types/api_manual";
 
 export const useApiStore = defineStore("api", () => {
   const auth = useAuthStore();
@@ -38,6 +39,18 @@ export const useApiStore = defineStore("api", () => {
     );
     return response.data as UserResponse;
   };
+
+  // TODO: change parameter/return type to actual type
+  const searchPhotographer = async (req: SearchPhotographerParams): Promise<UserResponse[]> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/user/photographers`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+        params: req,
+      }
+    );
+    return response.data as UserResponse[];
+  }
 
   const createPackage = async (pkg: PackageRequest) => {
     const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
@@ -168,7 +181,7 @@ export const useApiStore = defineStore("api", () => {
     return response.data as BusyTime;
   };
 
-  const createBusyTime = async (busyTime: BusyTimeRequest) => {
+  const createBusyTime = async (busyTime: BusyTimeStrictRequest) => {
     const response = await axios.post(
       `${config.public.apiUrl}/user/busytime`,
       busyTime,
@@ -197,7 +210,7 @@ export const useApiStore = defineStore("api", () => {
   };
 
   const fetchAppointmentsDetail = async (): Promise<
-    AppointmentDetailResponse[]
+    AppointmentDetail[]
   > => {
     const response = await axios.get(
       `${config.public.apiUrl}/appointment/detail`,
@@ -205,7 +218,7 @@ export const useApiStore = defineStore("api", () => {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
-    return response.data as AppointmentDetailResponse[];
+    return response.data as AppointmentDetail[];
   };
 
   const updateAppointmentStatus = async (
@@ -336,6 +349,7 @@ export const useApiStore = defineStore("api", () => {
     fetchUserProfile,
     fetchAllSubpackage,
     fetchUserProfileById,
+    searchPhotographer,
     createPackage,
     updatePackage,
     updateUserInformation,
