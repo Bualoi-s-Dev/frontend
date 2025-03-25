@@ -1,5 +1,6 @@
 /* Do not change, this code is generated from Golang structs */
 
+
 export enum PackageType {
   WEDDING_BLISS = "WEDDING_BLISS",
   BIRTHDAY_SHOOTS = "BIRTHDAY_SHOOTS",
@@ -52,6 +53,13 @@ export enum AppointmentStatus {
   Canceled = "Canceled",
   Completed = "Completed",
 }
+export enum PaymentStatus {
+  Unpaid = "Unpaid",
+  Wait = "Wait",
+  InProcess = "InProcess",
+  Paid = "Paid",
+  Completed = "Completed",
+}
 export interface PackageRequest {
   title?: string;
   type?: PackageType;
@@ -66,10 +74,10 @@ export interface Subpackage {
   price: number;
   isInf: boolean;
   repeatedDay: DayName[];
-  avaliableStartTime: string;
-  avaliableEndTime: string;
-  avaliableStartDay: string;
-  avaliableEndDay: string;
+  availableStartTime: string;
+  availableEndTime: string;
+  availableStartDay: string;
+  availableEndDay: string;
 }
 export interface PackageResponse {
   id: string;
@@ -111,6 +119,7 @@ export interface UserResponse {
   instagram: string;
   showcasePackages: PackageResponse[];
   photographerPackages: PackageResponse[];
+  photographerRatings: RatingResponse[];
 }
 export interface SubpackageRequest {
   title?: string;
@@ -119,10 +128,10 @@ export interface SubpackageRequest {
   duration?: number;
   isInf?: boolean;
   repeatedDay?: string[];
-  avaliableStartTime?: string;
-  avaliableEndTime?: string;
-  avaliableStartDay?: string;
-  avaliableEndDay?: string;
+  availableStartTime?: string;
+  availableEndTime?: string;
+  availableStartDay?: string;
+  availableEndDay?: string;
 }
 export interface BusyTime {
   id: string;
@@ -141,12 +150,12 @@ export interface SubpackageResponse {
   duration: number;
   isInf: boolean;
   repeatedDay: string[];
-  avaliableStartTime: string;
-  avaliableEndTime: string;
-  avaliableStartDay: string;
-  avaliableEndDay: string;
+  availableStartTime: string;
+  availableEndTime: string;
+  availableStartDay: string;
+  availableEndDay: string;
   busyTimes: BusyTime[];
-  busyTimeMap: { [key: string]: BusyTime[] };
+  busyTimeMap: {[key: string]: BusyTime[]};
 }
 
 export interface BusyTimeRequest {
@@ -155,6 +164,7 @@ export interface BusyTimeRequest {
   endTime?: string;
   isValid?: boolean;
 }
+
 export interface BusyTimeStrictRequest {
   type: BusyTimeType;
   startTime: string;
@@ -183,21 +193,6 @@ export interface AppointmentResponse {
   location: string;
   price: number;
 }
-
-export interface RatingRequest {
-  rating: number;
-  review?: string;
-}
-
-export interface RatingResponse {
-  id: string;
-  customerId: string;
-  photographerId: string;
-  rating: number;
-  review?: string;
-  createdTime: string;
-}
-
 export interface AppointmentDetail {
   id: string;
   packageId: string;
@@ -218,12 +213,24 @@ export interface CreateAppointmentResponse {
   appointment: AppointmentResponse;
   busyTime: BusyTime;
 }
+export interface RatingRequest {
+  rating: number;
+  review?: string;
+}
+export interface RatingResponse {
+  id: string;
+  customerId: string;
+  photographerId: string;
+  rating: number;
+  review: string;
+  createdTime: Date;
+}
 export interface PhotographerPayment {
-  status: string;
+  status: PaymentStatus;
   balanceTransactionId?: string;
 }
 export interface CustomerPayment {
-  status: string;
+  status: PaymentStatus;
   checkoutId?: string;
   paymentIntentId?: string;
 }

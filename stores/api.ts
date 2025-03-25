@@ -16,6 +16,7 @@ import type {
   RatingRequest,
   RatingResponse,
   OnboardingURL,
+  PaymentResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 
@@ -298,6 +299,8 @@ export const useApiStore = defineStore("api", () => {
     );
     return response.data as RatingResponse;
   };
+
+  PaymentResponse
 
   const fetchAllPayment = async (): Promise<
     PaymentResponse[]

@@ -1,29 +1,34 @@
 <script setup lang="ts">
 import type { UserProfile } from 'firebase/auth';
 import Index from '~/pages/package/showcase/index.vue';
-import { AppointmentStatus, type AppointmentDetail, type AppointmentResponse, type UserRequest, type UserResponse } from '~/types/api';
+import { PaymentStatus, type PaymentResponse, type UserResponse } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
 const api = useApiStore();
 const config = useRuntimeConfig();
 
-const appointmentList = ref<AppointmentDetail[] | undefined>();
+const errorMessage = ref("");
+
+const paymentList = ref<PaymentResponse[] | undefined>();
 const userData = ref<UserResponse>();
 
-// TODO: refactor function to not use index
-const manageStatus = (index: number, status: AppointmentStatus) => {
-    if(appointmentList.value == undefined) return ;
-    appointmentList.value[index].status = status;
-    return ;
-}
-
 onMounted(async () => {
-    const response1 = await api.fetchAppointmentsDetail();
-    appointmentList.value = response1;
+    try {
+        const response = await api.fetchAllPayment();
+        paymentList.value = response;
+    }
+    catch (error: any) {
+        errorMessage.value = error.message;
+    }
     
-    const response2 = await api.fetchUserProfile();
-    userData.value = response2;
+    try {
+        const response = await api.fetchUserProfile();
+        userData.value = response;
+    }
+    catch (error: any) {
+        errorMessage.value = error.message;
+    }
 })
 
 </script>
@@ -32,14 +37,14 @@ onMounted(async () => {
     <div class="mt-6 flex flex-col">
         <SearchBar :role="userData?.role" :but="false" />
         <div class="items-center mx-7 my-2">
-            <h1 class="text-xl">To Pay</h1>
+            <h1 class="text-xl">Transactions</h1>
         </div>
         <div
-            v-for="appointment, index in appointmentList"
-            :key="appointment.id"
+            v-for="payment in paymentList"
+            :key="payment.payment.id"
             class="flex items-center"
         >
-            <TransactionCard v-if="appointment.status != AppointmentStatus.Completed" :role="userData?.role" :appointmentData="appointment" :index="index" :manageStatus="manageStatus" />
+            <TransactionCard v-if="payment.payment.customer.status == PaymentStatus.Paid || payment.payment.photographer.status == PaymentStatus.InProcess || payment.payment.photographer.status == PaymentStatus.Completed" :role="userData?.role" :paymentId="payment.payment.id" />
         </div>
     </div>
 </template>
