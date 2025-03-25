@@ -40,16 +40,17 @@ export const useApiStore = defineStore("api", () => {
     return response.data as UserResponse;
   };
 
-  // TODO: change parameter/return type to actual type
   const searchPhotographer = async (req: SearchPhotographerParams): Promise<UserResponse[]> => {
     const response = await axios.get(
       `${config.public.apiUrl}/user/photographers`,
       {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
-        params: req,
+        // TODO: remove limit when doing pagination
+        params: { ...req, limit: 1000 },
       }
     );
-    return response.data as UserResponse[];
+    // TODO: also return pagination data
+    return response.data.photographers as UserResponse[];
   }
 
   const createPackage = async (pkg: PackageRequest) => {
