@@ -57,7 +57,17 @@ const onHome = async () => {
 const onAppointment = async () => {
   await toggleMenu();
   router.push("/appointment/list");
-};
+}
+
+const onToPay = async () => {
+  await toggleMenu();
+  router.push("/payment/topay");
+}
+
+const onTransaction = async () => {
+  await toggleMenu();
+  router.push("/payment/transaction");
+}
 
 const onProfile = async () => {
   await toggleMenu();
@@ -85,13 +95,8 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div
-    v-if="menuOpen"
-    @click="toggleMenu"
-    onc
-    class="bg-black absolute top-0 left-0 w-screen h-screen"
-    :class="menuOpen ? 'opacity-50' : 'opacity-0'"
-  ></div>
+  <div v-if="menuOpen" @click="toggleMenu" onc class="bg-black absolute top-0 left-0 w-screen h-screen"
+    :class="menuOpen ? 'opacity-50' : 'opacity-0'"></div>
   <nav class="fixed w-full p-6 bg-transparent">
     <div class="flex items-center justify-end mr-5">
       <!-- Mobile toggle -->
@@ -125,14 +130,9 @@ const handleLogout = async () => {
       <!-- Drawer Menu -->
       <aside
         class="p-5 transform drop-shadow-xl top-0 left-0 w-64 bg-white fixed h-full overflow-auto ease-in-out transition-all duration-300 z-30"
-        :class="menuOpen ? 'translate-x-0' : '-translate-x-full'"
-      >
+        :class="menuOpen ? 'translate-x-0' : '-translate-x-full'">
         <div class="flex flex-col justify-center items-center">
-          <img
-            :src="user.profile"
-            alt="Profile Image"
-            class="w-30 h-30 rounded-full object-cover"
-          />
+          <img :src="user.profile" alt="Profile Image" class="w-30 h-30 rounded-full object-cover" />
           <p class="pt-5 text-xl">{{ user.name }}</p>
           <p style="color: #666666">{{ user.role }}</p>
           <!-- <img src="/assets/userpf.jpg" alt="Profile Image" class="w-30 h-30 rounded-full object-cover">
@@ -141,67 +141,43 @@ const handleLogout = async () => {
 
         <ul class="divide-y-1 mx-3">
           <li>
-            <a
-              @click="onHome"
-              class="my-4 inline-block"
-              :class="firstSegment == '' ? 'text-red-300' : 'text-black'"
-              >Home</a
-            >
+            <a @click="onHome" class="my-4 inline-block"
+              :class="firstSegment == '' ? 'text-red-300' : 'text-black'">Home</a>
           </li>
           <li>
-            <a
-              @click="onAppointment"
-              class="my-4 inline-block"
-              :class="
-                firstSegment == 'appointment' && secondSegment != 'complete'
-                  ? 'text-red-300'
-                  : 'text-black'
-              "
-              >Appointments</a
-            >
+            <a @click="onAppointment" class="my-4 inline-block" :class="firstSegment == 'appointment' && secondSegment != 'complete'
+                ? 'text-red-300'
+                : 'text-black'
+              ">Appointments</a>
           </li>
           <li v-if="user.role == 'Photographer'">
-            <a
-              @click="onBusy"
-              class="my-4 inline-block"
-              :class="
-                firstSegment == 'profile' && secondSegment == 'schedule'
-                  ? 'text-red-300'
-                  : 'text-black'
-              "
-              >My busy time</a
-            >
+            <a @click="onBusy" class="my-4 inline-block" :class="firstSegment == 'profile' && secondSegment == 'schedule'
+                ? 'text-red-300'
+                : 'text-black'
+              ">My busy time</a>
           </li>
           <li v-if="user.role == 'Photographer'">
-            <a
-              @click="onCompleted"
-              class="my-4 inline-block"
-              :class="
-                firstSegment == 'appointment' && secondSegment == 'complete'
-                  ? 'text-red-300'
-                  : 'text-black'
-              "
-              >History</a
-            >
+            <a @click="onCompleted" class="my-4 inline-block" :class="firstSegment == 'appointment' && secondSegment == 'complete'
+                ? 'text-red-300'
+                : 'text-black'
+              ">History</a>
+          </li>
+          <li v-if="user.role == 'Customer'"><a @click="onToPay" class="my-4 inline-block"
+              :class="firstSegment == 'payment' && secondSegment != 'transaction' ? 'text-red-300' : 'text-black'">To
+              Pay</a></li>
+          <li v-if="user.role == 'Customer'"><a @click="onTransaction" class="my-4 inline-block"
+              :class="firstSegment == 'payment' && secondSegment == 'transaction' ? 'text-red-300' : 'text-black'">Transactions</a>
           </li>
           <li>
-            <a
-              @click="onProfile"
-              class="my-4 inline-block"
-              :class="
-                firstSegment == 'profile' && secondSegment != 'schedule'
-                  ? 'text-red-300'
-                  : 'text-black'
-              "
-              >Profile</a
-            >
+            <a @click="onProfile" class="my-4 inline-block" :class="firstSegment == 'profile' && secondSegment != 'schedule'
+                ? 'text-red-300'
+                : 'text-black'
+              ">Profile</a>
           </li>
           <li>
             <NuxtLink
               class="my-8 w-full text-center cta inline-block bg-black hover:bg-black px-3 py-2 rounded text-white"
-              @click="handleLogout"
-              >Logout</NuxtLink
-            >
+              @click="handleLogout">Logout</NuxtLink>
           </li>
         </ul>
       </aside>

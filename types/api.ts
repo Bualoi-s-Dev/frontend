@@ -197,3 +197,48 @@ export interface RatingResponse {
   review?: string;
   createdTime: string;
 }
+
+export interface AppointmentDetail {
+  id: string;
+  packageId: string;
+  subpackageId: string;
+  customerId: string;
+  photographerId: string;
+  packageName: string;
+  subpackageName: string;
+  customerName: string;
+  photographerName: string;
+  price: number;
+  startTime: string;
+  endTime: string;
+  status: AppointmentStatus;
+  location: string;
+}
+export interface CreateAppointmentResponse {
+  appointment: AppointmentResponse;
+  busyTime: BusyTime;
+}
+export interface PhotographerPayment {
+  status: string;
+  balanceTransactionId?: string;
+}
+export interface CustomerPayment {
+  status: string;
+  checkoutId?: string;
+  paymentIntentId?: string;
+}
+export interface Payment {
+  id: string;
+  appointmentId: string;
+  customer: CustomerPayment;
+  photographer: PhotographerPayment;
+}
+export interface PaymentResponse {
+  payment: Payment;
+  appointment: AppointmentDetail;
+  package: PackageResponse;
+}
+
+export interface OnboardingURL {
+  url: string;
+}
