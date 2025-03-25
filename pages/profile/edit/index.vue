@@ -39,6 +39,8 @@ const fetchUserProfile = async () => {
 
     packages.value = response.photographerPackages;
     allData.value = response; // Storing response in data
+
+    role.value = response.role;
   } catch (error: any) {
     console.error(error.message);
     useToastify(error.message, { type: "error" });
