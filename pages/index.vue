@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { UserRole, type PackageResponse, type UserResponse } from '~/types/api';
+import { UserRole, type PackageResponse, type UserResponse } from "~/types/api";
 
 const profile = ref<UserResponse | null>(null);
 const packages = ref<PackageResponse[] | null>(null);
@@ -8,16 +8,21 @@ const router = useRouter();
 
 const api = useApiStore();
 
-const loading = computed(() => !profile.value ||
-  (profile.value && profile.value.role !== UserRole.Photographer && !packages.value));
+const loading = computed(
+  () =>
+    !profile.value ||
+    (profile.value &&
+      profile.value.role !== UserRole.Photographer &&
+      !packages.value)
+);
 
 onMounted(async () => {
   profile.value = await api.fetchUserProfile();
   if (profile.value.role !== UserRole.Photographer)
     packages.value = await api.fetchAllPackage();
-  else
-    packages.value = profile.value.photographerPackages;
-})
+  else packages.value = profile.value.photographerPackages;
+  console.log(packages.value);
+});
 </script>
 
 <template>
