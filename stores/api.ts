@@ -11,8 +11,9 @@ import type {
   AppointmentResponse,
   AppointmentUpdateStatusRequest,
   AppointmentRequest,
-  AppointmentDetailResponse,
+  AppointmentDetail,
   SubpackageResponse,
+  OnboardingURL,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 
@@ -165,7 +166,7 @@ export const useApiStore = defineStore("api", () => {
   };
 
   const fetchAppointmentsDetail = async (): Promise<
-    AppointmentDetailResponse[]
+    AppointmentDetail[]
   > => {
     const response = await axios.get(
       `${config.public.apiUrl}/appointment/detail`,
@@ -173,7 +174,7 @@ export const useApiStore = defineStore("api", () => {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
-    return response.data as AppointmentDetailResponse[];
+    return response.data as AppointmentDetail[];
   };
 
   const updateAppointmentStatus = async (
@@ -237,6 +238,42 @@ export const useApiStore = defineStore("api", () => {
     return response.data as AppointmentResponse;
   };
 
+  const fetchAllPayment = async (): Promise<
+    PaymentResponse[]
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse[];
+  };
+
+  const fetchPayment = async (id: string): Promise<
+    PaymentResponse
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse;
+  };
+
+  const fetchOnboardingURL = async (): Promise<
+    OnboardingURL
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment/onboardingURL`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as OnboardingURL;
+  };
+
   return {
     fetchPackage,
     fetchAllPackage,
@@ -260,5 +297,8 @@ export const useApiStore = defineStore("api", () => {
     fetchBusyTime,
     createBusyTime,
     deleteBusyTime,
+    fetchAllPayment, 
+    fetchPayment, 
+    fetchOnboardingURL
   };
 });

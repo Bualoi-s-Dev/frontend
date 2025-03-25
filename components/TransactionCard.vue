@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppointmentStatus, type AppointmentDetailResponse, type AppointmentUpdateStatusRequest } from '~/types/api';
+import { AppointmentStatus, type AppointmentDetail, type AppointmentUpdateStatusRequest } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
@@ -8,7 +8,7 @@ const config = useRuntimeConfig();
 
 const prop = withDefaults(
   defineProps<{
-    appointmentData: AppointmentDetailResponse;
+    appointmentData: AppointmentDetail;
     index: number;
     manageStatus: (index: number, status: AppointmentStatus) => void;
   }>(),
