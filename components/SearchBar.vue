@@ -15,9 +15,11 @@ const prop = withDefaults(
     filterOptions?: {
       isCategorizing?: boolean;
       isSorting?: boolean;
+      isSelectingDuration?: boolean;
       isSelectingDateRange?: boolean;
       isSelectingLocation?: boolean;
       isSelectingActiveDays?: boolean;
+      isSelectingPriceRange?: boolean;
     };
     activeDays?: string[];
   }>(),

@@ -41,6 +41,21 @@ const fetchUserProfileById = async (id: string) => {
   }
 };
 
+// SearchBar
+const filterUrl = ref("");
+const searchQuery = ref("");
+
+watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
+  const queryParams = [];
+
+  if (newSearch) queryParams.push(newSearch);
+  if (newFilter) queryParams.push(newFilter);
+  const query = queryParams.length ? `?${queryParams.join("&")}` : "";
+  // subPackages.value = await api.fetchSubpackageWithFilter(query);
+  console.log( await api.fetchSubpackageWithFilter(query) );
+});
+
+
 onMounted(async () => {
   const [response, profile] = await Promise.all([
     api.fetchPackage(id),
@@ -60,7 +75,7 @@ onMounted(async () => {
   type.value = formatPackageType(response.type);
   // Store subPackages data
   subPackages.value = response.subPackages;
-
+  
   await fetchUserProfileById(response.ownerId);
 });
 
@@ -101,11 +116,11 @@ const handleFilterApply = (data: any) => {
   </div>
   <div class="w-full h-full p-6 flex flex-col">
     <div class="flex items-center justify-between gap-[10px] w-full">
-      <input
-        type="text"
-        class="border border-stroke w-full rounded-md py-1 pl-2 text-lg"
-      />
-      <FilterButton @applyFilter="handleFilterApply"/>
+      <SearchBar @update:search="searchQuery = $event" @update:filter="filterUrl = $event" 
+        :filter-options="{
+          isSelectingActiveDays:true,
+          isSelectingDuration:true,
+          }"/>
       <button
         v-if="isOwner"
         class="flex justify-center items-center gap-[8px] text-[14px] p-[9px] pr-[13px] rounded-[6px] bg-black text-white"

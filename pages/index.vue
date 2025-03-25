@@ -56,7 +56,7 @@ onMounted(async () => {
     </template>
     <template v-else>
       <div class="flex items-center justify-between gap-[10px] w-full">
-        <SearchBar @update:search="searchQuery = $event" @update:filter="filterUrl = $event" :filter-options="{isCategorizing:true}"/>
+        <SearchBar @update:search="searchQuery = $event" @update:filter="filterUrl = $event" :filter-options="{isCategorizing:true, isSelectingPriceRange:true}"/>
       </div>
       <WorkList :data="packages!" navigate />
     </template>

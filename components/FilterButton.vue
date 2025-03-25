@@ -19,8 +19,19 @@ const startDate = ref("");
 const endDate = ref("");
 const selectedCategory = ref(); // Default selected category
 const dropdownOpen = ref(false);
-
+const activeDays = ref<string[]>([]);
 const availableCategories = Object.values(PackageType);
+
+// Days
+const toggleDay = (day: string) => {
+  const uppercaseDay = day.toUpperCase(); // Ensure the day is in uppercase
+
+  if (activeDays.value.includes(uppercaseDay)) {
+    activeDays.value = activeDays.value.filter((d) => d !== uppercaseDay);
+  } else {
+    activeDays.value.push(uppercaseDay);
+  }
+};
 
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value;
@@ -30,12 +41,16 @@ const props = defineProps<{
   filterOptions?: {
     isCategorizing?: boolean;
     isSorting?: boolean;
+    isSelectingDuration?: boolean;
+    isSelectingPriceRange?: boolean;
     isSelectingDateRange?: boolean;
     isSelectingLocation?: boolean;
     isSelectingActiveDays?: boolean;
   };
   activeDays?: string[];
 }>();
+
+const sliderValue = ref([0, 500]); // Initial values
 
 const days = computed(() => [
   { name: "Sun", active: props.activeDays?.includes("SUN") ?? false },
@@ -58,19 +73,25 @@ const applyFilter = () => {
   if (props.filterOptions?.isCategorizing && selectedCategory.value) {
     params.append("type", selectedCategory.value);
   }
+  if (props.filterOptions?.isSelectingPriceRange) {
+    params.append("minPrice", sliderValue.value[0].toString());
+  }
+  if (props.filterOptions?.isSelectingPriceRange) {
+    params.append("maxPrice", sliderValue.value[1].toString());
+  }
   if (props.filterOptions?.isSelectingDateRange && startDate.value) {
-    params.append("start_date", startDate.value);
+    params.append("startDate", startDate.value);
   }
   if (props.filterOptions?.isSelectingDateRange && endDate.value) {
-    params.append("end_date", endDate.value);
+    params.append("endDate", endDate.value);
   }
   if (props.filterOptions?.isSelectingActiveDays) {
-    const activeDays = days.value.filter(day => day.active).map(day => day.name.toUpperCase());
-    if (activeDays.length) {
-      params.append("active_days", activeDays.join(","));
+    if (activeDays.value.length) {
+      params.append("repeatedDay", activeDays.value.join(","));
     }
   }
-  emit("applyFilter",{ url: `${params.toString()}`})
+
+  emit("applyFilter", { url: `${params.toString()}` });
   showConfirmDialog.value = false;
 };
 
@@ -168,6 +189,30 @@ const closeFilter = () => {
         </div>
       </div>
 
+      <div v-if="props.filterOptions?.isSelectingPriceRange">
+        <h2 class="text-gray-500 mt-4">Choose Price</h2>
+        <DoubleSlider
+          v-model="sliderValue"
+          :min="0"
+          :max="10000"
+          :minRange="5"
+          class="custom-slider"
+        />
+        <p>Selected Range: {{ sliderValue[0] }} - {{ sliderValue[1] }}</p>
+      </div>
+
+      <div v-if="props.filterOptions?.isSelectingDuration">
+        <h2 class="text-gray-500 mt-4">Select Duration (Minute)</h2>
+        <DoubleSlider
+          v-model="sliderValue"
+          :min="0"
+          :max="600"
+          :minRange="5"
+          class="custom-slider"
+        />
+        <p>Selected Range: {{ sliderValue[0] }} - {{ sliderValue[1] }}</p>
+      </div>
+
       <!-- Location Filter -->
       <div v-if="props.filterOptions?.isSelectingLocation">
         <h2 class="text-gray-500 mt-4">Location</h2>
@@ -177,23 +222,28 @@ const closeFilter = () => {
         />
       </div>
 
+      <!-- Selecting Day -->
       <div v-if="props.filterOptions?.isSelectingActiveDays">
-        <h2 class="text-gray-500 mt-4">Date Range</h2>
-        <div class="flex py-[5px] gap-[10px]">
-          <p
-            v-for="(day, ind0ex) in days"
+        <h2 class="text-gray-500 mt-4">Avaliable Date</h2>
+        <div class="flex justify-between mt-1.5">
+          <button
+            v-for="(day, index) in days"
             :key="index"
-            class="flex justify-center w-[36px] py-[5px] border rounded-[5px] text-[12px]"
+            class="flex justify-center w-[36px] py-[10px] px-[12px] border rounded-[5px] text-[12px] font-light cursor-pointer"
             :class="{
-              'border-primary text-primary': day.active,
-              'border-body text-body': !day.active,
+              'border-primary text-primary': activeDays.includes(
+                day.name.toUpperCase()
+              ),
+              'border-stroke text-placeHolder': !activeDays.includes(
+                day.name.toUpperCase()
+              ),
             }"
+            @click="toggleDay(day.name)"
           >
             {{ day.name }}
-          </p>
+          </button>
         </div>
       </div>
-      
     </div>
   </div>
 </template>

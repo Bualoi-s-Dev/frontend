@@ -137,6 +137,27 @@ export const useApiStore = defineStore("api", () => {
     return response.data as SubpackageResponse;
   };
 
+  const fetchAllSubpackage = async (): Promise<SubpackageResponse[]> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/subpackage`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as SubpackageResponse[];
+  };
+
+
+  const fetchSubpackageWithFilter = async (filter: string): Promise<SubpackageResponse[]> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/subpackage${filter}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as SubpackageResponse[];
+  };
+
   const fetchBusyTime = async (id: string): Promise<BusyTime> => {
     const response = await axios.get(
       `${config.public.apiUrl}/busytime/photographer/${id}`,
@@ -167,6 +188,7 @@ export const useApiStore = defineStore("api", () => {
     );
     return response.data;
   };
+
   const fetchAllAppointment = async (): Promise<AppointmentResponse[]> => {
     const response = await axios.get(`${config.public.apiUrl}/appointment`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
@@ -312,6 +334,7 @@ export const useApiStore = defineStore("api", () => {
     fetchAllPackageWithFilter,
     fetchUserPackage,
     fetchUserProfile,
+    fetchAllSubpackage,
     fetchUserProfileById,
     createPackage,
     updatePackage,
@@ -326,6 +349,7 @@ export const useApiStore = defineStore("api", () => {
     createSubpackage,
     deleteSubpackage,
     fetchSubpackage,
+    fetchSubpackageWithFilter,
     updateSubpackage,
     fetchBusyTime,
     createBusyTime,

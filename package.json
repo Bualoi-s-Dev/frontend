@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@iconify/vue": "^4.3.0",
+    "@material-ui/core": "^4.12.4",
     "@material/slider": "^14.0.0",
     "@pinia/nuxt": "^0.10.0",
     "@tailwindcss/vite": "^4.0.1",
