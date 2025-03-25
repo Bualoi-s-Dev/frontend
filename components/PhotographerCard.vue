@@ -37,8 +37,6 @@ const rating = computed(() => props.data.photographerRatings.reduce((a, b) => a 
             
             <span class="text-gray-400 text-sm">{{ data.location }}</span>
             <span class="text-sm text-primary">{{ priceRange }}</span>
-
-            
         </div>
     </button>
 </template>
