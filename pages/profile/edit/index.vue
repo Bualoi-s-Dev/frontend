@@ -9,6 +9,7 @@ const allData = ref<any>(null);
 const config = useRuntimeConfig();
 const user = ref<EditData>({ name: "", gender: "", location: "" });
 const imageUrl = ref("");
+const role = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 const packages = ref<PackageResponse[] | null>(null);
 const oldImage = ref("");
@@ -103,7 +104,7 @@ const handleChooseImage = () => fileInput.value?.click();
       <div class="flex flex-row justify-between mx-5.5">
         <div class="flex flex-row items-center gap-3">
           <BackButton />
-          <h1 class="text-md">Edit Information</h1>
+          <h1 class="text-xl">Edit Information</h1>
         </div>
         <Button
           :disabled="updating"
@@ -112,7 +113,7 @@ const handleChooseImage = () => fileInput.value?.click();
           >Save</Button
         >
       </div>
-      <div class="flex flex-col items-center">
+      <div class="flex flex-col items-center mt-[16px]">
         <input
           type="file"
           ref="fileInput"
@@ -158,14 +159,15 @@ const handleChooseImage = () => fileInput.value?.click();
           </div>
         </div>
       </div>
-      <h2 class="ml-6 mt-6">Work showcase</h2>
+      <div v-if="role === 'Photographer'">
+        <h2 class="ml-6 mt-6">Work showcase</h2>
 
-      <WorkList v-if="packages" :data="packages" />
+        <WorkList v-if="packages" :data="packages" />
 
-      <div class="m-5">
-        <WorkCard :to-add="true" />
+        <div class="m-5">
+          <WorkCard :to-add="true" />
+        </div>
       </div>
-
       <div
         v-if="isModalOpen"
         class="fixed inset-0 bg-opacity-50 flex items-center justify-center"
