@@ -45,6 +45,7 @@ const onSubmit = () => {
 };
 
 const redirectToCheckout = async () => {
+    console.log('loading stripe', publishableKey.value)
     const stripe = await loadStripe(publishableKey.value);
     if (!stripe) {
         console.error("Stripe failed to initialize.");
@@ -100,7 +101,7 @@ const redirectToCheckout = async () => {
         <div class="flex flex-col gap-5">
             <div class="flex flex-col gap-1">
                 <label class="text-[16px]">Appointment</label>
-                <input disabled type="number" :value="fullPackage"
+                <input disabled type="text" :value="fullPackage"
                     class="block w-full px-3 py-2 border text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             </div>
             <div class="flex flex-row gap-5">
