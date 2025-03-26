@@ -148,6 +148,10 @@ const goToCreateReview = () => {
   router.push({ path: `/profile/${id}/createreview` });
 };
 
+const goToAllpackage = () => {
+  router.push({ path: `/package/${id}/allpackage` });
+};
+
 const hasReviewed = computed(() => {
   return reviews.value.some((review) => review.owner);
 });
@@ -161,6 +165,10 @@ const rating = computed<number>(() => {
   );
 
   return parseFloat((totalScore / reviews.value.length).toFixed(1)) || 0;
+});
+
+const limitedPackages = computed(() => {
+  return packages.value ? packages.value.slice(0, 3) : [];
 });
 </script>
 
@@ -223,8 +231,11 @@ const rating = computed<number>(() => {
         </div>
         <!-- Display Content Based on Active Tab -->
         <div v-if="activeTab === 'WORK'" class="flex flex-col gap-[20px]">
-          <WorkList v-if="packages" :data="packages" navigate />
-          <p class="text-[16px] text-center text-body cursor-pointer underline">
+          <WorkList v-if="packages" :data="limitedPackages" navigate />
+          <p
+            class="text-[16px] text-center text-body cursor-pointer underline"
+            @click="goToAllpackage"
+          >
             See all packages
           </p>
         </div>
