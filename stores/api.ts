@@ -15,6 +15,8 @@ import type {
   AppointmentDetail,
   RatingRequest,
   RatingResponse,
+  PaymentURL,
+  PaymentResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 import type { SearchPhotographerParams } from "~/types/api_manual";
@@ -63,6 +65,8 @@ export const useApiStore = defineStore("api", () => {
   }
 
   const createPackage = async (pkg: PackageRequest) => {
+    const token = await auth.fetchToken()
+    console.log(token)
     const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
@@ -369,6 +373,58 @@ export const useApiStore = defineStore("api", () => {
     return response.data as RatingResponse;
   };
 
+  PaymentResponse
+
+  const fetchAllPayment = async (): Promise<
+    PaymentResponse[]
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse[];
+  };
+
+  const fetchPayment = async (id: string): Promise<
+    PaymentResponse
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse;
+  };
+
+  const fetchOnboardingURL = async (): Promise<
+    PaymentURL
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment/onboardingURL`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentURL;
+  };
+
+  // TODO: This API is for demo ONLY!
+  const createPayment = async (id: string): Promise<
+    PaymentResponse
+  > => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/payment/charge/${id}`,
+      null,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse;
+  };
+
   return {
     fetchPackage,
     fetchAllPackage,
@@ -404,5 +460,9 @@ export const useApiStore = defineStore("api", () => {
     createRating,
     deleteRating,
     updateRating,
+    fetchAllPayment, 
+    fetchPayment, 
+    fetchOnboardingURL, 
+    createPayment
   };
 });

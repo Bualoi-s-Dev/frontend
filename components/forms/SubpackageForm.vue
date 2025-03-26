@@ -10,10 +10,10 @@ const props = defineProps<{
     duration: number,
     isInf: boolean,
     repeatedDay: string[],
-    avaliableStartTime: string,
-    avaliableEndTime: string,
-    avaliableStartDay: string,
-    avaliableEndDay: string
+    availableStartTime: string,
+    availableEndTime: string,
+    availableStartDay: string,
+    availableEndDay: string
   ) => void;
   data?: SubpackageResponse;
   disabled?: boolean;
@@ -39,10 +39,10 @@ watch(
       description.value = newData.description || "";
       price.value = newData.price?.toString() || "";
       duration.value = newData.duration?.toString() || "";
-      startTime.value = newData.avaliableStartTime || "";
-      endTime.value = newData.avaliableEndTime || "";
-      startDate.value = newData.avaliableStartDay || "";
-      endDate.value = newData.avaliableEndDay || "";
+      startTime.value = newData.availableStartTime || "";
+      endTime.value = newData.availableEndTime || "";
+      startDate.value = newData.availableStartDay || "";
+      endDate.value = newData.availableEndDay || "";
       activeDays.value = newData.repeatedDay || [];
       repeatForever.value = newData.isInf || false;
     }

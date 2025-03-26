@@ -12,7 +12,7 @@ const packageInfo = ref<PackageResponse | undefined>();
 const errors = ref<Record<string, string>>({});
 const location = ref("");
 const duration = ref(0);
-const shitt = ref(""); // TODO: delete this
+const temp = ref(""); // TODO: replace with another method
 
 const prop = defineProps<{
     packageName: string;
@@ -120,7 +120,7 @@ const onSubmit = async () => {
                 <!-- <select :disabled="updating" -->
                 <select disabled
                     class="border w-full disabled:opacity-50 rounded-md py-2 px-2 text-[14px] border-stroke"
-                    v-model="shitt" :class="{ 'border-red-500': errors.packages }">
+                    v-model="temp" :class="{ 'border-red-500': errors.packages }">
 
                     <option disabled value="">{{ prop.packageName }}</option>
                     <!-- <option v-for="packageData in packages" :value="packageData" :key="packageData.id">{{ packageData.title }}</option> -->
@@ -134,7 +134,7 @@ const onSubmit = async () => {
                 <!-- <select :disabled="updating" -->
                 <select disabled
                     class="border w-full disabled:opacity-50 rounded-md py-2 px-2 text-[14px] border-stroke"
-                    v-model="shitt" :class="{ 'border-red-500': errors.subpackageId }">
+                    v-model="temp" :class="{ 'border-red-500': errors.subpackageId }">
                     <option disabled value="">{{ prop.subpackageName }}</option>
                     <!-- <option v-for="subpackageData in packageInfo?.subPackages" :value="subpackageData.id"
                         :key="subpackageData.id">{{ subpackageData.title }}</option> -->

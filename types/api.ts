@@ -53,6 +53,13 @@ export enum AppointmentStatus {
   Canceled = "Canceled",
   Completed = "Completed",
 }
+export enum PaymentStatus {
+  Unpaid = "Unpaid",
+  Wait = "Wait",
+  InProcess = "InProcess",
+  Paid = "Paid",
+  Completed = "Completed",
+}
 export interface PackageRequest {
   title?: string;
   type?: PackageType;
@@ -212,11 +219,11 @@ export interface RatingResponse {
   createdTime: Date;
 }
 export interface PhotographerPayment {
-  status: string;
+  status: PaymentStatus;
   balanceTransactionId?: string;
 }
 export interface CustomerPayment {
-  status: string;
+  status: PaymentStatus;
   checkoutId?: string;
   paymentIntentId?: string;
 }
@@ -230,4 +237,7 @@ export interface PaymentResponse {
   payment: Payment;
   appointment: AppointmentDetail;
   package: PackageResponse;
+}
+export interface PaymentURL {
+  url: string;
 }
