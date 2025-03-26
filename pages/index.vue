@@ -20,8 +20,10 @@ onMounted(async () => {
   profile.value = await api.fetchUserProfile();
   if (profile.value.role !== UserRole.Photographer)
     packages.value = await api.fetchAllPackage();
-  else packages.value = profile.value.photographerPackages;
-  console.log(packages.value);
+  else
+    packages.value = profile.value.photographerPackages;
+  // const onboardingURL = await api.fetchOnboardingURL();
+  // console.log(packages.value);
 });
 </script>
 

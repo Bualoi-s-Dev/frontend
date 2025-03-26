@@ -35,10 +35,10 @@ const submit = async (
   duration: number,
   isInf: boolean,
   repeatedDay: string[],
-  avaliableStartTime: string,
-  avaliableEndTime: string,
-  avaliableStartDay: string,
-  avaliableEndDay: string
+  availableStartTime: string,
+  availableEndTime: string,
+  availableStartDay: string,
+  availableEndDay: string
 ) => {
   loading.value = true;
 
@@ -50,10 +50,10 @@ const submit = async (
       duration,
       isInf,
       repeatedDay,
-      avaliableStartTime,
-      avaliableEndTime,
-      avaliableStartDay,
-      avaliableEndDay,
+      availableStartTime,
+      availableEndTime,
+      availableStartDay,
+      availableEndDay,
     };
     // Ensure packageId is available before making API request
     if (!id) {

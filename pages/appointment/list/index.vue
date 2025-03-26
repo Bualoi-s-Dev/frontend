@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { UserProfile } from 'firebase/auth';
-import Index from '~/pages/package/showcase/index.vue';
-import { AppointmentStatus, type AppointmentDetailResponse, type AppointmentResponse, type UserRequest, type UserResponse } from '~/types/api';
+import { AppointmentStatus, type AppointmentDetail, type AppointmentResponse, type UserRequest, type UserResponse } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
 const api = useApiStore();
 const config = useRuntimeConfig();
 
-const appointmentList = ref<AppointmentDetailResponse[] | undefined>();
+const appointmentList = ref<AppointmentDetail[] | undefined>();
 const userData = ref<UserResponse>();
 
 // TODO: refactor function to not use index

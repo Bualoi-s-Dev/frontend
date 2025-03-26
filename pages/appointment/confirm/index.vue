@@ -3,5 +3,5 @@
 </script>
 
 <template>
-    <AppointmentForm />
+    <!-- <AppointmentForm /> -->
 </template>
