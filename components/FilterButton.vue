@@ -109,10 +109,10 @@ const applyFilter = () => {
   }
   if (props.filterOptions?.isSelectingDate && startDate.value) {
     if( !startTime.value ) params.append("startTime", startDate.value + "T12:00:00Z" );
-    else params.append("startTime", startDate.value + `T${startTime.value}:00`)
+    else params.append("startTime", startDate.value + `T${startTime.value}:00Z`)
 
     if( !endTime.value ) params.append("endTime", startDate.value + "T23:59:00Z" );
-    else params.append("endTime", startDate.value + `T${endTime.value}:00`)    
+    else params.append("endTime", startDate.value + `T${endTime.value}:00Z`)    
   }
 
   if (props.filterOptions?.isSelectingStatus && selectedCategory.value) {
