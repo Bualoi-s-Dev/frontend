@@ -52,8 +52,9 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
   if (newSearch) queryParams.push(newSearch);
   if (newFilter) queryParams.push(newFilter);
   const query = queryParams.length ? `${queryParams.join("&")}` : "";
-  let baseList = await api.fetchSubpackageWithFilter(`?packageId=${subPackageId.value}` +'&'+ query );
-  subPackages.value = baseList.subpackages;
+  console.log('query', query)
+  subPackages.value = await api.fetchSubpackageWithFilter(`?packageId=${subPackageId.value}` +'&'+ query );
+  // subPackages.value = baseList.subpackages;
   console.log( subPackages.value );
 });
 
@@ -77,7 +78,7 @@ onMounted(async () => {
   type.value = formatPackageType(response.type);
   // Store subPackages data
   subPackageId.value = response.id;
-  subPackages.value = (await api.fetchSubpackageWithFilter(`?packageId=${response.id}`)).subpackages;
+  subPackages.value = await api.fetchSubpackageWithFilter(`?packageId=${response.id}`);
   await fetchUserProfileById(response.ownerId);
 });
 
@@ -120,6 +121,7 @@ const handleFilterApply = (data: any) => {
     <div class="flex items-center justify-between gap-[10px] w-full">
       <SearchBar 
         search-key="title"
+        @update:search="searchQuery = $event"
         @update:filter="filterUrl = $event" 
         :filter-options="{
           isSelectingDateRange:subPackages[0] && subPackages[0].availableStartDay ? true : false,

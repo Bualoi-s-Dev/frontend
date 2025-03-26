@@ -105,7 +105,7 @@ export const useApiStore = defineStore("api", () => {
     const response = await axios.get(`${config.public.apiUrl}/package${filter}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
-    return response.data as PackageResponse[];
+    return (response.data ?? []) as PackageResponse[];
   };
 
   const updateUserInformation = async (payload: UserRequest) => {
@@ -172,14 +172,17 @@ export const useApiStore = defineStore("api", () => {
 
 
   const fetchSubpackageWithFilter = async (filter: string): Promise<SubpackageResponse[]> => {
-    console.log(filter);
+    // TODO remove this limit when doing pagination
+    filter = filter.length === 0 ? "limit=1000" : filter + "&limit=1000";
+
     const response = await axios.get(
       `${config.public.apiUrl}/subpackage${filter}`,
       {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
-    return response.data as SubpackageResponse[];
+    // TODO: include pagination information
+    return (response.data.subpackages ?? []) as SubpackageResponse[];
   };
 
   const fetchBusyTime = async (id: string): Promise<BusyTime> => {
