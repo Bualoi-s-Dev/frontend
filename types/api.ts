@@ -158,13 +158,6 @@ export interface SubpackageResponse {
   busyTimeMap: {[key: string]: BusyTime[]};
 }
 
-export interface BusyTimeRequest {
-  type?: BusyTimeType;
-  startTime?: string;
-  endTime?: string;
-  isValid?: boolean;
-}
-
 export interface BusyTimeStrictRequest {
   type: BusyTimeType;
   startTime: string;
@@ -245,7 +238,6 @@ export interface PaymentResponse {
   appointment: AppointmentDetail;
   package: PackageResponse;
 }
-
 export interface PaymentURL {
   url: string;
 }

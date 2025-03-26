@@ -34,8 +34,6 @@ const fetchUserProfile = async () => {
   }
 };
 
-console.log(fetchUserProfile());
-
 const toggleMenu = async () => {
   menuOpen.value = !menuOpen.value;
   if (menuOpen.value) {
@@ -47,6 +45,11 @@ const toggleMenu = async () => {
 
 const onLogoutSuccess = () => {
   router.push("/user/login");
+};
+
+const onPhotographer = async () => {
+  await toggleMenu();
+  router.push("/photographers");
 };
 
 const onHome = async () => {
@@ -170,7 +173,7 @@ const handleLogout = async () => {
             <a @click="onStripe" class="my-4 inline-block"
             >Stripe</a>
           </li>
-          <li v-if="user.role == 'Customer'"><a @click="onTransaction" class="my-4 inline-block"
+          <li v-if="user.role == 'Customer'"><a @click="onPhotographer" class="my-4 inline-block"
               :class="firstSegment == 'photographers' ? 'text-red-300' : 'text-black'">Photographers</a>
           </li>
           <li v-if="user.role == 'Customer'"><a @click="onToPay" class="my-4 inline-block"
