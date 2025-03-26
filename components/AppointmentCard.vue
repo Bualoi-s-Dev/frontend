@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppointmentStatus, type AppointmentDetail, type AppointmentUpdateStatusRequest } from '~/types/api';
+import { AppointmentStatus, UserRole, type AppointmentDetail, type AppointmentUpdateStatusRequest } from '~/types/api';
 
 const router = useRouter();
 const route = useRoute()
@@ -48,6 +48,12 @@ const onCancel = async () => {
     prop.manageStatus(prop.index, AppointmentStatus.Canceled);
 }
 
+// TODO: This function for demo only
+const onCreatePayment = async() => {
+    if(prop.appointmentData == undefined) return ;
+    await api.createPayment(prop.appointmentData.id);
+}
+
 </script>
 
 <template>
@@ -61,9 +67,12 @@ const onCancel = async () => {
             <p class="text-gray-600">Meeting at : {{ appointmentData.location }}</p>
             <p class="text-red-500 text-lg font-semibold">{{ appointmentData?.price }} ฿</p>
             <p class="text-gray-900">Status : <span class="font-medium">{{ appointmentData?.status }}</span></p>
-           
+            
             <div v-if="!complete" class="flex flex-row gap-2">
                 <div v-if="role == 'Photographer'" class="flex flex-row gap-2">
+                    <!-- TODO: This button for demo only -->
+                    <Button v-if="appointmentData.status == AppointmentStatus.Accepted" @click="onCreatePayment" height="h-9" button-options="border border-stroke rounded-md px-4">Create Payment</Button>
+
                     <Button v-if="appointmentData.status == AppointmentStatus.Pending" @click="onAccept" height="h-9" button-options="border border-stroke rounded-md px-4">Accept</Button>
                     <Button v-if="appointmentData.status == AppointmentStatus.Pending" @click="onReject" height="h-9" button-options="border border-stroke rounded-md px-4">Reject</Button>
                     <Button v-if="appointmentData.status == AppointmentStatus.Accepted" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
