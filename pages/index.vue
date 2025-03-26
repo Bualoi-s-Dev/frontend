@@ -35,8 +35,6 @@ onMounted(async () => {
     packages.value = await api.fetchAllPackage();
   else packages.value = profile.value.photographerPackages;
 });
-
-
 </script>
 
 <template>
