@@ -15,6 +15,8 @@ import type {
   AppointmentDetail,
   RatingRequest,
   RatingResponse,
+  PaymentURL,
+  PaymentResponse,
 } from "~/types/api";
 import { useAuthStore } from "./auth";
 import type { SearchPhotographerParams } from "~/types/api_manual";
@@ -53,7 +55,19 @@ export const useApiStore = defineStore("api", () => {
     return response.data.photographers as UserResponse[];
   }
 
+  const searchPhotographerWithFilter = async (params: string): Promise<UserResponse[]> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/user/photographers${params}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as UserResponse[];
+  }
+
   const createPackage = async (pkg: PackageRequest) => {
+    const token = await auth.fetchToken()
+    console.log(token)
     const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
@@ -96,7 +110,7 @@ export const useApiStore = defineStore("api", () => {
     const response = await axios.get(`${config.public.apiUrl}/package${filter}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
-    return response.data as PackageResponse[];
+    return (response.data ?? []) as PackageResponse[];
   };
 
   const updateUserInformation = async (payload: UserRequest) => {
@@ -163,13 +177,17 @@ export const useApiStore = defineStore("api", () => {
 
 
   const fetchSubpackageWithFilter = async (filter: string): Promise<SubpackageResponse[]> => {
+    // TODO remove this limit when doing pagination
+    filter = filter.length === 0 ? "limit=1000" : filter + "&limit=1000";
+
     const response = await axios.get(
       `${config.public.apiUrl}/subpackage${filter}`,
       {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
-    return response.data as SubpackageResponse[];
+    // TODO: include pagination information
+    return (response.data.subpackages ?? []) as SubpackageResponse[];
   };
 
   const fetchBusyTime = async (id: string): Promise<BusyTime> => {
@@ -205,6 +223,20 @@ export const useApiStore = defineStore("api", () => {
 
   const fetchAllAppointment = async (): Promise<AppointmentResponse[]> => {
     const response = await axios.get(`${config.public.apiUrl}/appointment`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as AppointmentResponse[];
+  };
+
+  const fetchAppointmentDetailsWithFilter = async (param: string): Promise<AppointmentResponse[]> => {
+    const response = await axios.get(`${config.public.apiUrl}/appointment/detail${param}`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as AppointmentResponse[];
+  };
+
+  const fetchAppointmentDetailWithId = async (id: string): Promise<AppointmentResponse[]> => {
+    const response = await axios.get(`${config.public.apiUrl}/appointment/detail/${id}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
     return response.data as AppointmentResponse[];
@@ -342,6 +374,58 @@ export const useApiStore = defineStore("api", () => {
     return response.data as RatingResponse;
   };
 
+  PaymentResponse
+
+  const fetchAllPayment = async (): Promise<
+    PaymentResponse[]
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse[];
+  };
+
+  const fetchPayment = async (id: string): Promise<
+    PaymentResponse
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse;
+  };
+
+  const fetchOnboardingURL = async (): Promise<
+    PaymentURL
+  > => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/payment/onboardingURL`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentURL;
+  };
+
+  // TODO: This API is for demo ONLY!
+  const createPayment = async (id: string): Promise<
+    PaymentResponse
+  > => {
+    const response = await axios.post(
+      `${config.public.apiUrl}/payment/charge/${id}`,
+      null,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as PaymentResponse;
+  };
+
   return {
     fetchPackage,
     fetchAllPackage,
@@ -351,10 +435,13 @@ export const useApiStore = defineStore("api", () => {
     fetchAllSubpackage,
     fetchUserProfileById,
     searchPhotographer,
+    searchPhotographerWithFilter,
     createPackage,
     updatePackage,
     updateUserInformation,
     fetchAllAppointment,
+    fetchAppointmentDetailsWithFilter,
+    fetchAppointmentDetailWithId,
     fetchAppointmentsDetail,
     updateAppointmentStatus,
     fetchAppointment,
@@ -374,5 +461,9 @@ export const useApiStore = defineStore("api", () => {
     createRating,
     deleteRating,
     updateRating,
+    fetchAllPayment, 
+    fetchPayment, 
+    fetchOnboardingURL, 
+    createPayment
   };
 });

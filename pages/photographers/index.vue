@@ -6,10 +6,12 @@ import { type SearchPhotographerParams } from '~/types/api_manual';
 const router = useRouter();
 const route = useRoute();
 const api = useApiStore();
+// SearchBar
+const filterUrl = ref("");
+const searchQuery = ref("");
 
 const photographers = ref<UserResponse[] | null>(null);
 
-const searchQuery = ref("");
 const updateSearchQuery = (q: string) => {
     searchQuery.value = q.length === 0 ? "" : q.split("search=")[1];
     loadPhotographers();
@@ -72,4 +74,27 @@ onMounted(async () => {
             <PhotographerCard :data="photographer" />
         </div>
     </div>
+
+    <SearchBar
+      search-key="name"
+      role="guest"
+      @update:search="searchQuery = $event"
+      @update:filter="filterUrl = $event"
+    />
+    {{ searchQuery }}
+    <div v-if="photographers.length === 0" class="w-full p-4">
+      <div
+        v-for="i in 5"
+        :key="i"
+        class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"
+      ></div>
+    </div>
+    <div
+      v-for="(photographer, index) in photographers"
+      :key="photographer.id"
+      class="flex items-center"
+    >
+      <PhotographerCard :data="photographer" />
+    </div>
+  </div>
 </template>

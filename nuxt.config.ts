@@ -19,6 +19,7 @@ export default defineNuxtConfig({
       },
       apiUrl: process.env.API_URL,
       s3URL: process.env.S3_URL,
+      STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY, 
     }
   },
   components: [

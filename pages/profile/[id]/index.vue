@@ -37,6 +37,7 @@ const reviews = ref<
 const isContactInfoVisible = ref(false);
 
 const userId = ref("");
+const role = ref("");
 const packages = ref<PackageResponse[] | null>(null);
 const errorMessage = ref("");
 const activeTab = ref<"WORK" | "REVIEW">("WORK"); // Default active tab
@@ -66,6 +67,8 @@ const fetchUserProfileById = async () => {
     profileInformation.value.instagram = response.instagram;
     profileInformation.value.facebook = response.facebook;
     profileInformation.value.id = response.id;
+
+    role.value = response.role;
 
     packages.value = response.photographerPackages;
   } catch (error: any) {
@@ -100,9 +103,10 @@ const fetchCustomer = async (
 };
 
 const fetchRating = async () => {
+  if (role.value === "Customer") return;
   try {
     const response = await api.fetchRating(id);
-    console.log('rating resp', response);
+    console.log("rating resp", response);
     if (Array.isArray(response)) {
       for (const rating of response) {
         let formattedDate = "";
@@ -144,6 +148,10 @@ const goToCreateReview = () => {
   router.push({ path: `/profile/${id}/createreview` });
 };
 
+const goToAllpackage = () => {
+  router.push({ path: `/package/${id}/allpackage` });
+};
+
 const hasReviewed = computed(() => {
   return reviews.value.some((review) => review.owner);
 });
@@ -157,6 +165,10 @@ const rating = computed<number>(() => {
   );
 
   return parseFloat((totalScore / reviews.value.length).toFixed(1)) || 0;
+});
+
+const limitedPackages = computed(() => {
+  return packages.value ? packages.value.slice(0, 3) : [];
 });
 </script>
 
@@ -183,13 +195,18 @@ const rating = computed<number>(() => {
             <h2 class="text-[20px]">
               {{ profileInformation.name }}
             </h2>
-            <RatingStars :rating="rating" />
-            <p class="text-[14px] text-body">{{ rating }} stars</p>
+            <RatingStars v-if="role === 'Photographer'" :rating="rating" />
+            <p v-if="role === 'Photographer'" class="text-[14px] text-body">
+              {{ rating }} stars
+            </p>
           </div>
         </div>
       </div>
 
-      <div class="flex flex-col gap-[25px] w-full">
+      <div
+        v-if="role === 'Photographer'"
+        class="flex flex-col gap-[25px] w-full"
+      >
         <div class="flex justify-evenly cursor-pointer">
           <div
             class="flex flex-col gap-[5px] items-center"
@@ -214,8 +231,11 @@ const rating = computed<number>(() => {
         </div>
         <!-- Display Content Based on Active Tab -->
         <div v-if="activeTab === 'WORK'" class="flex flex-col gap-[20px]">
-          <WorkList v-if="packages" :data="packages" />
-          <p class="text-[16px] text-center text-body cursor-pointer underline">
+          <WorkList v-if="packages" :data="limitedPackages" navigate />
+          <p
+            class="text-[16px] text-center text-body cursor-pointer underline"
+            @click="goToAllpackage"
+          >
             See all packages
           </p>
         </div>
@@ -233,7 +253,10 @@ const rating = computed<number>(() => {
                 </p>
               </div>
             </div>
-            <div v-if="!hasReviewed && userId !== profileInformation.id" class="flex flex-col gap-[5px] px-[15px]">
+            <div
+              v-if="!hasReviewed && userId !== profileInformation.id"
+              class="flex flex-col gap-[5px] px-[15px]"
+            >
               <p class="text-[18px] text-body font-medium">
                 Review this photographer
               </p>
@@ -260,7 +283,7 @@ const rating = computed<number>(() => {
           </p>
         </div>
       </div>
-      <div class="mx-5">
+      <div v-if="role === 'Photographer'" class="mx-5">
         <div
           class="flex justify-between items-center cursor-pointer"
           @click="isContactInfoVisible = !isContactInfoVisible"
@@ -312,7 +335,7 @@ const rating = computed<number>(() => {
         </div>
       </div>
     </div>
-    <div class="flex flex-col m-6 gap-5">
+    <div v-if="role === 'Photographer'" class="flex flex-col m-6 gap-5">
       <h1 class="font-semibold">Other accessories</h1>
       <div class="flex flex-row justify-between">
         <p>More Information</p>

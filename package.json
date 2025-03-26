@@ -15,6 +15,7 @@
     "@material/slider": "^14.0.0",
     "@pinia/nuxt": "^0.10.0",
     "@tailwindcss/vite": "^4.0.1",
+    "@vue-stripe/vue-stripe": "^4.5.0",
     "axios": "^1.7.9",
     "firebase": "^11.3.1",
     "nuxt": "^3.15.4",

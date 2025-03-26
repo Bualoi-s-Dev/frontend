@@ -83,10 +83,10 @@ const hours: string[] = [
 ];
 
 const packageDetails = {
-  avaliableEndDay: "2021-12-31",
-  avaliableEndTime: "18:27",
-  avaliableStartDay: "2021-01-01",
-  avaliableStartTime: "09:04",
+  availableEndDay: "2021-12-31",
+  availableEndTime: "18:27",
+  availableStartDay: "2021-01-01",
+  availableStartTime: "09:04",
   description: "This is a package for wedding",
   duration: 60,
   id: "12345678abcd",
@@ -97,7 +97,7 @@ const packageDetails = {
   title: "Wedding Bliss Package",
 };
 
-const intervals = getTimeIntervals(packageDetails.avaliableStartTime, packageDetails.avaliableEndTime, packageDetails.duration);
+const intervals = getTimeIntervals(packageDetails.availableStartTime, packageDetails.availableEndTime, packageDetails.duration);
 
 const parseTime = (time: string): Date => {
   const [hour, minuteAndAmPm] = time.split(":");

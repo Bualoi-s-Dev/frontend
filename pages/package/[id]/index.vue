@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
-import type { Subpackage } from "~/types/api";
+import type { Subpackage, SubpackageResponse } from "~/types/api";
 import { useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -28,7 +28,8 @@ const name = ref("");
 const id = route.params.id as string;
 
 const isOwner = ref(false);
-const subPackages = ref<Subpackage[]>([]);
+const subPackages = ref<SubpackageResponse[]>([]);
+const subPackageId = ref();
 
 const fetchUserProfileById = async (id: string) => {
   try {
@@ -50,9 +51,11 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
 
   if (newSearch) queryParams.push(newSearch);
   if (newFilter) queryParams.push(newFilter);
-  const query = queryParams.length ? `?${queryParams.join("&")}` : "";
-  // subPackages.value = await api.fetchSubpackageWithFilter(query);
-  console.log( await api.fetchSubpackageWithFilter(query) );
+  const query = queryParams.length ? `${queryParams.join("&")}` : "";
+  console.log('query', query)
+  subPackages.value = await api.fetchSubpackageWithFilter(`?packageId=${subPackageId.value}` +'&'+ query );
+  // subPackages.value = baseList.subpackages;
+  console.log( subPackages.value );
 });
 
 
@@ -67,15 +70,15 @@ onMounted(async () => {
   if (response.photoUrls && response.photoUrls.length > 0) {
     const imgUrl = config.public.s3URL + response.photoUrls[0];
     response.photoUrls[0] = imgUrl;
-
+  
     imageUrl.value = response.photoUrls[0];
   }
   title.value = response.title;
   ownerId.value = response.ownerId;
   type.value = formatPackageType(response.type);
   // Store subPackages data
-  subPackages.value = response.subPackages;
-  
+  subPackageId.value = response.id;
+  subPackages.value = await api.fetchSubpackageWithFilter(`?packageId=${response.id}`);
   await fetchUserProfileById(response.ownerId);
 });
 
@@ -116,8 +119,12 @@ const handleFilterApply = (data: any) => {
   </div>
   <div class="w-full h-full p-6 flex flex-col">
     <div class="flex items-center justify-between gap-[10px] w-full">
-      <SearchBar @update:search="searchQuery = $event" @update:filter="filterUrl = $event" 
+      <SearchBar 
+        search-key="title"
+        @update:search="searchQuery = $event"
+        @update:filter="filterUrl = $event" 
         :filter-options="{
+          isSelectingDateRange:subPackages[0] && subPackages[0].availableStartDay ? true : false,
           isSelectingActiveDays:true,
           isSelectingDuration:true,
           }"/>
@@ -161,10 +168,10 @@ const handleFilterApply = (data: any) => {
         :description="subpackage.description"
         :price="subpackage.price"
         :duration="subpackage.duration"
-        :timeStart="subpackage.avaliableStartTime"
-        :timeEnd="subpackage.avaliableEndTime"
-        :dateStart="subpackage.avaliableStartDay"
-        :dateEnd="subpackage.avaliableEndDay"
+        :timeStart="subpackage.availableStartTime"
+        :timeEnd="subpackage.availableEndTime"
+        :dateStart="subpackage.availableStartDay"
+        :dateEnd="subpackage.availableEndDay"
         :activeDays="subpackage.repeatedDay"
         :isInf="subpackage.isInf"
         :isOwner="isOwner"

@@ -7,6 +7,8 @@ import logo from "assets/logo.png";
 import { useAuthStore } from "~/stores/auth";
 
 const router = useRouter();
+const api = useApiStore();
+
 const email = ref("");
 const password = ref("");
 const errorMessage = ref("");
@@ -37,6 +39,9 @@ const onLoginSuccess = async () => {
   } catch (error: any) {
     console.log(error.message)
   }
+  // TODO: Only first time login
+  // const onboardingURL = await api.fetchOnboardingURL();
+  // window.location.href = onboardingURL.url;
   await router.push("/");
 }
 
