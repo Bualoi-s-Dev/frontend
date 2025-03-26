@@ -52,6 +52,16 @@ export const useApiStore = defineStore("api", () => {
     return response.data as UserResponse[];
   }
 
+  const searchPhotographerWithFilter = async (params: string): Promise<UserResponse[]> => {
+    const response = await axios.get(
+      `${config.public.apiUrl}/user/photographers${params}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data as UserResponse[];
+  }
+
   const createPackage = async (pkg: PackageRequest) => {
     const response = await axios.post(`${config.public.apiUrl}/package`, pkg, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
@@ -162,6 +172,7 @@ export const useApiStore = defineStore("api", () => {
 
 
   const fetchSubpackageWithFilter = async (filter: string): Promise<SubpackageResponse[]> => {
+    console.log(filter);
     const response = await axios.get(
       `${config.public.apiUrl}/subpackage${filter}`,
       {
@@ -204,6 +215,20 @@ export const useApiStore = defineStore("api", () => {
 
   const fetchAllAppointment = async (): Promise<AppointmentResponse[]> => {
     const response = await axios.get(`${config.public.apiUrl}/appointment`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as AppointmentResponse[];
+  };
+
+  const fetchAppointmentWithFilter = async (param: string): Promise<AppointmentResponse[]> => {
+    const response = await axios.get(`${config.public.apiUrl}/appointment${param}`, {
+      headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+    });
+    return response.data as AppointmentResponse[];
+  };
+
+  const fetchAppointmentDetailWithId = async (id: string): Promise<AppointmentResponse[]> => {
+    const response = await axios.get(`${config.public.apiUrl}/appointment/detail/${id}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
     return response.data as AppointmentResponse[];
@@ -350,10 +375,13 @@ export const useApiStore = defineStore("api", () => {
     fetchAllSubpackage,
     fetchUserProfileById,
     searchPhotographer,
+    searchPhotographerWithFilter,
     createPackage,
     updatePackage,
     updateUserInformation,
     fetchAllAppointment,
+    fetchAppointmentWithFilter,
+    fetchAppointmentDetailWithId,
     fetchAppointmentsDetail,
     updateAppointmentStatus,
     fetchAppointment,

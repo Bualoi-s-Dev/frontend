@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import type { UserProfile } from 'firebase/auth';
-import Index from '~/pages/package/showcase/index.vue';
-import { AppointmentStatus, type AppointmentDetailResponse, type AppointmentResponse, type UserRequest, type UserResponse } from '~/types/api';
+import type { UserProfile } from "firebase/auth";
+import Index from "~/pages/package/showcase/index.vue";
+import {
+  AppointmentStatus,
+  type AppointmentDetailResponse,
+  type AppointmentResponse,
+  type UserRequest,
+  type UserResponse,
+} from "~/types/api";
 
 const router = useRouter();
-const route = useRoute()
+const route = useRoute();
 const api = useApiStore();
 const config = useRuntimeConfig();
 
@@ -13,33 +19,77 @@ const userData = ref<UserResponse>();
 
 // TODO: refactor function to not use index
 const manageStatus = (index: number, status: AppointmentStatus) => {
-    if(appointmentList.value == undefined) return ;
-    appointmentList.value[index].status = status;
-    return ;
-}
+  if (appointmentList.value == undefined) return;
+  appointmentList.value[index].status = status;
+  return;
+};
+
+// SearchBar
+const filterUrl = ref("");
+const searchQuery = ref("");
+
+watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
+  const queryParams = [];
+
+  if (newSearch) queryParams.push(newSearch);
+  if (newFilter) queryParams.push(newFilter);
+  const query = queryParams.length ? `?${queryParams.join("&")}` : "";
+  const baseList = await api.fetchAppointmentWithFilter(query);
+  const appointments = baseList.appointments;
+
+  const detailedAppointments = await Promise.allSettled(
+    appointments.map((appointment) =>
+      api.fetchAppointmentDetailWithId(appointment.id)
+    )
+  );
+ 
+  appointmentList.value = detailedAppointments.value;
+  console.log(detailedAppointments);
+});
 
 onMounted(async () => {
-    const response1 = await api.fetchAppointmentsDetail();
-    appointmentList.value = response1;
-    
-    const response2 = await api.fetchUserProfile();
-    userData.value = response2;
-})
+  const baseList = await api.fetchAppointmentsDetail();
 
+  const detailedList = await Promise.all(
+    baseList.map((appointment) =>
+      api.fetchAppointmentDetailWithId(appointment.id)
+    )
+  );
+  console.log(detailedList)
+  appointmentList.value = detailedList;
+
+  const response2 = await api.fetchUserProfile();
+  userData.value = response2;
+});
 </script>
 
 <template>
-    <div class="mt-6 flex flex-col">
-        <SearchBar :role="userData?.role" />
-        <div class="items-center mx-7 my-2">
-            <h1 class="text-xl">Appointment List</h1>
-        </div>
-        <div
-            v-for="appointment, index in appointmentList"
-            :key="appointment.id"
-            class="flex items-center"
-        >
-            <AppointmentCard v-if="appointment.status != AppointmentStatus.Completed" :role="userData?.role" :appointmentData="appointment" :index="index" :manageStatus="manageStatus" />
-        </div>
+  <div class="mt-6 flex flex-col">
+    <SearchBar
+      searchKey="name"
+      @update:search="searchQuery = $event"
+      @update:filter="filterUrl = $event"
+      :filter-options="{
+        isSelectingActiveDays: true,
+        isSelectingDuration: true,
+      }"
+      :role="userData?.role"
+    />
+    <div class="items-center mx-7 my-2">
+      <h1 class="text-xl">Appointment List</h1>
     </div>
+    <div
+      v-for="(appointment, index) in appointmentList"
+      :key="appointment.id"
+      class="flex items-center"
+    >
+      <AppointmentCard
+        v-if="appointment.status != AppointmentStatus.Completed"
+        :role="userData?.role"
+        :appointmentData="appointment"
+        :index="index"
+        :manageStatus="manageStatus"
+      />
+    </div>
+  </div>
 </template>

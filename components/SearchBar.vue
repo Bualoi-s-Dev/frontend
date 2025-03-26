@@ -12,6 +12,7 @@ const filters = ref(["Category A", "Category B", "Category C"]);
 const prop = withDefaults(
   defineProps<{
     role?: string;
+    searchKey: string;
     filterOptions?: {
       isCategorizing?: boolean;
       isSorting?: boolean;
@@ -39,15 +40,14 @@ const onCreate = async () => {
 
 watch(searchQuery, (newQuery) => {
   const params = new URLSearchParams();
-  params.append("search", newQuery);
-
+  params.append(prop.searchKey, newQuery);
+  
   emit("update:search", params.toString());
 });
 
 const handleFilterApply = (data: any) => {
   filterParams.value = data.url;
   emit("update:filter", data.url);
-  console.log("Filter applied:", data.url);
 };
 </script>
 
