@@ -176,7 +176,7 @@ const handleLogout = async () => {
           <li v-if="user.role == 'Customer'"><a @click="onToPay" class="my-4 inline-block"
               :class="firstSegment == 'payment' && secondSegment != 'transaction' ? 'text-red-300' : 'text-black'">To
               Pay</a></li>
-          <li v-if="user.role == 'Customer'"><a @click="onTransaction" class="my-4 inline-block"
+          <li><a @click="onTransaction" class="my-4 inline-block"
               :class="firstSegment == 'payment' && secondSegment == 'transaction' ? 'text-red-300' : 'text-black'">Transactions</a>
           </li>
           <li>
