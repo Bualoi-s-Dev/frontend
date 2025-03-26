@@ -45,6 +45,7 @@ const onSubmit = () => {
 };
 
 const redirectToCheckout = async () => {
+    console.log('loading stripe', publishableKey.value)
     const stripe = await loadStripe(publishableKey.value);
     if (!stripe) {
         console.error("Stripe failed to initialize.");
