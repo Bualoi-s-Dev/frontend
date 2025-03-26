@@ -18,16 +18,20 @@ const loading = computed(
 const filterUrl = ref("");
 const searchQuery = ref("");
 
+const timeout = ref<ReturnType<typeof setTimeout>>();
 watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
-  const queryParams = [];
+  if (timeout.value) clearTimeout(timeout.value);
 
-  if (newSearch) queryParams.push(newSearch);
-  if (newFilter) queryParams.push(newFilter);
-  const query = queryParams.length ? `?${queryParams.join("&")}` : "";
+  timeout.value = setTimeout(async () => {
+    const queryParams = [];
 
-  packages.value = null;
-  packages.value = await api.fetchAllPackageWithFilter(query);
-  console.log("got package", packages.value)
+    if (newSearch) queryParams.push(newSearch);
+    if (newFilter) queryParams.push(newFilter);
+    const query = queryParams.length ? `?${queryParams.join("&")}` : "";
+
+    packages.value = null;
+    packages.value = await api.fetchAllPackageWithFilter(query);
+  }, 500);
 });
 
 onMounted(async () => {
@@ -40,6 +44,12 @@ onMounted(async () => {
 
 <template>
   <div class="w-full h-full px-3 pt-6 flex flex-col">
+    <!-- Separate from the v-else part below because when loading is triggered again, search bar won't be re-rendered so that user's input would not disappear -->
+    <div v-if="profile?.role === UserRole.Customer" class="flex items-center justify-between gap-[10px] w-full">
+      <SearchBar search-key="search" @update:search="searchQuery = $event" @update:filter="filterUrl = $event"
+        :filter-options="{ isCategorizing: true, isSelectingPriceRange: true }" />
+    </div>
+
     <template v-if="loading">
       <div class="w-full h-32 rounded-xl mt-12 bg-gray-300 animate-pulse"></div>
       <div class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"></div>
@@ -54,10 +64,6 @@ onMounted(async () => {
       <WorkList owner-view :data="packages!" navigate />
     </template>
     <template v-else>
-      <div class="flex items-center justify-between gap-[10px] w-full">
-        <SearchBar search-key="search" @update:search="searchQuery = $event" @update:filter="filterUrl = $event"
-          :filter-options="{ isCategorizing: true, isSelectingPriceRange: true }" />
-      </div>
       <WorkList :data="packages!" navigate />
     </template>
   </div>
