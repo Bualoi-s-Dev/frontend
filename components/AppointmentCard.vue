@@ -20,6 +20,8 @@ const prop = withDefaults(
   }
 );
 
+const loading = ref(false);
+
 const formattedDate = (time: string) => {
       const date = new Date(time);
       return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -31,27 +33,47 @@ const formattedTime = (time: string) => {
 }
 
 const onAccept = async () => {
+    loading.value = true;
+
     const appointmentStatus : AppointmentUpdateStatusRequest = {status: AppointmentStatus.Accepted};
     await api.updateAppointmentStatus(prop.appointmentData?.id, appointmentStatus);
     prop.manageStatus(prop.index, AppointmentStatus.Accepted);
+    useToastify("Appointment has been accepted", {type: "success"});
+    
+    loading.value = false;
 }
 
 const onReject = async () => {
+    loading.value = true;
+
     const appointmentStatus : AppointmentUpdateStatusRequest = {status: AppointmentStatus.Rejected};
     await api.updateAppointmentStatus(prop.appointmentData?.id, appointmentStatus);
     prop.manageStatus(prop.index, AppointmentStatus.Rejected);
+    useToastify("Appointment has been rejected", {type: "success"});
+    
+    loading.value = false;
 }
 
 const onCancel = async () => {
+    loading.value = true;
+
     const appointmentStatus : AppointmentUpdateStatusRequest = {status: AppointmentStatus.Canceled};
     await api.updateAppointmentStatus(prop.appointmentData?.id, appointmentStatus);
     prop.manageStatus(prop.index, AppointmentStatus.Canceled);
+    useToastify("Appointment has been canceled", {type: "success"});
+    
+    loading.value = false;
 }
 
 // TODO: This function for demo only
 const onCreatePayment = async() => {
+    loading.value = true;
+
     if(prop.appointmentData == undefined) return ;
     await api.createPayment(prop.appointmentData.id);
+    useToastify("Mock payment created", {type: "success"});
+
+    loading.value = false;
 }
 
 </script>
@@ -71,14 +93,14 @@ const onCreatePayment = async() => {
             <div v-if="!complete" class="flex flex-row gap-2">
                 <div v-if="role == 'Photographer'" class="flex flex-row gap-2">
                     <!-- TODO: This button for demo only -->
-                    <Button v-if="appointmentData.status == AppointmentStatus.Accepted" @click="onCreatePayment" height="h-9" button-options="border border-stroke rounded-md px-4">Create Payment</Button>
+                    <Button :disabled="loading" v-if="appointmentData.status == AppointmentStatus.Accepted" @click="onCreatePayment" height="h-9" button-options="border border-stroke rounded-md px-4">Create Payment</Button>
 
-                    <Button v-if="appointmentData.status == AppointmentStatus.Pending" @click="onAccept" height="h-9" button-options="border border-stroke rounded-md px-4">Accept</Button>
-                    <Button v-if="appointmentData.status == AppointmentStatus.Pending" @click="onReject" height="h-9" button-options="border border-stroke rounded-md px-4">Reject</Button>
-                    <Button v-if="appointmentData.status == AppointmentStatus.Accepted" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
+                    <Button :disabled="loading" v-if="appointmentData.status == AppointmentStatus.Pending" @click="onAccept" height="h-9" button-options="border border-stroke rounded-md px-4">Accept</Button>
+                    <Button :disabled="loading" v-if="appointmentData.status == AppointmentStatus.Pending" @click="onReject" height="h-9" button-options="border border-stroke rounded-md px-4">Reject</Button>
+                    <Button :disabled="loading" v-if="appointmentData.status == AppointmentStatus.Accepted" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
                 </div>
                 <div v-else class="flex flex-row gap-2">
-                    <Button v-if="appointmentData.status == AppointmentStatus.Pending || appointmentData.status == AppointmentStatus.Accepted" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
+                    <Button :disabled="loading" v-if="appointmentData.status == AppointmentStatus.Pending || appointmentData.status == AppointmentStatus.Accepted" @click="onCancel" height="h-9" button-options="border border-stroke rounded-md px-4">Cancel</Button>
                 </div>
             </div>
         </div>
