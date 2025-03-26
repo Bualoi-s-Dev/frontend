@@ -12,7 +12,7 @@ const loading = computed(
     !profile.value ||
     (profile.value &&
       profile.value.role !== UserRole.Photographer &&
-      !packages.value)
+      packages.value === null)
 );
 
 const filterUrl = ref("");
@@ -25,8 +25,9 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
   if (newFilter) queryParams.push(newFilter);
   const query = queryParams.length ? `?${queryParams.join("&")}` : "";
 
+  packages.value = null;
   packages.value = await api.fetchAllPackageWithFilter(query);
-  console.log(packages.value);
+  console.log("got package", packages.value)
 });
 
 onMounted(async () => {
@@ -54,11 +55,8 @@ onMounted(async () => {
     </template>
     <template v-else>
       <div class="flex items-center justify-between gap-[10px] w-full">
-        <SearchBar 
-          search-key="search"
-          @update:search="searchQuery = $event" 
-          @update:filter="filterUrl = $event" 
-          :filter-options="{isCategorizing:true, isSelectingPriceRange:true}"/>
+        <SearchBar search-key="search" @update:search="searchQuery = $event" @update:filter="filterUrl = $event"
+          :filter-options="{ isCategorizing: true, isSelectingPriceRange: true }" />
       </div>
       <WorkList :data="packages!" navigate />
     </template>
