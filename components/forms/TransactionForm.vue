@@ -16,12 +16,12 @@ const paymentMethod = ref("Only Stripe Available");
 const temp = ref(""); // TODO: replace with another method
 
 const prop = withDefaults(
-  defineProps<{
-    paymentData: PaymentResponse | undefined;
-  }>(),
-  {
+    defineProps<{
+        paymentData: PaymentResponse | undefined;
+    }>(),
+    {
 
-  }
+    }
 );
 
 const fullPackage = computed(() => `${prop.paymentData?.appointment.packageName} / ${prop.paymentData?.appointment.subpackageName}`);
@@ -39,28 +39,28 @@ const checkoutRef = ref<StripeCheckout>();
 
 const onSubmit = () => {
     // TODO: go to transaction page
-  if (checkoutRef.value) {
-    checkoutRef.value.redirectToCheckout();
-  }
+    if (checkoutRef.value) {
+        checkoutRef.value.redirectToCheckout();
+    }
 };
 
 const redirectToCheckout = async () => {
-  const stripe = await loadStripe(publishableKey.value);
-  if (!stripe) {
-    console.error("Stripe failed to initialize.");
-    return;
-  }
+    const stripe = await loadStripe(publishableKey.value);
+    if (!stripe) {
+        console.error("Stripe failed to initialize.");
+        return;
+    }
 
-  if (prop.paymentData?.payment.customer.checkoutId == undefined) {
-    console.error("Checkout id is undefined.");
-    return ;
-  }
+    if (prop.paymentData?.payment.customer.checkoutId == undefined) {
+        console.error("Checkout id is undefined.");
+        return;
+    }
 
-  const { error } = await stripe.redirectToCheckout({ sessionId: prop.paymentData?.payment.customer.checkoutId });
+    const { error } = await stripe.redirectToCheckout({ sessionId: prop.paymentData?.payment.customer.checkoutId });
 
-  if (error) {
-    console.error("Stripe checkout error:", error);
-  }
+    if (error) {
+        console.error("Stripe checkout error:", error);
+    }
 };
 
 </script>
@@ -125,16 +125,16 @@ const redirectToCheckout = async () => {
                     class="block w-full px-3 py-2 border text-gray-600 border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
             </div>
             <div class="flex flex-col gap-1">
-                <label class="text-[16px]">Payment</label>
+                <label class="text-[16px]">Proceed to payment via Stripe</label>
                 <!-- TODO: fix this v-model shit -->
                 <!-- <select :disabled="updating" -->
-                <select disabled
+                <!-- <select disabled
                     class="border w-full text-gray-600 rounded-md py-2 px-2 text-[14px] border-stroke"
                     v-model="temp">
 
                     <option disabled value="">{{ paymentMethod }}</option>
-                    <!-- <option v-for="packageData in packages" :value="packageData" :key="packageData.id">{{ packageData.title }}</option> -->
-                </select>
+                     <option v-for="packageData in packages" :value="packageData" :key="packageData.id">{{ packageData.title }}</option>
+                </select> -->
             </div>
             <!-- <button :disabled="updating" @click="onSubmit"
                 class="mt-auto ml-auto text-l px-6 py-2 rounded-lg bg-black text-white">
@@ -148,10 +148,8 @@ const redirectToCheckout = async () => {
                 :pk="publishableKey"
                 :session-id="paymentData?.payment.customer.checkoutId"
             /> -->
-            <button 
-                @click="redirectToCheckout" 
-                class="mt-auto ml-auto text-l px-6 py-2 rounded-lg bg-black text-white">
-            >Continue</button>
+            <button @click="redirectToCheckout" class="mt-auto ml-auto text-l px-6 py-2 rounded-lg bg-black text-white">
+                Continue</button>
         </div>
     </div>
 </template>
