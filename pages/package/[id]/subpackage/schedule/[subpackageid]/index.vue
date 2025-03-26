@@ -176,8 +176,8 @@ const getTimeIntervals = (
 const intervals = computed(() => {
   if (!subpackageDetails.value) return [];
   return getTimeIntervals(
-    subpackageDetails.value.avaliableStartTime,
-    subpackageDetails.value.avaliableEndTime,
+    subpackageDetails.value.availableStartTime,
+    subpackageDetails.value.availableEndTime,
     subpackageDetails.value.duration
   );
 });

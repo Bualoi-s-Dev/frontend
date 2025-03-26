@@ -246,6 +246,6 @@ export interface PaymentResponse {
   package: PackageResponse;
 }
 
-export interface OnboardingURL {
+export interface PaymentURL {
   url: string;
 }

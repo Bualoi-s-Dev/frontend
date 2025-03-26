@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 import { defineAsyncComponent } from "vue";
 import { StripeCheckout } from '@vue-stripe/vue-stripe';
+import { loadStripe } from "@stripe/stripe-js";
 import type { AppointmentDetail, AppointmentStatus, PackageResponse, PaymentResponse } from "~/types/api";
 
 const router = useRouter();
@@ -40,6 +41,25 @@ const onSubmit = () => {
     // TODO: go to transaction page
   if (checkoutRef.value) {
     checkoutRef.value.redirectToCheckout();
+  }
+};
+
+const redirectToCheckout = async () => {
+  const stripe = await loadStripe(publishableKey.value);
+  if (!stripe) {
+    console.error("Stripe failed to initialize.");
+    return;
+  }
+
+  if (prop.paymentData?.payment.customer.checkoutId == undefined) {
+    console.error("Checkout id is undefined.");
+    return ;
+  }
+
+  const { error } = await stripe.redirectToCheckout({ sessionId: prop.paymentData?.payment.customer.checkoutId });
+
+  if (error) {
+    console.error("Stripe checkout error:", error);
   }
 };
 
@@ -123,13 +143,13 @@ const onSubmit = () => {
 
             <!-- TODO: fix this checkout button -->
 
-            <StripeCheckout
-                :ref="checkoutRef"
+            <!-- <StripeCheckout
+                ref="checkoutRef"
                 :pk="publishableKey"
                 :session-id="paymentData?.payment.customer.checkoutId"
-            />
+            /> -->
             <button 
-                @click="onSubmit" 
+                @click="redirectToCheckout" 
                 class="mt-auto ml-auto text-l px-6 py-2 rounded-lg bg-black text-white">
             >Continue</button>
         </div>

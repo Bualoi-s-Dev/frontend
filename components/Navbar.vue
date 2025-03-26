@@ -84,6 +84,10 @@ const onCompleted = async () => {
   router.push("/appointment/complete");
 };
 
+const onStripe = async () => {
+  window.location.href = "https://dashboard.stripe.com";
+};
+
 const handleLogout = async () => {
   try {
     await auth.handleLogout();
@@ -161,6 +165,10 @@ const handleLogout = async () => {
                 ? 'text-red-300'
                 : 'text-black'
               ">History</a>
+          </li>
+          <li v-if="user.role == 'Photographer'">
+            <a @click="onStripe" class="my-4 inline-block"
+            >Stripe</a>
           </li>
           <li v-if="user.role == 'Customer'"><a @click="onTransaction" class="my-4 inline-block"
               :class="firstSegment == 'photographers' ? 'text-red-300' : 'text-black'">Photographers</a>

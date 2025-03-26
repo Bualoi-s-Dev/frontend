@@ -17,6 +17,7 @@ onMounted(async () => {
     packages.value = await api.fetchAllPackage();
   else
     packages.value = profile.value.photographerPackages;
+  // const onboardingURL = await api.fetchOnboardingURL();
 })
 </script>
 
