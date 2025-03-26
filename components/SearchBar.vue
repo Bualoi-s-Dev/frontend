@@ -17,10 +17,12 @@ const prop = withDefaults(
       isCategorizing?: boolean;
       isSorting?: boolean;
       isSelectingDuration?: boolean;
+      isSelectingDate?: boolean;
       isSelectingDateRange?: boolean;
       isSelectingLocation?: boolean;
       isSelectingActiveDays?: boolean;
       isSelectingPriceRange?: boolean;
+      isSelectingStatus?: boolean;
     };
     activeDays?: string[];
   }>(),

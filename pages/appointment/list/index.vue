@@ -34,17 +34,9 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
   if (newSearch) queryParams.push(newSearch);
   if (newFilter) queryParams.push(newFilter);
   const query = queryParams.length ? `?${queryParams.join("&")}` : "";
-  const baseList = await api.fetchAppointmentWithFilter(query);
-  const appointments = baseList.appointments;
-
-  const detailedAppointments = await Promise.allSettled(
-    appointments.map((appointment) =>
-      api.fetchAppointmentDetailWithId(appointment.id)
-    )
-  );
- 
-  appointmentList.value = detailedAppointments.value;
-  console.log(detailedAppointments);
+  const baseList = await api.fetchAppointmentDetailsWithFilter(query);
+  
+  appointmentList.value = baseList;
 });
 
 onMounted(async () => {
@@ -66,14 +58,14 @@ onMounted(async () => {
 <template>
   <div class="mt-6 flex flex-col">
     <SearchBar
-      searchKey="name"
+      searchKey="packageName"
       @update:search="searchQuery = $event"
       @update:filter="filterUrl = $event"
       :filter-options="{
-        isSelectingActiveDays: true,
+        isSelectingDate: true,
+        isSelectingStatus: true,
         isSelectingDuration: true,
       }"
-      :role="userData?.role"
     />
     <div class="items-center mx-7 my-2">
       <h1 class="text-xl">Appointment List</h1>

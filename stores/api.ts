@@ -220,8 +220,8 @@ export const useApiStore = defineStore("api", () => {
     return response.data as AppointmentResponse[];
   };
 
-  const fetchAppointmentWithFilter = async (param: string): Promise<AppointmentResponse[]> => {
-    const response = await axios.get(`${config.public.apiUrl}/appointment${param}`, {
+  const fetchAppointmentDetailsWithFilter = async (param: string): Promise<AppointmentResponse[]> => {
+    const response = await axios.get(`${config.public.apiUrl}/appointment/detail${param}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
     return response.data as AppointmentResponse[];
@@ -380,7 +380,7 @@ export const useApiStore = defineStore("api", () => {
     updatePackage,
     updateUserInformation,
     fetchAllAppointment,
-    fetchAppointmentWithFilter,
+    fetchAppointmentDetailsWithFilter,
     fetchAppointmentDetailWithId,
     fetchAppointmentsDetail,
     updateAppointmentStatus,

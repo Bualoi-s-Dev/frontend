@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
-import { PackageType } from "~/types/api";
+import { AppointmentStatus, PackageType } from "~/types/api";
 
 const showConfirmDialog = ref(false);
 const emit = defineEmits<{
@@ -21,7 +21,7 @@ const selectedCategory = ref(); // Default selected category
 const dropdownOpen = ref(false);
 const activeDays = ref<string[]>([]);
 const availableCategories = Object.values(PackageType);
-
+const statusCategories = Object.values(AppointmentStatus);
 // Days
 const toggleDay = (day: string) => {
   const uppercaseDay = day.toUpperCase(); // Ensure the day is in uppercase
@@ -44,13 +44,17 @@ const props = defineProps<{
     isSelectingDuration?: boolean;
     isSelectingPriceRange?: boolean;
     isSelectingDateRange?: boolean;
+    isSelectingDate?: boolean;
     isSelectingLocation?: boolean;
     isSelectingActiveDays?: boolean;
+    isSelectingStatus?: boolean;
   };
   activeDays?: string[];
 }>();
 
-const sliderValue = ref([0, 500]); // Initial values
+const sliderValue = ref([0, 10000]); // Initial values
+const startTime = ref("");
+const endTime = ref("");
 
 const days = computed(() => [
   { name: "Sun", active: props.activeDays?.includes("SUN") ?? false },
@@ -67,6 +71,18 @@ const selectCategory = (category: string) => {
   dropdownOpen.value = false; // Close dropdown after selection
 };
 
+const clearFilter = () => {
+  startTime.value = "";
+  endTime.value = "";
+  startDate.value = "";
+  endDate.value = "";
+  selectedCategory.value = "";
+
+  applyFilter();
+
+  showConfirmDialog.value = false;
+};
+
 const applyFilter = () => {
   const params = new URLSearchParams();
 
@@ -79,11 +95,28 @@ const applyFilter = () => {
   if (props.filterOptions?.isSelectingPriceRange) {
     params.append("maxPrice", sliderValue.value[1].toString());
   }
+  if (props.filterOptions?.isSelectingDuration && startTime.value) {
+    params.append("availableStartTime", startTime.value);
+  }
+  if (props.filterOptions?.isSelectingDuration && endTime.value) {
+    params.append("availableEndTime", endTime.value);
+  }
   if (props.filterOptions?.isSelectingDateRange && startDate.value) {
-    params.append("startDate", startDate.value);
+    params.append("availbleStartDay", startDate.value);
   }
   if (props.filterOptions?.isSelectingDateRange && endDate.value) {
-    params.append("endDate", endDate.value);
+    params.append("availableEndDay", endDate.value);
+  }
+  if (props.filterOptions?.isSelectingDate && startDate.value) {
+    if( !startTime.value ) params.append("startTime", startDate.value + "T12:00:00Z" );
+    else params.append("startTime", startDate.value + `T${startTime.value}:00`)
+
+    if( !endTime.value ) params.append("endTime", startDate.value + "T23:59:00Z" );
+    else params.append("endTime", startDate.value + `T${endTime.value}:00`)    
+  }
+
+  if (props.filterOptions?.isSelectingStatus && selectedCategory.value) {
+    params.append("status", selectedCategory.value);
   }
   if (props.filterOptions?.isSelectingActiveDays) {
     if (activeDays.value.length) {
@@ -155,6 +188,37 @@ const closeFilter = () => {
         </div>
       </div>
 
+      <!-- Category -->
+      <div
+        v-if="props.filterOptions?.isSelectingStatus"
+        class="flex relative justify-between mb-2"
+      >
+        <span class="text-gray-500">Status</span>
+        <button
+          @click="toggleDropdown"
+          class="text-gray-500 focus:outline-none"
+        >
+          &gt;
+        </button>
+
+        <!-- Dropdown -->
+        <div
+          v-if="dropdownOpen"
+          class="absolute top-8 right-0 bg-white border border-gray-300 rounded-lg shadow-lg w-60"
+        >
+          <ul>
+            <li
+              v-for="category in statusCategories"
+              :key="category"
+              @click="selectCategory(category)"
+              class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+            >
+              {{ category }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <!-- Category Input -->
       <div v-if="selectedCategory" class="flex gap-2">
         <div
@@ -189,6 +253,24 @@ const closeFilter = () => {
         </div>
       </div>
 
+      <!-- Selecting Day -->
+      <div
+        v-if="props.filterOptions?.isSelectingDate"
+        class="mt-4 flex flex-col gap-2"
+      >
+        <h2 class="text-gray-500">Date Range</h2>
+        <div class="flex gap-2">
+          <div>
+            <label class="block text-sm font-medium">Date</label>
+            <input
+              v-model="startDate"
+              type="date"
+              class="w-full border rounded-md p-1.5 text-sm text-gray-500"
+            />
+          </div>
+        </div>
+      </div>
+
       <div v-if="props.filterOptions?.isSelectingPriceRange">
         <h2 class="text-gray-500 mt-4">Choose Price</h2>
         <DoubleSlider
@@ -202,15 +284,29 @@ const closeFilter = () => {
       </div>
 
       <div v-if="props.filterOptions?.isSelectingDuration">
-        <h2 class="text-gray-500 mt-4">Select Duration (Minute)</h2>
-        <DoubleSlider
-          v-model="sliderValue"
-          :min="0"
-          :max="600"
-          :minRange="5"
-          class="custom-slider"
-        />
-        <p>Selected Range: {{ sliderValue[0] }} - {{ sliderValue[1] }}</p>
+        <div class="flex gap-[16px]">
+          <div class="w-full">
+            <div class="flex flex-row text-lg mt-3">
+              Start Time
+            </div>
+            <input
+              v-model="startTime"
+              type="time"
+              class="w-full border rounded-md p-1.5 text-sm text-gray-500"
+            />
+          </div>
+
+          <div class="w-full">
+            <div class="flex flex-row text-lg mt-3">
+              End Time
+            </div>
+            <input
+              v-model="endTime"
+              type="time"
+              class="w-full border rounded-md p-1.5 text-sm text-gray-500"
+            />
+          </div>
+        </div>
       </div>
 
       <!-- Location Filter -->
@@ -222,7 +318,7 @@ const closeFilter = () => {
         />
       </div>
 
-      <!-- Selecting Day -->
+      <!-- Selecting Active Day(s) -->
       <div v-if="props.filterOptions?.isSelectingActiveDays">
         <h2 class="text-gray-500 mt-4">Avaliable Date</h2>
         <div class="flex justify-between mt-1.5">
@@ -243,6 +339,10 @@ const closeFilter = () => {
             {{ day.name }}
           </button>
         </div>
+      </div>
+
+      <div class="flex justify-between font-medium mt-5">
+        <p class="text-gray-400" @click="clearFilter">Clear</p>
       </div>
     </div>
   </div>

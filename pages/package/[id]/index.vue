@@ -69,7 +69,7 @@ onMounted(async () => {
   if (response.photoUrls && response.photoUrls.length > 0) {
     const imgUrl = config.public.s3URL + response.photoUrls[0];
     response.photoUrls[0] = imgUrl;
-
+  
     imageUrl.value = response.photoUrls[0];
   }
   title.value = response.title;
@@ -120,8 +120,9 @@ const handleFilterApply = (data: any) => {
     <div class="flex items-center justify-between gap-[10px] w-full">
       <SearchBar 
         search-key="title"
-      @update:search="searchQuery = $event" @update:filter="filterUrl = $event" 
+        @update:filter="filterUrl = $event" 
         :filter-options="{
+          isSelectingDateRange:subPackages[0] && subPackages[0].availableStartDay ? true : false,
           isSelectingActiveDays:true,
           isSelectingDuration:true,
           }"/>
