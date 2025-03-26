@@ -121,8 +121,6 @@ onMounted(async () => {
   console.log(response1, response2);
   if (response1.photoUrls && response1.photoUrls.length > 0) {
     const imgUrl = config.public.s3URL + response1.photoUrls[0];
-    // const imgBlob = await fetch(imgUrl).then((res) => res.blob());
-    // response1.photoUrls[0] = await readFileAsDataURL(imgBlob);
     response1.photoUrls[0] = imgUrl;
 
     imageUrl.value = response1.photoUrls[0];
@@ -235,12 +233,25 @@ const intersectedIntervals = computed(() => {
 });
 
 const events = computed<Event[]>(() => {
-  if (!subpackageDetails.value?.busyTimeMap[selectedDate.value]) return [];
+  // if (!subpackageDetails.value?.busyTimeMap[selectedDate.value]) return [];
+  if(!subpackageDetails.value) return [];
 
-  return subpackageDetails.value.busyTimeMap[selectedDate.value].map((m) => ({
+  const result = (subpackageDetails.value.busyTimeMap[selectedDate.value] ?? []).map((m) => ({
     start: formatTime(new Date(m.startTime)),
     end: formatTime(new Date(m.endTime)),
     title: "Busy",
   }));
+
+
+  // Mark past time if user currently select current date
+  if(new Date().toISOString().split("T")[0] === selectedDate.value) {
+    result.push({
+      start: "00:00",
+      end: formatTime(new Date()),
+      title: "Busy",
+    })
+  }
+
+  return result;
 });
 </script>
