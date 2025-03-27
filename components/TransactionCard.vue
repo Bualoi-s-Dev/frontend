@@ -55,11 +55,11 @@ const onPay = async () => {
             <p class="text-gray-600">Total : <span class="text-lg font-semibold text-red-500">{{ paymentData?.appointment?.price }} ฿</span></p>
             <div v-if="paymentData?.payment.customer.status != PaymentStatus.Unpaid">
                 <p v-if="role == UserRole.Customer" class="text-gray-900">Status : <span class="font-medium">{{ paymentData?.payment.customer.status }}</span></p>
-                <p v-if="role == UserRole.Photographer" class="text-gray-900">Status : <span class="font-medium">{{ paymentData?.payment.photographer.status }}</span></p>
             </div>
+            <p v-if="role == UserRole.Photographer" class="text-gray-900">Status : <span class="font-medium">{{ paymentData?.payment.photographer.status }}</span></p>
             <div class="flex flex-row gap-2">
                 <div class="flex flex-row gap-2">
-                    <Button v-if="paymentData?.payment.customer.status == PaymentStatus.Unpaid" @click="onPay" height="h-9" button-options="border border-stroke rounded-md px-8">Pay</Button>
+                    <Button v-if="role == UserRole.Customer && paymentData?.payment.customer.status == PaymentStatus.Unpaid" @click="onPay" height="h-9" button-options="border border-stroke rounded-md px-8">Pay</Button>
                 </div>
             </div>
         </div>
