@@ -15,6 +15,10 @@ const emit = defineEmits<{
   (e: "openFilter"): void;
 }>();
 
+import { onMounted, onBeforeUnmount } from "vue";
+
+const filterRef = ref<HTMLElement | null>(null);
+
 const startDate = ref("");
 const endDate = ref("");
 const location = ref("");
@@ -23,6 +27,25 @@ const dropdownOpen = ref(false);
 const activeDays = ref<string[]>([]);
 const availableCategories = Object.values(PackageType);
 const statusCategories = Object.values(AppointmentStatus);
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    showConfirmDialog.value &&
+    filterRef.value &&
+    !filterRef.value.contains(event.target as Node)
+  ) {
+    closeFilter();
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+
 // Days
 const toggleDay = (day: string) => {
   const uppercaseDay = day.toUpperCase(); // Ensure the day is in uppercase
@@ -160,7 +183,7 @@ const closeFilter = () => {
     class="flex items-center relative justify-center p-[10px] border border-stroke rounded-[6px]"
   >
     <Icon
-      @click="openFilter"
+      @click.stop="openFilter"
       icon="solar:filter-linear"
       class="w-[16px] h-[16px] text-black"
     />
@@ -173,6 +196,7 @@ const closeFilter = () => {
 
     <div
       v-if="showConfirmDialog"
+      ref="filterRef"
       class="absolute top-12 right-0 flex items-center justify-center z-[102]"
     >
       <div class="gap-[20px] bg-white p-[25px] rounded-lg shadow-lg w-[346px]">
@@ -196,9 +220,10 @@ const closeFilter = () => {
             &gt;
           </button>
 
-          <!-- Dropdown -->
+          <!-- Category Dropdown -->
           <div
             v-if="dropdownOpen"
+            @click.stop
             class="absolute z-50 top-8 right-0 bg-white border border-gray-300 rounded-lg shadow-lg w-60"
           >
             <ul>
@@ -227,9 +252,10 @@ const closeFilter = () => {
             &gt;
           </button>
 
-          <!-- Dropdown -->
+          <!-- Status Dropdown -->
           <div
             v-if="dropdownOpen"
+            @click.stop
             class="absolute top-8 right-0 bg-white border border-gray-300 rounded-lg shadow-lg w-60"
           >
             <ul>
@@ -246,11 +272,17 @@ const closeFilter = () => {
         </div>
 
         <!-- Category Input -->
-        <div v-if="selectedCategory" class="flex gap-2">
+        <div v-if="selectedCategory" class="flex gap-2 mt-2">
           <div
             class="bg-black text-white px-3 py-1 rounded-full flex items-center gap-2 text-sm"
           >
             {{ selectedCategory }}
+            <button
+              @click="selectedCategory = ''"
+              class="text-white hover:text-gray-300"
+            >
+              &times;
+            </button>
           </div>
         </div>
 
