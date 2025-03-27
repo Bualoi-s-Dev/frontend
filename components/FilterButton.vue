@@ -78,6 +78,8 @@ const clearFilter = () => {
   startDate.value = "";
   endDate.value = "";
   selectedCategory.value = "";
+  sliderValue.value[0] = 0;
+  sliderValue.value[1] = 10000;
 
   applyFilter();
 

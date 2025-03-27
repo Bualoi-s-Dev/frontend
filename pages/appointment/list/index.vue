@@ -35,13 +35,13 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
 onMounted(async () => {
   const baseList = await api.fetchAppointmentsDetail();
 
-  const detailedList = await Promise.all(
-    baseList.map((appointment) =>
-      api.fetchAppointmentDetailWithId(appointment.id)
-    )
-  );
-  console.log(detailedList)
-  appointmentList.value = detailedList;
+  // const detailedList = await Promise.all(
+  //   baseList.map((appointment) =>
+  //     api.fetchAppointmentDetailWithId(appointment.id)
+  //   )
+  // );
+  console.log(baseList)
+  appointmentList.value = baseList;
 
   const response2 = await api.fetchUserProfile();
   userData.value = response2;
