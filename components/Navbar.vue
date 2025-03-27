@@ -169,9 +169,10 @@ const handleLogout = async () => {
                 : 'text-black'
               ">History</a>
           </li>
-          <li v-if="user.role == 'Photographer'">
+          <li v-if="user.role == 'Photographer'" class="flex flex-row">
             <a @click="onStripe" class="my-4 inline-block"
-            >Stripe</a>
+            >Payment acc.</a>
+            <Icon icon="tabler:external-link" style="width: 25; height: inherit" />
           </li>
           <li v-if="user.role == 'Customer'"><a @click="onPhotographer" class="my-4 inline-block"
               :class="firstSegment == 'photographers' ? 'text-red-300' : 'text-black'">Photographers</a>

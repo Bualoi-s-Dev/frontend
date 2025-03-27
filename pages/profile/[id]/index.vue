@@ -2,7 +2,7 @@
 import Button from "@/components/Button.vue";
 import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue/dist/iconify.js";
-import type { PackageResponse } from "~/types/api";
+import type { UserResponse, PackageResponse } from "~/types/api";
 // TODO: can refactor from fetching user profile from backend to using user store instead.
 // but we will have to call updateProfile everywhere that modify the profile first.
 
@@ -11,17 +11,7 @@ const router = useRouter();
 const api = useApiStore();
 const config = useRuntimeConfig();
 
-const profileInformation = ref({
-  id: "",
-  name: "",
-  description: "",
-  profile: "",
-  location: "",
-  phone: "",
-  lineID: "",
-  instagram: "",
-  facebook: "",
-});
+const profileInformation = ref<UserResponse | null>(null);
 const reviews = ref<
   Array<{
     ratingId: string;
@@ -58,15 +48,9 @@ const fetchUserProfileById = async () => {
   try {
     const id = route.params.id as string;
     const response = await api.fetchUserProfileById(id);
+    response.profile = `${config.public.s3URL}${response.profile}`;
 
-    profileInformation.value.name = response.name;
-    profileInformation.value.profile = config.public.s3URL + response.profile;
-    profileInformation.value.location = response.location;
-    profileInformation.value.phone = response.phone;
-    profileInformation.value.lineID = response.lineID;
-    profileInformation.value.instagram = response.instagram;
-    profileInformation.value.facebook = response.facebook;
-    profileInformation.value.id = response.id;
+    profileInformation.value = response
 
     role.value = response.role;
 
@@ -177,7 +161,7 @@ const limitedPackages = computed(() => {
     <BackButton />
     Photographer Profile
   </div>
-  <div class="mt-[16px] w-full">
+  <div v-if="profileInformation" class="mt-[16px] w-full">
     <div class="flex flex-col gap-[25px] w-full">
       <div class="flex flex-col gap-[10px]">
         <div class="flex justify-end">
@@ -283,6 +267,18 @@ const limitedPackages = computed(() => {
           </p>
         </div>
       </div>
+      <div v-else class="mx-5 p-4 border border-black rounded-lg bg-white text-black shadow-md">
+  <label class="block font-semibold mb-2 text-lg border-b border-gray-400 pb-1">
+    Gender: <span class="font-normal">{{ profileInformation.gender }}</span>
+  </label>
+  <label class="block font-semibold mb-2 text-lg border-b border-gray-400 pb-1">
+    Location: <span class="font-normal">{{ profileInformation.location }}</span>
+  </label>
+  <label class="block font-semibold mb-2 text-lg">
+    Email: <span class="font-normal">{{ profileInformation.email }}</span>
+  </label>
+</div>
+
       <div v-if="role === 'Photographer'" class="mx-5">
         <div
           class="flex justify-between items-center cursor-pointer"
@@ -351,4 +347,5 @@ const limitedPackages = computed(() => {
       </div>
     </div>
   </div>
+  <div v-else></div>
 </template>

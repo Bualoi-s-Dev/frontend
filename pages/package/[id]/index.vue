@@ -118,9 +118,27 @@ const handleFilterApply = (data: any) => {
     {{ title }}
   </div>
   <div class="w-full h-full p-6 flex flex-col">
+    <div class="flex gap-[16px] mt-6 items-center">
+      <img
+        class="h-[50px] w-[50px] object-cover rounded-full cursor-pointer"
+        :src="profileUrl"
+        alt="Profile Image"
+        @click="router.push(`/profile/${ownerId}`)"
+      />
+      <p class="text-xl">{{ name }}</p>
+    </div>
+    <img
+      v-if="imageUrl"
+      class="h-[253px] w-full object-cover rounded-[20px] mt-6"
+      :src="imageUrl"
+      alt="Package Image"
+    />
+
     <div class="flex items-center justify-between gap-[10px] w-full">
       <SearchBar 
         search-key="title"
+        :include-search="false"
+        searchLabelReplacement="Subpackages"
         @update:search="searchQuery = $event"
         @update:filter="filterUrl = $event" 
         :filter-options="{
@@ -137,21 +155,6 @@ const handleFilterApply = (data: any) => {
         New
       </button>
     </div>
-    <div class="flex gap-[16px] mt-6 items-center">
-      <img
-        class="h-[50px] w-[50px] object-cover rounded-full cursor-pointer"
-        :src="profileUrl"
-        alt="Profile Image"
-        @click="router.push(`/profile/${ownerId}`)"
-      />
-      <p class="text-xl">{{ name }}</p>
-    </div>
-    <img
-      v-if="imageUrl"
-      class="h-[253px] w-full object-cover rounded-[20px] mt-6"
-      :src="imageUrl"
-      alt="Package Image"
-    />
 
     <div
       class="text-[12px] text-white rounded-[10px] px-[10px] py-[8px] w-fit mt-6 bg-gradient-to-r from-primary to-secondary opacity-85"
