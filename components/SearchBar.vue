@@ -12,6 +12,10 @@ const filters = ref(["Category A", "Category B", "Category C"]);
 const prop = withDefaults(
   defineProps<{
     role?: string;
+    
+    includeSearch?:boolean;
+    searchLabelReplacement?: string;
+
     searchKey: string;
     filterOptions?: {
       isCategorizing?: boolean;
@@ -27,6 +31,7 @@ const prop = withDefaults(
     activeDays?: string[];
   }>(),
   {
+    includeSearch: true,
     role: "guest",
   }
 );
@@ -54,13 +59,15 @@ const handleFilterApply = (data: any) => {
 </script>
 
 <template>
-  <div class="w-full mx-3 my-3 p-2 flex flex-row gap-2 items-center">
+  <div class="w-full max-w-full my-3 p-2 flex flex-row gap-2 items-center">
     <input
+    v-if="prop.includeSearch"
       v-model="searchQuery"
       type="text"
       placeholder="Search..."
-      class="px-4 py-2 border rounded-md w-80 focus:ring-2 focus:ring-blue-500 outline-none"
+      class="px-4 py-2 border rounded-md flex-1 focus:ring-2 focus:ring-blue-500 outline-none"
     />
+    <div class="flex-1 text-lg font-bold" v-else>{{searchLabelReplacement}}</div>
     <FilterButton @apply-filter="handleFilterApply" :filter-options="filterOptions"/>
     <!-- <Button height="h-9" icon-color="gray" bg-color="bg-white" middle-icon="basil:filter-outline" button-options="border border-stroke rounded-md"></Button> -->
     <Button
