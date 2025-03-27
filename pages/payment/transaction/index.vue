@@ -44,7 +44,10 @@ onMounted(async () => {
             :key="payment.payment.id"
             class="flex items-center"
         >
-            <TransactionCard v-if="payment.payment.customer.status == PaymentStatus.Paid || payment.payment.photographer.status == PaymentStatus.InProcess || payment.payment.photographer.status == PaymentStatus.Completed" :role="userData?.role" :paymentId="payment.payment.id" />
+            <TransactionCard v-if="payment.payment.customer.status == PaymentStatus.Paid || 
+            payment.payment.photographer.status == PaymentStatus.InProcess || 
+            payment.payment.photographer.status == PaymentStatus.Completed ||
+            payment.payment.photographer.status == PaymentStatus.Wait" :role="userData?.role" :paymentId="payment.payment.id" />
         </div>
     </div>
 </template>
