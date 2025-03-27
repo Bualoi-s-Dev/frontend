@@ -59,7 +59,7 @@ const handleFilterApply = (data: any) => {
       v-model="searchQuery"
       type="text"
       placeholder="Search..."
-      class="px-4 py-2 border rounded-md w-full focus:ring-2 focus:ring-blue-500 outline-none"
+      class="px-4 py-2 border rounded-md w-80 focus:ring-2 focus:ring-blue-500 outline-none"
     />
     <FilterButton @apply-filter="handleFilterApply" :filter-options="filterOptions"/>
     <!-- <Button height="h-9" icon-color="gray" bg-color="bg-white" middle-icon="basil:filter-outline" button-options="border border-stroke rounded-md"></Button> -->
