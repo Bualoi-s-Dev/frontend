@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import type { UserProfile } from 'firebase/auth';
-import { AppointmentStatus, type AppointmentDetail, type AppointmentResponse, type UserRequest, type UserResponse } from '~/types/api';
+import type { UserProfile } from "firebase/auth";
+import {
+  AppointmentStatus,
+  type AppointmentDetail,
+  type AppointmentResponse,
+  type UserRequest,
+  type UserResponse,
+} from "~/types/api";
 
 const router = useRouter();
 const route = useRoute();
@@ -28,7 +34,6 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
   if (newFilter) queryParams.push(newFilter);
   const query = queryParams.length ? `?${queryParams.join("&")}` : "";
   const baseList = await api.fetchAppointmentDetailsWithFilter(query);
-  
   appointmentList.value = baseList;
 });
 
@@ -40,9 +45,8 @@ onMounted(async () => {
   //     api.fetchAppointmentDetailWithId(appointment.id)
   //   )
   // );
-  console.log(baseList)
+  console.log(baseList);
   appointmentList.value = baseList;
-
   const response2 = await api.fetchUserProfile();
   userData.value = response2;
 });
