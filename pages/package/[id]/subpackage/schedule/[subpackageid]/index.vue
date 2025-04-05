@@ -28,7 +28,7 @@
           class="p-2 border rounded-lg shadow-sm w-full"
         />
       </div>
-      <TimeSchedule :input-date="selectedDate" :show-date="true" />
+      <TimeSchedule v-model:input-date="selectedDate" :show-date="true" :active-days="subpackageDetails?.repeatedDay"/>
       <p class="flex justify-center mt-5 text-xl">
         {{ formatDate(selectedDate) }}
       </p>

@@ -23,7 +23,7 @@
   </div>
 
   <div class="p-4">
-    <TimeSchedule :input-date="selectedDate" :show-date="true" />
+    <TimeSchedule v-model:input-date="selectedDate" :show-date="true" />
     <p class="flex justify-center mt-5 text-xl">
       {{ formatDate(selectedDate) }}
     </p>
@@ -55,7 +55,6 @@ const packageData = ref<BusyTime[]>([]);
 const filteredPackageData = computed(() => {
   return packageData.value.filter((item) => {
     const itemDate = new Date(item.startTime).toISOString().split("T")[0]; // Extract YYYY-MM-DD
-    console.log(itemDate, selectedDate.value);
     return itemDate === selectedDate.value;
   });
 });
@@ -80,14 +79,11 @@ const goToCreateBusyTime = () => {
 onMounted(async () => {
   try {
     const profile = await api.fetchUserProfile();
-    console.log(profile);
-
     // Fetch busy time data and remove invalid entries
     const response = (await api.fetchBusyTime(profile.id)).filter(item => item.isValid);
 
     // Combine both data arrays
     packageData.value = response;
-    console.log(packageData.value);
   } catch (error) {
     console.error("Failed to fetch busy time data:", error);
   }
