@@ -13,7 +13,27 @@ import {
 const props = defineProps<{
   inputDate: string;
   showDate?: boolean;
+  activeDays?: string[];
 }>();
+
+const emit = defineEmits<{
+  (e: "update:inputDate", value:string): void;
+}>();
+
+const updateSelectedDate = ( date: Date ) => {
+  selectedDate.value = date;
+  emit('update:inputDate', date.toISOString().split('T')[0]);
+}
+
+const days = computed(() => [
+  { name: "Sun", active: props.activeDays?.includes("SUN") ?? false },
+  { name: "Mon", active: props.activeDays?.includes("MON") ?? false },
+  { name: "Tue", active: props.activeDays?.includes("TUE") ?? false },
+  { name: "Wed", active: props.activeDays?.includes("WED") ?? false },
+  { name: "Thu", active: props.activeDays?.includes("THU") ?? false },
+  { name: "Fri", active: props.activeDays?.includes("FRI") ?? false },
+  { name: "Sat", active: props.activeDays?.includes("SAT") ?? false },
+]);
 
 const selectedDate = ref(new Date(props.inputDate));
 
@@ -42,26 +62,30 @@ const weekDays = computed(() => {
   return Array.from({ length: 7 }, (_, i) => addDays(customStart, i));
 });
 
-
 const isSelected = (date: Date) => {
   return isSameDay(date, selectedDate.value);
 };
 </script>
 
 <template>
-  <div class="flex space-x-1">
-    <div
-      v-for="day in weekDays"
-      :key="day.toString()"
-      class="p-1 border rounded-lg text-center cursor-pointer w-11"
+  <div class="flex justify-between mt-2">
+    <button
+      v-for="(date, index) in weekDays"
+      :key="index"
+      class="flex flex-col items-center w-[36px] py-[10px] px-[12px] border rounded-[5px] text-[12px] font-light cursor-pointer"
       :class="{
-        'border-primary text-primary': day,
-        'border-body text-body': !isSelected(day),
+        'bg-primary text-white': isSelected(date),
+        'border-primary text-primary': activeDays?.includes(
+          format(date, 'EEE').toUpperCase()
+        ),
+        'border-stroke text-placeHolder': !activeDays?.includes(
+          format(date, 'EEE').toUpperCase()
+        ),
       }"
+      @click="updateSelectedDate(date)"
     >
-      <div class="text-sm">{{ format(day, "EEE") }}</div>
-      <div v-if="showDate" class="text-sm">{{ format(day, "d") }}</div>
-    </div>
+      <div>{{ format(date, "EEE") }}</div>
+      <div>{{ format(date, "d") }}</div>
+    </button>
   </div>
 </template>
-isSelected
