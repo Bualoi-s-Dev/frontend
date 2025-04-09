@@ -374,8 +374,6 @@ export const useApiStore = defineStore("api", () => {
     return response.data as RatingResponse;
   };
 
-  PaymentResponse
-
   const fetchAllPayment = async (): Promise<
     PaymentResponse[]
   > => {

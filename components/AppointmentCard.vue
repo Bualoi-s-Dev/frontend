@@ -13,14 +13,14 @@ const config = useRuntimeConfig();
 
 const prop = withDefaults(
   defineProps<{
-    role?: string;
+    role?: UserRole;
     complete?: boolean;
     appointmentData: AppointmentDetail;
     index: number;
     manageStatus: (index: number, status: AppointmentStatus) => void;
   }>(),
   {
-    role: "guest",
+    role: UserRole.Guest,
     complete: false,
   }
 );
@@ -114,7 +114,7 @@ const onCreatePayment = async () => {
         </h2>
     </div>
     <div class="flex flex-col gap-1 p-3">
-      <p v-if="role == 'Photographer'" class="text-gray-600 font-medium">
+      <p v-if="role == UserRole.Photographer" class="text-gray-600 font-medium">
         Customer :
         <span class="font-bold">{{ appointmentData?.customerName }}</span>
       </p>
@@ -145,13 +145,13 @@ const onCreatePayment = async () => {
             <p v-if="appointmentData.status == AppointmentStatus.Pending" class="text-gray-900">Status : <span class="font-medium text-blue-600">{{ appointmentData.status }}</span></p>
             <p v-if="appointmentData.status == AppointmentStatus.Accepted || appointmentData.status == AppointmentStatus.Completed" class="text-gray-900">Status : <span class="font-medium text-green-600">{{ appointmentData.status }}</span></p>
         </div>
-        <p class="text-gray-900 text-lg font-semibold"">
+        <p class="text-gray-900 text-lg font-semibold">
           {{ appointmentData?.price }} ฿
         </p>
       </div>
 
       <div v-if="!complete" class="flex flex-row gap-2 mt-1">
-        <div v-if="role == 'Photographer'" class="flex flex-row gap-2">
+        <div v-if="role == UserRole.Photographer" class="flex flex-row gap-2">
           <!-- TODO: This button for demo only -->
           <Button
             :disabled="loading"
