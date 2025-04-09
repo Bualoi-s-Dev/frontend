@@ -13,14 +13,14 @@ const config = useRuntimeConfig();
 
 const prop = withDefaults(
   defineProps<{
-    role?: string;
+    role?: UserRole;
     complete?: boolean;
     appointmentData: AppointmentDetail;
     index: number;
     manageStatus: (index: number, status: AppointmentStatus) => void;
   }>(),
   {
-    role: "guest",
+    role: UserRole.Guest,
     complete: false,
   }
 );
@@ -107,42 +107,51 @@ const onCreatePayment = async () => {
 </script>
 
 <template>
-  <div class="bg-neutral-100 w-full shadow-md rounded-lg mx-5 my-3 p-3">
-    <div class="flex flex-col gap-1">
-      <h2 class="text-lg font-semibold text-gray-900">
-        {{ appointmentData?.packageName }}
-      </h2>
+  <div class="bg-neutral-100 w-full shadow-md rounded-lg mx-5 my-3">
+    <div class="bg-red-300 p-3">
+        <h2 class="text-lg font-semibold text-gray-900">
+          {{ appointmentData?.packageName }} / {{ appointmentData?.subpackageName }}
+        </h2>
+    </div>
+    <div class="flex flex-col gap-1 p-3">
+      <p v-if="role == UserRole.Photographer" class="text-gray-600 font-medium">
+        Customer :
+        <span class="font-bold">{{ appointmentData?.customerName }}</span>
+      </p>
+      <p v-else class="text-gray-600 font-medium">
+        Photographer :
+        <span class="font-bold">{{ appointmentData?.photographerName }}</span>
+      </p>
       <p class="text-gray-600 mt-1">
         Date :
         <span class="font-medium">{{
           formattedDate(appointmentData?.startTime)
         }}</span>
       </p>
-      <p class="text-gray-600 mt-1">
+      <p class="text-gray-600">
         Time :
         <span class="font-medium"
           >{{ formattedTime(appointmentData?.startTime) }} -
           {{ formattedTime(appointmentData?.endTime) }}</span
         >
       </p>
-      <p v-if="role == 'Photographer'" class="text-gray-600">
-        Customer :
-        <span class="font-medium">{{ appointmentData?.customerName }}</span>
+      <p class="text-gray-600">
+        Meeting at : 
+        <span class="font-medium">{{ appointmentData.location }}</span>
       </p>
-      <p v-else class="text-gray-600">
-        Photographer :
-        <span class="font-medium">{{ appointmentData?.photographerName }}</span>
-      </p>
-      <p class="text-gray-600">Meeting at : {{ appointmentData.location }}</p>
-      <p class="text-red-500 text-lg font-semibold">
-        {{ appointmentData?.price }} ฿
-      </p>
-      <p class="text-gray-900">
-        Status : <span class="font-medium">{{ appointmentData?.status }}</span>
-      </p>
+      <div class="flex flex-row justify-between items-center">
+        <div>
+            <p v-if="appointmentData.status == AppointmentStatus.Canceled || appointmentData.status == AppointmentStatus.Rejected" class="text-gray-900">Status : <span class="font-medium text-red-600">{{ appointmentData.status }}</span></p>
+            <p v-if="appointmentData.status == AppointmentStatus.Pending" class="text-gray-900">Status : <span class="font-medium text-blue-600">{{ appointmentData.status }}</span></p>
+            <p v-if="appointmentData.status == AppointmentStatus.Accepted || appointmentData.status == AppointmentStatus.Completed" class="text-gray-900">Status : <span class="font-medium text-green-600">{{ appointmentData.status }}</span></p>
+        </div>
+        <p class="text-gray-900 text-lg font-semibold">
+          {{ appointmentData?.price }} ฿
+        </p>
+      </div>
 
-      <div v-if="!complete" class="flex flex-row gap-2">
-        <div v-if="role == 'Photographer'" class="flex flex-row gap-2">
+      <div v-if="!complete" class="flex flex-row gap-2 mt-1">
+        <div v-if="role == UserRole.Photographer" class="flex flex-row gap-2">
           <!-- TODO: This button for demo only -->
           <Button
             :disabled="loading"
@@ -158,7 +167,7 @@ const onCreatePayment = async () => {
             v-if="appointmentData.status == AppointmentStatus.Pending"
             @click="onAccept"
             height="h-9"
-            button-options="border border-stroke rounded-md px-4"
+            button-options="border border-stroke rounded-md px-4 bg-green-600"
             >Accept</Button
           >
           <Button
@@ -166,7 +175,7 @@ const onCreatePayment = async () => {
             v-if="appointmentData.status == AppointmentStatus.Pending"
             @click="onReject"
             height="h-9"
-            button-options="border border-stroke rounded-md px-4"
+            button-options="border border-stroke rounded-md px-4 bg-red-600"
             >Reject</Button
           >
           <Button
@@ -174,11 +183,11 @@ const onCreatePayment = async () => {
             v-if="appointmentData.status == AppointmentStatus.Accepted"
             @click="onCancel"
             height="h-9"
-            button-options="border border-stroke rounded-md px-4"
+            button-options="border border-stroke rounded-md px-4 bg-red-600"
             >Cancel</Button
           >
         </div>
-        <div v-else class="flex flex-row gap-2">
+        <div v-else class="flex flex-row gap-2 mt-1">
           <Button
             :disabled="loading"
             v-if="
@@ -187,7 +196,7 @@ const onCreatePayment = async () => {
             "
             @click="onCancel"
             height="h-9"
-            button-options="border border-stroke rounded-md px-4"
+            button-options="border border-stroke rounded-md px-4 bg-red-600"
             >Cancel</Button
           >
         </div>

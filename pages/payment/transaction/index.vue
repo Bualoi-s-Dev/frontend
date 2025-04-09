@@ -47,7 +47,7 @@ onMounted(async () => {
             <TransactionCard v-if="payment.payment.customer.status == PaymentStatus.Paid || 
             payment.payment.photographer.status == PaymentStatus.InProcess || 
             payment.payment.photographer.status == PaymentStatus.Completed ||
-            payment.payment.photographer.status == PaymentStatus.Wait" :role="userData?.role" :paymentId="payment.payment.id" />
+            payment.payment.photographer.status == PaymentStatus.Wait" pageId="Transaction" :role="userData?.role" :paymentData="payment" />
         </div>
     </div>
 </template>

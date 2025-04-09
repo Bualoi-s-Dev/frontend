@@ -44,7 +44,7 @@ onMounted(async () => {
             :key="payment.payment.id"
             class="flex items-center"
         >
-            <TransactionCard v-if="payment.payment.customer.status == PaymentStatus.Unpaid" :role="userData?.role" :paymentId="payment.payment.id" />
+            <TransactionCard v-if="payment.payment.customer.status == PaymentStatus.Unpaid" pageId="ToPay" :role="userData?.role" :paymentData="payment" />
         </div>
     </div>
 </template>
