@@ -136,12 +136,12 @@ const applyFilter = () => {
   }
   if (props.filterOptions?.isSelectingDate && startDate.value) {
     if (!startTime.value)
-      params.append("startTime", startDate.value + "T12:00:00Z");
+      params.append("startTime", startDate.value + "T00:00:01Z");
     else
       params.append("startTime", startDate.value + `T${startTime.value}:00Z`);
 
     if (!endTime.value)
-      params.append("endTime", startDate.value + "T23:59:00Z");
+      params.append("endTime", startDate.value + "T23:59:59Z");
     else params.append("endTime", startDate.value + `T${endTime.value}:00Z`);
   }
 
@@ -202,7 +202,7 @@ const closeFilter = () => {
       <div class="gap-[20px] bg-white p-[25px] rounded-lg shadow-lg w-[346px]">
         <div class="flex justify-between items-center font-medium">
           <span>Sort & Filter</span>
-          <p @click="applyFilter">Apply</p>
+          <p class="underline" @click="applyFilter">Apply</p>
         </div>
 
         <hr class="border-t border-gray-300 my-4" />
