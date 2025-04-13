@@ -9,7 +9,7 @@
   >
     <p v-if="interval.type === 'Appointment'">My appointment</p>
     <p v-else>
-      My busy time
+      {{ interval.name }}
       <!-- Delete Button -->
       <button
         class="absolute top-2 right-2 bg-white text-red-500 px-2 py-1 rounded-md text-sm"
