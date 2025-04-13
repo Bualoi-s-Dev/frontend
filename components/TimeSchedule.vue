@@ -9,11 +9,12 @@ import {
   setMonth,
   setYear,
 } from "date-fns";
+import { DayName } from "~/types/api";
 
 const props = defineProps<{
   inputDate: string;
   showDate?: boolean;
-  activeDays?: string[];
+  activeDays?: DayName[];
 }>();
 
 const emit = defineEmits<{
@@ -25,27 +26,27 @@ const updateSelectedDate = ( date: Date ) => {
   emit('update:inputDate', date.toISOString().split('T')[0]);
 }
 
-const days = computed(() => [
-  { name: "Sun", active: props.activeDays?.includes("SUN") ?? false },
-  { name: "Mon", active: props.activeDays?.includes("MON") ?? false },
-  { name: "Tue", active: props.activeDays?.includes("TUE") ?? false },
-  { name: "Wed", active: props.activeDays?.includes("WED") ?? false },
-  { name: "Thu", active: props.activeDays?.includes("THU") ?? false },
-  { name: "Fri", active: props.activeDays?.includes("FRI") ?? false },
-  { name: "Sat", active: props.activeDays?.includes("SAT") ?? false },
-]);
+// const days = computed(() => [
+//   { name: "Sun", active: props.activeDays?.includes(DayName.SUN) ?? false },
+//   { name: "Mon", active: props.activeDays?.includes(DayName.MON) ?? false },
+//   { name: "Tue", active: props.activeDays?.includes(DayName.TUE) ?? false },
+//   { name: "Wed", active: props.activeDays?.includes(DayName.WED) ?? false },
+//   { name: "Thu", active: props.activeDays?.includes(DayName.THU) ?? false },
+//   { name: "Fri", active: props.activeDays?.includes(DayName.FRI) ?? false },
+//   { name: "Sat", active: props.activeDays?.includes(DayName.SAT) ?? false },
+// ]);
 
 const selectedDate = ref(new Date(props.inputDate));
 
-const day = computed(() =>
-  selectedDate.value ? new Date(selectedDate.value).getDate() : ""
-);
-const month = computed(() =>
-  selectedDate.value ? new Date(selectedDate.value).getMonth() + 1 : ""
-);
-const year = computed(() =>
-  selectedDate.value ? new Date(selectedDate.value).getFullYear() : ""
-);
+// const day = computed(() =>
+//   selectedDate.value ? new Date(selectedDate.value).getDate() : ""
+// );
+// const month = computed(() =>
+//   selectedDate.value ? new Date(selectedDate.value).getMonth() + 1 : ""
+// );
+// const year = computed(() =>
+//   selectedDate.value ? new Date(selectedDate.value).getFullYear() : ""
+// );
 
 watch(props, (newProps) => {
   selectedDate.value = new Date(newProps.inputDate);
@@ -76,10 +77,10 @@ const isSelected = (date: Date) => {
       :class="{
         'bg-primary text-white': isSelected(date),
         'border-primary text-primary': activeDays?.includes(
-          format(date, 'EEE').toUpperCase()
+          format(date, 'EEE').toUpperCase() as DayName
         ),
         'border-stroke text-placeHolder': !activeDays?.includes(
-          format(date, 'EEE').toUpperCase()
+          format(date, 'EEE').toUpperCase() as DayName
         ),
       }"
       @click="updateSelectedDate(date)"
