@@ -15,6 +15,7 @@ const props = defineProps<{
     addable?: boolean;
     subPackages: SubpackageResponse[];
   }[];
+  onDelete?: (id: string) => Promise<void>;
   ownerView?: boolean;
   navigate?: boolean;
 }>();
@@ -42,6 +43,7 @@ const config = useRuntimeConfig();
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
     <div v-for="(work, index) in data" :key="index">
       <WorkCard
+        @deleted="async () => onDelete?.(work.id ?? 'no id in data')"
         :subpackages="work.subPackages"
         :navigate="navigate"
         :images="work.photoUrls.map((url) => `${config.public.s3URL}${url}`)"

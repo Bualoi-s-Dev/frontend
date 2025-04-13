@@ -192,6 +192,7 @@ onUnmounted(() => {
     </div>
   </div>
   <DeleteConfirmPopup
+    itemText="review"
     :show="showConfirmDialog"
     @close="showConfirmDialog = false"
     @confirm="deleteItem"

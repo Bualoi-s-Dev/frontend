@@ -106,12 +106,21 @@ export const useApiStore = defineStore("api", () => {
   };
 
   const fetchAllPackageWithFilter = async (filter: string): Promise<PackageResponse[]> => {
-    console.log('This -> ' + filter);
     const response = await axios.get(`${config.public.apiUrl}/package${filter}`, {
       headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
     });
     return (response.data ?? []) as PackageResponse[];
   };
+
+  const deletePackage = async (id: string) => {
+    const response = await axios.delete(
+      `${config.public.apiUrl}/package/${id}`,
+      {
+        headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
+      }
+    );
+    return response.data;
+  }
 
   const updateUserInformation = async (payload: UserRequest) => {
     const response = await axios.patch(
@@ -436,6 +445,7 @@ export const useApiStore = defineStore("api", () => {
     searchPhotographerWithFilter,
     createPackage,
     updatePackage,
+    deletePackage,
     updateUserInformation,
     fetchAllAppointment,
     fetchAppointmentDetailsWithFilter,

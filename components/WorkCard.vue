@@ -6,6 +6,7 @@ import type { SubpackageResponse } from "~/types/api";
 // Props
 const props = defineProps<{
   subpackages: SubpackageResponse[];
+  onDeleted?: () => Promise<void>;
   navigate?: boolean;
   editable?: boolean;
   addable?: boolean;
@@ -35,6 +36,8 @@ const offset = ref(0);
 const startX = ref(0);
 const isDragging = ref(false);
 const carousel = ref<HTMLElement | null>(null);
+const showDeleteDialog = ref(false);
+const deleteDialogLoading = ref(false);
 
 // Compute container width
 const containerWidth = computed(() => carousel.value?.clientWidth || 0);
@@ -67,6 +70,18 @@ const endDrag = () => {
     offset.value = -currentIndex.value * containerWidth.value;
   }
 };
+
+const deleteItem = async () => {
+  deleteDialogLoading.value = true;
+  try {
+    await props.onDeleted?.();
+  } catch (err) {
+
+  } finally {
+    showDeleteDialog.value = false;
+    deleteDialogLoading.value = false;
+  }
+}
 
 const handleClick = () => {
   if (props.navigate) router.push(`/package/${props.id}`);
@@ -118,13 +133,21 @@ onMounted(() => {
       <div v-if="type" class="my-4 text-left">
         <div class="flex flex-row justify-between">
           <Button bg-color="bg-primary">{{ type }}</Button>
-          <div v-if="editable">
-            <button @click.stop="router.push(`/package/edit/${id}`)">
-              <Icon icon="iconoir:edit" width="30px" />
-            </button>
-          </div>
-          <div v-else-if="addable">
-            <Button>Add</Button>
+
+          <div class="flex flex-row items-center gap-4">
+            <div v-if="editable">
+              <button @click.stop="router.push(`/package/edit/${id}`)">
+                <Icon icon="iconoir:edit" width="30px" />
+              </button>
+            </div>
+            <div v-if="editable">
+              <button @click.stop="() => showDeleteDialog = true">
+                <Icon icon="iconoir:trash" width="30px" />
+              </button>
+            </div>
+            <div v-else-if="addable">
+              <Button>Add</Button>
+            </div>
           </div>
         </div>
         <div class="mt-4">
@@ -139,4 +162,7 @@ onMounted(() => {
 
     <button v-if="toAdd" @click="router.push(`/package/create`)" class="absolute w-full h-full top-0 left-0"></button>
   </button>
+
+  <DeleteConfirmPopup :disabled="deleteDialogLoading" item-text="package" :show="showDeleteDialog"
+    @close="() => showDeleteDialog = false" @confirm="deleteItem" />
 </template>
