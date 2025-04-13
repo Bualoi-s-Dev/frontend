@@ -13,8 +13,11 @@
     <div class="p-4">
       <h2 class="text-lg mb-2">Time Schedule</h2>
       <h2 class="text-lg mb-2">Date</h2>
-      <div class="mb-4"> 
-        <VueDatePicker v-model="selectedDate" :enable-time-picker="false" :clearable="false" :min-date="new Date().toISOString().split('T')[0]" :max-date="subpackageDetails?.availableEndDay" :disabled-week-days="disabledWeekDays" />
+      <div class="mb-4">
+        <!-- TODO: set max time as max between today and subpackage optional start day -->
+        <VueDatePicker v-model="selectedDate" :enable-time-picker="false" :clearable="false"
+          :min-date="new Date().toISOString().split('T')[0]" :max-date="subpackageDetails?.availableEndDay"
+          :disabled-week-days="disabledWeekDays" />
       </div>
       <TimeSchedule v-model:input-date="selectedDate" :show-date="true" :active-days="subpackageDetails?.repeatedDay" />
       <p class="flex justify-center mt-5 text-xl">
