@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { UserRole, type PackageResponse, type UserResponse } from "~/types/api";
+import { Icon } from "@iconify/vue";
 
 const profile = ref<UserResponse | null>(null);
 const packages = ref<PackageResponse[] | null>(null);
@@ -38,27 +39,33 @@ const deleteItem = async (id: string) => {
   try {
     const result = await api.deletePackage(id);
     packages.value = packages.value!.filter((p) => p.id !== id);
-    useToastify('Sucessfully deleted package', { type: "success" });
+    useToastify("Sucessfully deleted package", { type: "success" });
   } catch (err: any) {
     useToastify("Unable to delete package: " + err.message, { type: "error" });
   }
-}
+};
 
 onMounted(async () => {
   profile.value = await api.fetchUserProfile();
   if (profile.value.role !== UserRole.Photographer)
     packages.value = await api.fetchAllPackage();
-  else
-    packages.value = profile.value.photographerPackages;
+  else packages.value = profile.value.photographerPackages;
 });
 </script>
 
 <template>
-  <div class="w-full h-full px-3 pt-6 flex flex-col">
+  <div class="w-full h-full px-3 flex flex-col">
     <!-- Separate from the v-else part below because when loading is triggered again, search bar won't be re-rendered so that user's input would not disappear -->
-    <div v-if="profile?.role === UserRole.Customer" class="flex items-center justify-between gap-[10px] w-full">
-      <SearchBar search-key="search" @update:search="searchQuery = $event" @update:filter="filterUrl = $event"
-        :filter-options="{ isCategorizing: true, isSelectingPriceRange: true }" />
+    <div
+      v-if="profile?.role === UserRole.Customer"
+      class="flex items-center justify-between gap-[10px] w-full"
+    >
+      <SearchBar
+        search-key="search"
+        @update:search="searchQuery = $event"
+        @update:filter="filterUrl = $event"
+        :filter-options="{ isCategorizing: true, isSelectingPriceRange: true }"
+      />
     </div>
 
     <template v-if="loading">
@@ -68,11 +75,22 @@ onMounted(async () => {
       <div class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"></div>
     </template>
     <template v-else-if="profile!.role === UserRole.Photographer">
-      <div class="px-6 mt-6 flex flex-row w-full justify-between items-center">
-        <h1 class="font-bold">Your Packages</h1>
-        <Button @click="router.push('/package/create')">Add Package</Button>
+      <div class="px-6 my-6 flex flex-row w-full justify-between items-center">
+        <h1 class="text-xl">Your Packages</h1>
+        <button
+          class="flex justify-center items-center gap-[8px] text-[14px] p-[9px] pr-[13px] rounded-[6px] bg-black text-white"
+          @click="router.push('/package/create')"
+        >
+          <Icon icon="ic:baseline-plus" class="w-[16px] h-[16px]" />
+          New
+        </button>
       </div>
-      <WorkList @delete="async (id) => deleteItem(id)" owner-view :data="packages!" navigate />
+      <WorkList
+        @delete="async (id) => deleteItem(id)"
+        owner-view
+        :data="packages!"
+        navigate
+      />
     </template>
     <template v-else>
       <WorkList :data="packages!" navigate />

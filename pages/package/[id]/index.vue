@@ -52,12 +52,13 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
   if (newSearch) queryParams.push(newSearch);
   if (newFilter) queryParams.push(newFilter);
   const query = queryParams.length ? `${queryParams.join("&")}` : "";
-  console.log('query', query)
-  subPackages.value = await api.fetchSubpackageWithFilter(`?packageId=${subPackageId.value}` +'&'+ query );
+  console.log("query", query);
+  subPackages.value = await api.fetchSubpackageWithFilter(
+    `?packageId=${subPackageId.value}` + "&" + query
+  );
   // subPackages.value = baseList.subpackages;
-  console.log( subPackages.value );
+  console.log(subPackages.value);
 });
-
 
 onMounted(async () => {
   const [response, profile] = await Promise.all([
@@ -70,15 +71,17 @@ onMounted(async () => {
   if (response.photoUrls && response.photoUrls.length > 0) {
     const imgUrl = config.public.s3URL + response.photoUrls[0];
     response.photoUrls[0] = imgUrl;
-  
+
     imageUrl.value = response.photoUrls[0];
   }
   title.value = response.title;
   ownerId.value = response.ownerId;
-  type.value = formatPackageType(response.type);
+  type.value = response.type;
   // Store subPackages data
   subPackageId.value = response.id;
-  subPackages.value = await api.fetchSubpackageWithFilter(`?packageId=${response.id}`);
+  subPackages.value = await api.fetchSubpackageWithFilter(
+    `?packageId=${response.id}`
+  );
   await fetchUserProfileById(response.ownerId);
 });
 
@@ -94,13 +97,6 @@ const deleteSubpackage = async (subpackageId: string) => {
   }
 };
 
-const formatPackageType = (type: string): string => {
-  return type
-    .toLowerCase()
-    .replace(/_/g, " ") // Replace underscores with spaces
-    .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
-};
-
 const goToCreateSubpackage = () => {
   router.push(`/package/${id}/subpackage/create`);
 };
@@ -109,7 +105,6 @@ const handleFilterApply = (data: any) => {
   filterData.value = data;
   console.log("Filter applied:", data);
 };
-
 </script>
 
 <template>
@@ -118,7 +113,7 @@ const handleFilterApply = (data: any) => {
     {{ title }}
   </div>
   <div class="w-full h-full p-6 flex flex-col">
-    <div class="flex gap-[16px] mt-6 items-center">
+    <div class="flex gap-[16px] items-center">
       <img
         class="h-[50px] w-[50px] object-cover rounded-full cursor-pointer"
         :src="profileUrl"
@@ -135,17 +130,19 @@ const handleFilterApply = (data: any) => {
     />
 
     <div class="flex items-center justify-between gap-[10px] w-full">
-      <SearchBar 
+      <SearchBar
         search-key="title"
         :include-search="false"
         searchLabelReplacement="Subpackages"
         @update:search="searchQuery = $event"
-        @update:filter="filterUrl = $event" 
+        @update:filter="filterUrl = $event"
         :filter-options="{
-          isSelectingDateRange:subPackages[0] && subPackages[0].availableStartDay ? true : false,
-          isSelectingActiveDays:true,
-          isSelectingDuration:true,
-          }"/>
+          isSelectingDateRange:
+            subPackages[0] && subPackages[0].availableStartDay ? true : false,
+          isSelectingActiveDays: true,
+          isSelectingDuration: true,
+        }"
+      />
       <button
         v-if="isOwner"
         class="flex justify-center items-center gap-[8px] text-[14px] p-[9px] pr-[13px] rounded-[6px] bg-black text-white"
@@ -156,11 +153,8 @@ const handleFilterApply = (data: any) => {
       </button>
     </div>
 
-    <div
-      class="text-[12px] text-white rounded-[10px] px-[10px] py-[8px] w-fit mt-6 bg-gradient-to-r from-primary to-secondary opacity-85"
-    >
-      {{ type }}
-    </div>
+    <PackageTypeBadge v-if="type" :type="type" />
+
     <div class="flex flex-col gap-[16px] mt-6 pb-12">
       <SubpackageCard
         v-for="subpackage in subPackages"
