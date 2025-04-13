@@ -5,45 +5,30 @@
   </div>
   <div class="w-full h-full p-6 flex flex-col">
     <div class="flex gap-[16px] items-center">
-      <img
-        class="h-[50px] w-[50px] object-cover rounded-full cursor-pointer"
-        :src="profileUrl"
-        alt="Profile Image"
-        @click="router.push(`/profile/${ownerId}`)"
-      />
+      <img class="h-[50px] w-[50px] object-cover rounded-full cursor-pointer" :src="profileUrl" alt="Profile Image"
+        @click="router.push(`/profile/${ownerId}`)" />
       <p class="text-xl">{{ name }}</p>
     </div>
-    <img
-      class="h-[253px] w-full object-cover rounded-[20px] mt-6"
-      :src="imageUrl"
-    />
+    <img class="h-[253px] w-full object-cover rounded-[20px] mt-6" :src="imageUrl" />
     <div class="p-4">
       <h2 class="text-lg mb-2">Time Schedule</h2>
       <h2 class="text-lg mb-2">Date</h2>
-      <div class="mb-4">
-        <input
-          :min="new Date().toISOString().split('T')[0]"
-          type="date"
-          v-model="selectedDate"
-          class="p-2 border rounded-lg shadow-sm w-full"
-        />
+      <div class="mb-4"> 
+        <VueDatePicker v-model="selectedDate" :enable-time-picker="false" :clearable="false" :min-date="new Date().toISOString().split('T')[0]" :max-date="subpackageDetails?.availableEndDay" :disabled-week-days="disabledWeekDays" />
       </div>
-      <TimeSchedule v-model:input-date="selectedDate" :show-date="true" :active-days="subpackageDetails?.repeatedDay"/>
+      <TimeSchedule v-model:input-date="selectedDate" :show-date="true" :active-days="subpackageDetails?.repeatedDay" />
       <p class="flex justify-center mt-5 text-xl">
         {{ formatDate(selectedDate) }}
       </p>
       <div>
         <ul v-if="includedDate" class="flex flex-col gap-5 my-5">
           <li v-for="(interval, index) in intersectedIntervals" :key="index">
-            <button
-              @click="() => handleClick(index)"
-              :class="[
-                'rounded-2xl drop-shadow-xl p-7 text-white w-full',
-                interval.isIntersected
-                  ? 'bg-red-schedule'
-                  : 'bg-green-schedule',
-              ]"
-            >
+            <button @click="() => handleClick(index)" :class="[
+              'rounded-2xl drop-shadow-xl p-7 text-white w-full',
+              interval.isIntersected
+                ? 'bg-red-schedule'
+                : 'bg-green-schedule',
+            ]">
               {{ interval.start }} - {{ interval.end }}
             </button>
           </li>
@@ -57,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 import { ref, computed } from "vue";
 import type { DayName, SubpackageResponse } from "~/types/api";
 
@@ -83,6 +70,15 @@ interface Event {
 }
 const selectedDate = ref<string>(new Date().toISOString().split("T")[0]);
 const subpackageDetails = ref<SubpackageResponse | undefined>();
+
+const disabledWeekDays = computed(() => {
+  if (!subpackageDetails.value) return [];
+
+  const repeatedDays = subpackageDetails.value.repeatedDay.map((x) => dayNameToDayIndex(x as DayName));
+  // Return array of days (0-6) that are not in repeatedDays
+  return [0, 1, 2, 3, 4, 5, 6].filter(day => !repeatedDays.includes(day));
+});
+
 
 const includedDate = computed(() =>
   subpackageDetails.value?.repeatedDay
@@ -233,25 +229,31 @@ const intersectedIntervals = computed(() => {
 });
 
 const events = computed<Event[]>(() => {
-  // if (!subpackageDetails.value?.busyTimeMap[selectedDate.value]) return [];
-  if(!subpackageDetails.value) return [];
+  if (!subpackageDetails.value) return [];
 
-  const result = (subpackageDetails.value.busyTimeMap[selectedDate.value] ?? []).map((m) => ({
-    start: formatTime(new Date(m.startTime)),
-    end: formatTime(new Date(m.endTime)),
-    title: "Busy",
-  }));
-
+  const result = subpackageDetails.value.busyTimes
+    .map(b => ({
+      // Subtract 7 hours to covert GMT+7
+      ...b,
+      startTime: new Date(new Date(b.startTime).getTime() - 7 * 60 * 60 * 1000).toISOString(),
+      endTime: new Date(new Date(b.endTime).getTime() - 7 * 60 * 60 * 1000).toISOString()
+    }))
+    .filter(b => b.startTime.split("T")[0] <= selectedDate.value && selectedDate.value <= b.endTime.split("T")[0])
+    .map(b => ({
+      start: formatTime(new Date(b.startTime)),
+      end: formatTime(new Date(b.endTime)),
+      title: "Busy",
+    }));
 
   // Mark past time if user currently select current date
-  if(new Date().toISOString().split("T")[0] === selectedDate.value) {
+  if (new Date().toISOString().split("T")[0] === selectedDate.value) {
     result.push({
       start: "00:00",
       end: formatTime(new Date()),
-      title: "Busy",
+      title: "Past Time",
     })
   }
-
+  console.log('events', result)
   return result;
 });
 </script>

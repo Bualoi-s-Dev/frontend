@@ -34,11 +34,22 @@ watch([searchQuery, filterUrl], async ([newSearch, newFilter]) => {
   }, 500);
 });
 
+const deleteItem = async (id: string) => {
+  try {
+    const result = await api.deletePackage(id);
+    packages.value = packages.value!.filter((p) => p.id !== id);
+    useToastify('Sucessfully deleted package', { type: "success" });
+  } catch (err: any) {
+    useToastify("Unable to delete package: " + err.message, { type: "error" });
+  }
+}
+
 onMounted(async () => {
   profile.value = await api.fetchUserProfile();
   if (profile.value.role !== UserRole.Photographer)
     packages.value = await api.fetchAllPackage();
-  else packages.value = profile.value.photographerPackages;
+  else
+    packages.value = profile.value.photographerPackages;
 });
 </script>
 
@@ -61,7 +72,7 @@ onMounted(async () => {
         <h1 class="font-bold">Your Packages</h1>
         <Button @click="router.push('/package/create')">Add Package</Button>
       </div>
-      <WorkList owner-view :data="packages!" navigate />
+      <WorkList @delete="async (id) => deleteItem(id)" owner-view :data="packages!" navigate />
     </template>
     <template v-else>
       <WorkList :data="packages!" navigate />
