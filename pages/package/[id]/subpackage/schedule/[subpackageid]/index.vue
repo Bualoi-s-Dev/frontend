@@ -13,9 +13,8 @@
     <div class="p-4">
       <h2 class="text-lg mb-2">Time Schedule</h2>
       <h2 class="text-lg mb-2">Date</h2>
-      <div class="mb-4">
-        <input :min="new Date().toISOString().split('T')[0]" type="date" v-model="selectedDate"
-          class="p-2 border rounded-lg shadow-sm w-full" />
+      <div class="mb-4"> 
+        <VueDatePicker v-model="selectedDate" :enable-time-picker="false" :clearable="false" :min-date="new Date().toISOString().split('T')[0]" :max-date="subpackageDetails?.availableEndDay" :disabled-week-days="disabledWeekDays" />
       </div>
       <TimeSchedule v-model:input-date="selectedDate" :show-date="true" :active-days="subpackageDetails?.repeatedDay" />
       <p class="flex justify-center mt-5 text-xl">
@@ -43,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 import { ref, computed } from "vue";
 import type { DayName, SubpackageResponse } from "~/types/api";
 
@@ -70,6 +71,13 @@ interface Event {
 const selectedDate = ref<string>(new Date().toISOString().split("T")[0]);
 const subpackageDetails = ref<SubpackageResponse | undefined>();
 
+const disabledWeekDays = computed(() => {
+  if (!subpackageDetails.value) return [];
+
+  const repeatedDays = subpackageDetails.value.repeatedDay.map((x) => dayNameToDayIndex(x as DayName));
+  // Return array of days (0-6) that are not in repeatedDays
+  return [0, 1, 2, 3, 4, 5, 6].filter(day => !repeatedDays.includes(day));
+});
 
 
 const includedDate = computed(() =>
