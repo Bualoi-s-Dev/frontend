@@ -60,6 +60,13 @@ export enum PaymentStatus {
   Paid = "Paid",
   Completed = "Completed",
 }
+export interface Package {
+  id: string;
+  ownerId: string;
+  title: string;
+  type: PackageType;
+  photoUrls: string[];
+}
 export interface PackageRequest {
   title?: string;
   type?: PackageType;
@@ -121,13 +128,17 @@ export interface UserResponse {
   photographerPackages: PackageResponse[];
   photographerRatings: RatingResponse[];
 }
+export interface CheckProviderResponse {
+  email: string;
+  providers: string[];
+}
 export interface SubpackageRequest {
   title?: string;
   description?: string;
   price?: number;
   duration?: number;
   isInf?: boolean;
-  repeatedDay?: string[];
+  repeatedDay?: DayName[];
   availableStartTime?: string;
   availableEndTime?: string;
   availableStartDay?: string;
@@ -136,6 +147,7 @@ export interface SubpackageRequest {
 export interface BusyTime {
   id: string;
   photographerId: string;
+  name: string;
   type: BusyTimeType;
   startTime: string;
   endTime: string;
@@ -149,16 +161,16 @@ export interface SubpackageResponse {
   price: number;
   duration: number;
   isInf: boolean;
-  repeatedDay: string[];
+  repeatedDay: DayName[];
   availableStartTime: string;
   availableEndTime: string;
   availableStartDay: string;
   availableEndDay: string;
   busyTimes: BusyTime[];
-  busyTimeMap: {[key: string]: BusyTime[]};
 }
 
 export interface BusyTimeStrictRequest {
+  name: string;
   type: BusyTimeType;
   startTime: string;
   endTime: string;
@@ -179,8 +191,8 @@ export interface AppointmentResponse {
   id: string;
   customerId: string;
   photographerId: string;
-  packageId: string;
-  subpackageId: string;
+  package: Package;
+  subpackage: Subpackage;
   busyTimeId: string;
   status: AppointmentStatus;
   location: string;
@@ -188,8 +200,8 @@ export interface AppointmentResponse {
 }
 export interface AppointmentDetail {
   id: string;
-  packageId: string;
-  subpackageId: string;
+  package: Package;
+  subpackage: Subpackage;
   customerId: string;
   photographerId: string;
   packageName: string;
@@ -236,7 +248,6 @@ export interface Payment {
 export interface PaymentResponse {
   payment: Payment;
   appointment: AppointmentDetail;
-  package: PackageResponse;
 }
 export interface PaymentURL {
   url: string;
