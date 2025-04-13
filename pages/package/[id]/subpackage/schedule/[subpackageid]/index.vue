@@ -225,14 +225,13 @@ const events = computed<Event[]>(() => {
 
   const result = subpackageDetails.value.busyTimes
     .map(b => ({
-      // Add 7 hours to covert to GMT+7
+      // Subtract 7 hours to covert GMT+7
       ...b,
       startTime: new Date(new Date(b.startTime).getTime() - 7 * 60 * 60 * 1000).toISOString(),
       endTime: new Date(new Date(b.endTime).getTime() - 7 * 60 * 60 * 1000).toISOString()
     }))
     .filter(b => b.startTime.split("T")[0] <= selectedDate.value && selectedDate.value <= b.endTime.split("T")[0])
     .map(b => ({
-      // Add 7 hours to covert to GMT+7
       start: formatTime(new Date(b.startTime)),
       end: formatTime(new Date(b.endTime)),
       title: "Busy",

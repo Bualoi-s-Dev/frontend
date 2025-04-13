@@ -133,7 +133,11 @@ const goToCreateReview = () => {
 };
 
 const goToAllpackage = () => {
-  router.push({ path: `/package/${id}/allpackage` });
+  if (profileInformation.value?.id === userId.value) {
+    router.push({ path: `/` })
+  } else {
+    router.push({ path: `/package/${id}/allpackage` });
+  }
 };
 
 const hasReviewed = computed(() => {
@@ -165,11 +169,8 @@ const limitedPackages = computed(() => {
     <div class="flex flex-col gap-[25px] w-full">
       <div class="flex flex-col gap-[10px]">
         <div class="flex justify-end">
-          <p
-            v-if="userId === profileInformation.id"
-            class="text-[16px] mr-4 text-body cursor-pointer underline w-fit"
-            @click="router.push('/profile/edit')"
-          >
+          <p v-if="userId === profileInformation.id" class="text-[16px] mr-4 text-body cursor-pointer underline w-fit"
+            @click="router.push('/profile/edit')">
             Edit profile
           </p>
         </div>
@@ -187,46 +188,25 @@ const limitedPackages = computed(() => {
         </div>
       </div>
 
-      <div
-        v-if="role === 'Photographer'"
-        class="flex flex-col gap-[25px] w-full"
-      >
+      <div v-if="role === 'Photographer'" class="flex flex-col gap-[25px] w-full">
         <div class="flex justify-evenly cursor-pointer">
-          <div
-            class="flex flex-col gap-[5px] items-center"
-            @click="activeTab = 'WORK'"
-          >
+          <div class="flex flex-col gap-[5px] items-center" @click="activeTab = 'WORK'">
             <p class="text-[18px] px-[5px] text-body">WORK</p>
-            <hr
-              v-if="activeTab === 'WORK'"
-              class="text-primary w-full border-b-2 border-primary"
-            />
+            <hr v-if="activeTab === 'WORK'" class="text-primary w-full border-b-2 border-primary" />
           </div>
-          <div
-            class="flex flex-col gap-[5px] items-center"
-            @click="activeTab = 'REVIEW'"
-          >
+          <div class="flex flex-col gap-[5px] items-center" @click="activeTab = 'REVIEW'">
             <p class="text-[18px] px-[5px] text-body">REVIEW</p>
-            <hr
-              v-if="activeTab === 'REVIEW'"
-              class="text-primary w-full border-b-2 border-primary"
-            />
+            <hr v-if="activeTab === 'REVIEW'" class="text-primary w-full border-b-2 border-primary" />
           </div>
         </div>
         <!-- Display Content Based on Active Tab -->
         <div v-if="activeTab === 'WORK'" class="flex flex-col gap-[20px]">
           <WorkList v-if="packages" :data="limitedPackages" navigate />
-          <p
-            class="text-[16px] text-center text-body cursor-pointer underline"
-            @click="goToAllpackage"
-          >
+          <p class="text-[16px] text-center text-body cursor-pointer underline" @click="goToAllpackage">
             See all packages
           </p>
         </div>
-        <div
-          v-if="activeTab === 'REVIEW'"
-          class="flex flex-col gap-[20px] items-center w-full"
-        >
+        <div v-if="activeTab === 'REVIEW'" class="flex flex-col gap-[20px] items-center w-full">
           <div class="flex flex-col gap-[25px] w-full">
             <div class="flex items-center justify-center gap-[25px]">
               <p class="text-[48px] text-titleActive">{{ rating }}</p>
@@ -237,77 +217,51 @@ const limitedPackages = computed(() => {
                 </p>
               </div>
             </div>
-            <div
-              v-if="!hasReviewed && userId !== profileInformation.id"
-              class="flex flex-col gap-[5px] px-[15px]"
-            >
+            <div v-if="!hasReviewed && userId !== profileInformation.id" class="flex flex-col gap-[5px] px-[15px]">
               <p class="text-[18px] text-body font-medium">
                 Review this photographer
               </p>
-              <div
-                class="flex justify-between cursor-pointer"
-                @click="goToCreateReview"
-              >
-                <Icon
-                  v-for="index in 5"
-                  :key="index"
-                  icon="ic:round-star-border"
-                  class="text-empty-star w-[30px] h-[30px]"
-                />
+              <div class="flex justify-between cursor-pointer" @click="goToCreateReview">
+                <Icon v-for="index in 5" :key="index" icon="ic:round-star-border"
+                  class="text-empty-star w-[30px] h-[30px]" />
               </div>
             </div>
             <ReviewList :reviews="reviews" :showAll="false" />
           </div>
-          <p
-            v-if="reviews.length > 3"
-            class="text-[16px] text-center text-body cursor-pointer underline w-fit"
-            @click="goToAllReviews"
-          >
+          <p v-if="reviews.length > 3" class="text-[16px] text-center text-body cursor-pointer underline w-fit"
+            @click="goToAllReviews">
             See all reviews
           </p>
         </div>
       </div>
       <div v-else class="mx-5 p-4 border border-black rounded-lg bg-white text-black shadow-md">
-  <label class="block font-semibold mb-2 text-lg border-b border-gray-400 pb-1">
-    Gender: <span class="font-normal">{{ profileInformation.gender }}</span>
-  </label>
-  <label class="block font-semibold mb-2 text-lg border-b border-gray-400 pb-1">
-    Location: <span class="font-normal">{{ profileInformation.location }}</span>
-  </label>
-  <label class="block font-semibold mb-2 text-lg">
-    Email: <span class="font-normal">{{ profileInformation.email }}</span>
-  </label>
-</div>
+        <label class="block font-semibold mb-2 text-lg border-b border-gray-400 pb-1">
+          Gender: <span class="font-normal">{{ profileInformation.gender }}</span>
+        </label>
+        <label class="block font-semibold mb-2 text-lg border-b border-gray-400 pb-1">
+          Location: <span class="font-normal">{{ profileInformation.location }}</span>
+        </label>
+        <label class="block font-semibold mb-2 text-lg">
+          Email: <span class="font-normal">{{ profileInformation.email }}</span>
+        </label>
+      </div>
 
       <div v-if="role === 'Photographer'" class="mx-5">
-        <div
-          class="flex justify-between items-center cursor-pointer"
-          @click="isContactInfoVisible = !isContactInfoVisible"
-        >
+        <div class="flex justify-between items-center cursor-pointer"
+          @click="isContactInfoVisible = !isContactInfoVisible">
           <div class="flex">
-            <Button
-              middle-icon="material-symbols:mail-outline-sharp"
-              icon-color="black"
-              height="h-10"
-              bg-color="bg-button-profile"
-            ></Button>
+            <Button middle-icon="material-symbols:mail-outline-sharp" icon-color="black" height="h-10"
+              bg-color="bg-button-profile"></Button>
             <div class="flex-col ml-4">
               <p>Contact Information</p>
               <p class="text-[14px] text-label">Find their contact details!</p>
             </div>
           </div>
-          <Icon
-            :icon="
-              isContactInfoVisible ? 'weui:arrow-down' : 'weui:arrow-outlined'
-            "
-            class="w-[30px] h-[30px]"
-          />
+          <Icon :icon="isContactInfoVisible ? 'weui:arrow-down' : 'weui:arrow-outlined'
+            " class="w-[30px] h-[30px]" />
         </div>
 
-        <div
-          v-if="isContactInfoVisible"
-          class="flex flex-col ml-[5px] mt-[5px]"
-        >
+        <div v-if="isContactInfoVisible" class="flex flex-col ml-[5px] mt-[5px]">
           <div class="flex gap-[30px] items-center p-[10px]">
             <Icon icon="tdesign:location-filled" class="w-[30px] h-[30px]" />
             <p class="text-[18px]">{{ profileInformation.location }}</p>
