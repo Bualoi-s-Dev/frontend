@@ -72,25 +72,28 @@ const editItem = () => {
 
   <button
     @click="handleClick"
-    class="flex flex-col gap-[10px] py-[20px] px-[15px] w-full h-fit shadow-lg bg-innerBackground rounded-lg"
+    class="flex flex-col gap-[10px] py-[20px] px-[15px] w-full h-fit bg-white rounded-2xl shadow-lg"
   >
     <div class="flex justify-between items-center w-full">
-      <h1 class="text-titleActive text-[16px]">{{ props.title }}</h1>
+      <h1 class="text-xl font-semibold text-gray-900">{{ props.title }}</h1>
       <div v-if="props.isOwner" class="flex gap-[10px]">
-        <Icon
-          icon="icon-park-outline:edit-two"
-          class="w-[27px] h-[27px] text-body cursor-pointer"
+        <button
           @click="editItem"
-        />
-
-        <Icon
-          icon="pajamas:remove-all"
-          class="w-[27px] h-[27px] text-body cursor-pointer"
+          class="p-2 rounded-full"
+          aria-label="Edit package"
+        >
+          <Icon icon="iconoir:edit" width="24px" />
+        </button>
+        <button
           @click="confirmDelete"
-        />
+          class="p-2 rounded-full"
+          aria-label="Edit package"
+        >
+          <Icon icon="iconoir:trash" width="24px" />
+        </button>
       </div>
     </div>
-    <p class="text-body text-[14px] text-start">
+    <p class="text-body text-sm text-start">
       {{ props.description }}
     </p>
     <div class="flex py-[5px] gap-[10px]">
@@ -108,17 +111,20 @@ const editItem = () => {
     </div>
     <div class="flex justify-between items-end">
       <div class="flex flex-col gap-[10px] items-start">
-        <p class="text-primary text-[16px]">
+        <p class="text-primary-600 font-medium text-primary">
           Duration: {{ formattedDuration }}
         </p>
-        <p class="text-primary text-[16px]">
+        <p class="text-primary-600 font-medium text-primary">
           {{ props.timeStart }} - {{ props.timeEnd }}
         </p>
-        <p v-if="!props.isInf" class="text-primary text-[16px]">
+        <p
+          v-if="!props.isInf"
+          class="text-primary-600 font-medium text-primary"
+        >
           {{ props.dateStart }} - {{ props.dateEnd }}
         </p>
       </div>
-      <p class="text-primary text-[16px]">
+      <p class="text-primary-600 font-medium text-primary">
         ฿ {{ props.price.toLocaleString() }}
       </p>
     </div>

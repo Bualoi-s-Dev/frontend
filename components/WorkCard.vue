@@ -21,12 +21,12 @@ const props = defineProps<{
 const priceRange = computed(() => {
   if (props.subpackages.length === 0) return "No Subpackage";
 
-  const prices = props.subpackages.map(x => x.price);
+  const prices = props.subpackages.map((x) => x.price);
   const min = Math.min(...prices);
   const max = Math.max(...prices);
   if (min === max) return `$${min}`;
-  else return `$${min}-${max}`
-})
+  else return `$${min}-${max}`;
+});
 
 const router = useRouter();
 
@@ -50,7 +50,8 @@ const startDrag = (event: MouseEvent | TouchEvent) => {
 
 const onDrag = (event: MouseEvent | TouchEvent) => {
   if (!isDragging.value) return;
-  const currentX = "touches" in event ? event.touches[0].clientX : event.clientX;
+  const currentX =
+    "touches" in event ? event.touches[0].clientX : event.clientX;
   const diff = currentX - startX.value;
   offset.value = -currentIndex.value * containerWidth.value + diff;
 };
@@ -64,7 +65,10 @@ const endDrag = () => {
 
   if (diff > threshold && currentIndex.value > 0) {
     prevImage();
-  } else if (diff < -threshold && currentIndex.value < (props.images?.length ?? 0) - 1) {
+  } else if (
+    diff < -threshold &&
+    currentIndex.value < (props.images?.length ?? 0) - 1
+  ) {
     nextImage();
   } else {
     offset.value = -currentIndex.value * containerWidth.value;
@@ -76,16 +80,15 @@ const deleteItem = async () => {
   try {
     await props.onDeleted?.();
   } catch (err) {
-
   } finally {
     showDeleteDialog.value = false;
     deleteDialogLoading.value = false;
   }
-}
+};
 
 const handleClick = () => {
   if (props.navigate) router.push(`/package/${props.id}`);
-}
+};
 
 // Navigation Functions
 const prevImage = () => {
@@ -106,63 +109,105 @@ onMounted(() => {
   offset.value = -currentIndex.value * containerWidth.value;
 });
 </script>
-
 <template>
-  <button @click="handleClick" class="bg-gray-100 relative flex flex-col items-center w-full rounded-2xl shadow-md">
-    <div>
-      <div v-if="!toAdd" class="border border-gray-300 rounded-lg mt-3 w-77 aspect-[334/200] overflow-hidden shadow-md">
-        <div ref="carousel" class="flex transition-transform duration-300 ease-in-out w-full h-full"
-          :style="{ transform: `translateX(${offset}px)` }" @mousedown="startDrag" @touchstart="startDrag"
-          @mousemove="onDrag" @touchmove="onDrag" @mouseup="endDrag" @touchend="endDrag" @mouseleave="endDrag">
-          <!-- Images -->
-          <div v-for="(image, index) in images" :key="index" class="w-full h-full flex-shrink-0">
-            <img class="w-full h-full object-cover object-center" :src="image" alt="Carousel Image" />
-          </div>
+  <button
+    @click="handleClick"
+    class="relative flex flex-col items-center w-full bg-white rounded-2xl shadow-lg"
+    :aria-label="toAdd ? 'Create new package' : title"
+  >
+    <div class="w-full p-4">
+      <!-- Image Section -->
+      <div
+        v-if="!toAdd"
+        class="border border-gray-200 rounded-xl mt-2 w-full aspect-[334/200] overflow-hidden shadow-sm"
+      >
+        <img
+          v-if="images?.[0]"
+          class="w-full h-full object-cover object-center"
+          :src="images[0]"
+          alt="Package Image"
+        />
+        <div
+          v-else
+          class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500"
+        >
+          No Image
         </div>
       </div>
-      <div v-else class="bg-gray-400 rounded-lg overflow-hidden w-77 h-40 shadow-md">
-        <Button bg-color="bg-gray-400" button-options="w-full h-full" text-options="text-4xl text-white">+</Button>
-      </div>
-      <div class="flex justify-center mt-2">
-        <span v-for="(image, index) in images" :key="index"
-          :class="{ 'bg-gray-800': index === currentIndex, 'bg-gray-400 bg-': index !== currentIndex }"
-          class="w-1 h-1 mx-1 rounded-full transition-colors">
-        </span>
+      <div
+        v-else
+        class="bg-gradient-to-br from-gray-300 to-gray-400 rounded-xl w-full h-40 flex items-center justify-center shadow-md"
+      >
+        <Button
+          bg-color="bg-transparent"
+          button-options="w-full h-full"
+          text-options="text-5xl text-white font-bold"
+          aria-label="Add new package"
+        >
+          +
+        </Button>
       </div>
 
-      <div v-if="type" class="my-4 text-left">
-        <div class="flex flex-row justify-between">
-          <Button bg-color="bg-primary">{{ type }}</Button>
+      <!-- Content Section -->
+      <div v-if="type" class="mt-4 text-left">
+        <div class="flex flex-row justify-between items-center">
+          <PackageTypeBadge v-if="type" :type="type" />
 
-          <div class="flex flex-row items-center gap-4">
+          <div class="flex flex-row items-center gap-3">
             <div v-if="editable">
-              <button @click.stop="router.push(`/package/edit/${id}`)">
-                <Icon icon="iconoir:edit" width="30px" />
+              <button
+                @click.stop="router.push(`/package/edit/${id}`)"
+                class="p-2 rounded-full"
+                aria-label="Edit package"
+              >
+                <Icon icon="iconoir:edit" width="24px" />
               </button>
-            </div>
-            <div v-if="editable">
-              <button @click.stop="() => showDeleteDialog = true">
-                <Icon icon="iconoir:trash" width="30px" />
+              <button
+                @click.stop="() => (showDeleteDialog = true)"
+                class="p-2 rounded-full"
+                aria-label="Delete package"
+              >
+                <Icon icon="iconoir:trash" width="24px" />
               </button>
             </div>
             <div v-else-if="addable">
-              <Button>Add</Button>
+              <Button
+                bg-color="bg-primary-500"
+                text-options="text-white font-medium"
+                button-options="px-4 py-2 rounded-lg"
+              >
+                Add
+              </Button>
             </div>
           </div>
         </div>
-        <div class="mt-4">
-          <h2 class="text-lg font-medium">{{ title }}</h2>
-          <div class="flex flex-row justify-between">
-            <p class="text-gray-600 font-light">{{ owner }}</p>
-            <p class="text-primary font-light"> {{ priceRange }} </p>
+
+        <div class="mt-3">
+          <h2 class="text-xl font-semibold text-gray-900">{{ title }}</h2>
+          <div class="flex flex-row justify-between items-baseline mt-1">
+            <p class="text-body text-sm">{{ owner }}</p>
+            <p class="text-primary-600 font-medium text-primary">
+              {{ priceRange }}
+            </p>
           </div>
         </div>
       </div>
     </div>
 
-    <button v-if="toAdd" @click="router.push(`/package/create`)" class="absolute w-full h-full top-0 left-0"></button>
+    <!-- Overlay for Create Action -->
+    <button
+      v-if="toAdd"
+      @click="router.push(`/package/create`)"
+      class="absolute inset-0 w-full h-full rounded-2xl opacity-0 hover:bg-black/5 transition-opacity"
+      aria-label="Create package"
+    ></button>
   </button>
 
-  <DeleteConfirmPopup :disabled="deleteDialogLoading" item-text="package" :show="showDeleteDialog"
-    @close="() => showDeleteDialog = false" @confirm="deleteItem" />
+  <DeleteConfirmPopup
+    :disabled="deleteDialogLoading"
+    item-text="package"
+    :show="showDeleteDialog"
+    @close="() => (showDeleteDialog = false)"
+    @confirm="deleteItem"
+  />
 </template>

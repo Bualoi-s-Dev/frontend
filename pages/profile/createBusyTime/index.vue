@@ -9,6 +9,7 @@ const router = useRouter();
 const route = useRoute();
 const api = useApiStore();
 
+const title = ref("");
 const startTime = ref("");
 const endTime = ref("");
 const date = ref("");
@@ -17,6 +18,7 @@ const errors = ref<{ [key: string]: string }>({});
 
 const validate = () => {
   errors.value = {};
+  if (!title.value) errors.value.title = "Title is required.";
   if (!date.value) errors.value.date = "Date is required";
   if (!startTime.value) errors.value.startTime = "Start time is required.";
   if (!endTime.value) errors.value.endTime = "End time is required.";
@@ -35,6 +37,7 @@ const handleSubmit = async () => {
   if (!validate()) return;
   try {
     const payload = {
+      name: title.value,
       type: BusyTimeType.Photographer,
       startTime: constructISODateTime(date.value, startTime.value),
       endTime: constructISODateTime(date.value, endTime.value),
@@ -57,6 +60,21 @@ const handleSubmit = async () => {
     Create Busy Time
   </div>
   <div class="w-full h-full p-6 flex flex-col">
+    <div class="flex flex-row text-lg mt-6">
+      Title<span class="text-primary">*</span>
+    </div>
+    <input
+      v-model="title"
+      type="text"
+      class="border disabled:opacity-50 w-full rounded-md py-1 pl-2 text-lg mt-1.5"
+      :class="{
+        'border-red-500': errors.title,
+        'border-stroke': !errors.title,
+      }"
+    />
+    <div v-if="errors.title" class="text-red-500 text-sm mt-1">
+      {{ errors.title }}
+    </div>
     <div class="flex flex-row text-lg mt-6">
       Date<span class="text-primary">*</span>
     </div>

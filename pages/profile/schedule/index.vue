@@ -80,7 +80,9 @@ onMounted(async () => {
   try {
     const profile = await api.fetchUserProfile();
     // Fetch busy time data and remove invalid entries
-    const response = (await api.fetchBusyTime(profile.id)).filter(item => item.isValid);
+    const response = (await api.fetchBusyTime(profile.id)).filter(
+      (item) => item.isValid
+    );
 
     // Combine both data arrays
     packageData.value = response;

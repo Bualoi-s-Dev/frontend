@@ -37,8 +37,8 @@ const prop = withDefaults(
 );
 
 const emit = defineEmits<{
-  (event: 'update:search', searchQuery: string): void;
-  (event: 'update:filter', filterParams: string): void;
+  (event: "update:search", searchQuery: string): void;
+  (event: "update:filter", filterParams: string): void;
 }>();
 
 const onCreate = async () => {
@@ -60,12 +60,28 @@ const handleFilterApply = (data: any) => {
 
 <template>
   <div class="w-full max-w-full my-3 p-2 flex flex-row gap-2 items-center">
-    <input v-if="prop.includeSearch" v-model="searchQuery" type="text" placeholder="Search..."
-      class="px-4 py-2 border rounded-md flex-1 focus:ring-2 focus:ring-blue-500 outline-none" />
-    <div class="flex-1 text-lg font-bold" v-else>{{ searchLabelReplacement }}</div>
-    <FilterButton @apply-filter="handleFilterApply" :filter-options="filterOptions" />
+    <input
+      v-if="prop.includeSearch"
+      v-model="searchQuery"
+      type="text"
+      placeholder="Search..."
+      class="px-4 py-2 border rounded-md flex-1 focus:ring-2 focus:ring-blue-500 outline-none"
+    />
+    <div class="flex-1 text-lg font-bold" v-else>
+      {{ searchLabelReplacement }}
+    </div>
+    <FilterButton
+      @apply-filter="handleFilterApply"
+      :filter-options="filterOptions"
+    />
     <!-- <Button height="h-9" icon-color="gray" bg-color="bg-white" middle-icon="basil:filter-outline" button-options="border border-stroke rounded-md"></Button> -->
-    <Button v-if="role == 'Customer'" @click="onCreate" height="h-9" left-icon="ic:sharp-plus"
-      button-options="border border-stroke rounded-md px-4">New</Button>
+    <Button
+      v-if="role == 'Customer'"
+      @click="onCreate"
+      height="h-9"
+      left-icon="ic:sharp-plus"
+      button-options="border border-stroke rounded-md px-4"
+      >New</Button
+    >
   </div>
 </template>
