@@ -54,7 +54,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full h-full px-3 flex flex-col">
+  <div class="w-full h-full mt-6 px-3 flex flex-col">
     <!-- Separate from the v-else part below because when loading is triggered again, search bar won't be re-rendered so that user's input would not disappear -->
     <div
       v-if="profile?.role === UserRole.Customer"
@@ -75,7 +75,7 @@ onMounted(async () => {
       <div class="w-full h-32 rounded-xl mt-4 bg-gray-300 animate-pulse"></div>
     </template>
     <template v-else-if="profile!.role === UserRole.Photographer">
-      <div class="px-6 my-6 flex flex-row w-full justify-between items-center">
+      <div class="px-6 mb-6 flex flex-row w-full justify-between items-center">
         <h1 class="text-xl">Your Packages</h1>
         <button
           class="flex justify-center items-center gap-[8px] text-[14px] p-[9px] pr-[13px] rounded-[6px] bg-black text-white"
