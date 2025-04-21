@@ -46,9 +46,9 @@ const handleSubmit = async () => {
 
     await api.createBusyTime(payload);
     await router.push({ path: `/profile/schedule` });
-    useToastify("Successfully created subpackage", { type: "success" });
+    useToastify("Successfully created busy time", { type: "success" });
   } catch (error: any) {
-    console.error("Error creating subpackage:", error);
+    console.error("Error creating busy time:", error);
     useToastify(error.message, { type: "error" });
   }
 };
