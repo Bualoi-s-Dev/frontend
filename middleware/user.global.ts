@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     // User has not logged in
     const isSignedIn = await auth.isSignedIn();
     if (!isSignedIn) {
-        if (to.path === '/user/login' || to.path === '/user/register') return;
+        if (to.path === '/user/login' || to.path === '/user/register' || to.path === '/user/login/reset/1' || to.path === '/user/login/reset/2' || to.path === '/user/login/reset/success') return;
         else return navigateTo('/user/login');
     }
 
