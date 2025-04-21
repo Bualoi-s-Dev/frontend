@@ -199,14 +199,14 @@ export const useApiStore = defineStore("api", () => {
     return (response.data.subpackages ?? []) as SubpackageResponse[];
   };
 
-  const fetchBusyTime = async (id: string): Promise<BusyTime> => {
+  const fetchBusyTime = async (id: string): Promise<BusyTime[]> => {
     const response = await axios.get(
       `${config.public.apiUrl}/busytime/photographer/${id}`,
       {
         headers: { Authorization: `Bearer ${await auth.fetchToken()}` },
       }
     );
-    return response.data as BusyTime;
+    return response.data as BusyTime[];
   };
 
   const createBusyTime = async (busyTime: BusyTimeStrictRequest) => {
