@@ -73,7 +73,7 @@ onMounted(async () => {
       class="flex items-center"
     >
       <AppointmentCard
-        v-if="appointment.status != AppointmentStatus.Completed"
+        v-if="appointment.status != AppointmentStatus.Completed && appointment.status != AppointmentStatus.Canceled && appointment.status != AppointmentStatus.Rejected"
         :role="userData?.role"
         :appointmentData="appointment"
         :index="index"
