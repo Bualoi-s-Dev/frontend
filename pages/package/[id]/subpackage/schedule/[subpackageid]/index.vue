@@ -15,7 +15,7 @@
       <h2 class="text-lg mb-2">Date</h2>
       <div class="mb-4">
         <!-- TODO: set max time as max between today and subpackage optional start day -->
-        <VueDatePicker  v-model="selectedDate" model-type="yyyy-MM-dd" :enable-time-picker="false" :clearable="false"
+        <VueDatePicker v-model="selectedDate" model-type="yyyy-MM-dd" :enable-time-picker="false" :clearable="false"
           :min-date="new Date().toISOString().split('T')[0]" :max-date="subpackageDetails?.availableEndDay"
           :disabled-week-days="disabledWeekDays" />
       </div>
@@ -73,7 +73,7 @@ interface Event {
 const selectedDate = ref<string>(new Date().toISOString().split("T")[0]);
 const subpackageDetails = ref<SubpackageResponse | undefined>();
 
-watch(selectedDate, ()=>console.log("dej",selectedDate.value))
+watch(selectedDate, () => console.log("dej", selectedDate.value))
 const disabledWeekDays = computed(() => {
   if (!subpackageDetails.value) return [];
 
@@ -235,6 +235,7 @@ const events = computed<Event[]>(() => {
   if (!subpackageDetails.value) return [];
 
   const result = subpackageDetails.value.busyTimes
+    .filter(b => b.isValid)
     .map(b => ({
       // Subtract 7 hours to covert GMT+7
       ...b,

@@ -18,11 +18,14 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'Afternoon package Only onsite' }).click();
   await page.locator('[data-test-id="dp-input"]').click();
   await page.getByRole('button', { name: 'Next month' }).click();
-  await page.getByText('18').click();
+  await page.getByText('13').click();
   await page.locator('[data-test-id="select-button"]').click();
-  await page.getByRole('button', { name: ':31 PM - 04:01 PM' }).click();
+  await page.getByRole('button', { name: '2:31 PM - 04:01 PM' }).click();
   await page.locator('#location').click();
   await page.locator('#location').fill('Rayong');
   await page.getByRole('button', { name: 'Confirm' }).click();
-  await page.goto('https://frontend-2gn.pages.dev/package/68067dbff04a218e17b4e67d/subpackage/appointment/create/68067e87f04a218e17b4e67f?date=Sun+May+18+2025+07%3A00%3A00+GMT%2B0700+%28Indochina+Time%29&start=02%3A31+PM&end=04%3A01+PM');
+  await page.getByRole('button').filter({ hasText: /^$/ }).click();
+  await page.getByText('Appointments').click();
+  await expect(page.getByRole('heading', { name: 'My First Package / Afternoon' }).nth(2)).toBeVisible();
+  await page.goto('https://frontend-2gn.pages.dev/appointment/list');
 });
