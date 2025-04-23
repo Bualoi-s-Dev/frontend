@@ -24,8 +24,8 @@ const priceRange = computed(() => {
   const prices = props.subpackages.map((x) => x.price);
   const min = Math.min(...prices);
   const max = Math.max(...prices);
-  if (min === max) return `$${min}`;
-  else return `$${min}-${max}`;
+  if (min === max) return `฿${min}`;
+  else return `฿${min}-${max}`;
 });
 
 const router = useRouter();
