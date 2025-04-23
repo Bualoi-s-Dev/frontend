@@ -163,7 +163,7 @@ const limitedPackages = computed(() => {
 <template>
   <div class="ml-6 mt-6 flex flex-row gap-3 text-xl">
     <BackButton />
-    Photographer Profile
+    Profile
   </div>
   <div v-if="profileInformation" class="mt-[16px] w-full">
     <div class="flex flex-col gap-[25px] w-full">
