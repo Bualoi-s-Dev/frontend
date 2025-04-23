@@ -15,7 +15,7 @@
       <h2 class="text-lg mb-2">Date</h2>
       <div class="mb-4">
         <!-- TODO: set max time as max between today and subpackage optional start day -->
-        <VueDatePicker v-model="selectedDate" :enable-time-picker="false" :clearable="false"
+        <VueDatePicker  v-model="selectedDate" model-type="yyyy-MM-dd" :enable-time-picker="false" :clearable="false"
           :min-date="new Date().toISOString().split('T')[0]" :max-date="subpackageDetails?.availableEndDay"
           :disabled-week-days="disabledWeekDays" />
       </div>
@@ -49,7 +49,6 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import { ref, computed } from "vue";
 import type { DayName, SubpackageResponse } from "~/types/api";
-
 const route = useRoute();
 const router = useRouter();
 const api = useApiStore();
@@ -74,6 +73,7 @@ interface Event {
 const selectedDate = ref<string>(new Date().toISOString().split("T")[0]);
 const subpackageDetails = ref<SubpackageResponse | undefined>();
 
+watch(selectedDate, ()=>console.log("dej",selectedDate.value))
 const disabledWeekDays = computed(() => {
   if (!subpackageDetails.value) return [];
 
