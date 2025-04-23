@@ -8,7 +8,7 @@ test.use({
   }
 });
 
-test('test', async ({ page }) => {
+test('test customer create a appointment', async ({ page }) => {
   await page.goto('https://frontend-2gn.pages.dev/user/login');
   await page.locator('input[type="email"]').click();
   await page.locator('input[type="email"]').fill('neo.ccc@gmail.com');
