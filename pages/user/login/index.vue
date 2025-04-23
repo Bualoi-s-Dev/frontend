@@ -127,10 +127,6 @@ const handleSubmit = async () => {
           @click="handleGoogleLogin">
           Login with Google
         </Button>
-        <Button :disabled="processing" class="flex items-center justify-center py-[12px] bg-facebook"
-          textOptions="text-white text-[14px] font-poppins" leftIcon="logos:facebook" @click="handleFacebookLogin">
-          Login With Facebook
-        </Button>
       </div>
       <div class="pl-[8px] pt-[20px]">
         <label class="text-label text-[14px]">
