@@ -7,7 +7,7 @@ test.use({
   }
 });
 
-test('test', async ({ page }) => {
+test('test photographer accept & reject appointment', async ({ page }) => {
   await page.goto('https://frontend-2gn.pages.dev/user/login');
   await page.locator('input[type="email"]').click();
   await page.locator('input[type="email"]').fill('neo.p@gmail.com');
